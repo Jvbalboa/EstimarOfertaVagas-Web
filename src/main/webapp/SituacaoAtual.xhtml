@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+    
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="Templete.xhtml">
+	<ui:define name="corpo">
+	
+			
+		<div class="row">
+		  <div class="col-lg-6">
+		    
+		    <p:growl id="msgs" showDetail="true" /> 
+		    
+		    <p:outputLabel value="Matricula" for="acSimple" />
+		    <p:autoComplete id="acSimple" value="#{autoCompleteView.txt1}" completeMethod="#{autoCompleteView.completeText}" />
+		        
+		    <p:dialog header="Values" resizable="false" showEffect="fade" widgetVar="dlg">
+			        <p:panelGrid id="output" columns="2" columnClasses="label, value">
+			           
+			            <h:outputText value="Nome Curso:" />
+			            <h:outputText value="#{autoCompleteView.txt1}" />	 
+			            
+			        </p:panelGrid>
+		    </p:dialog> 
+		    
+		  </div><!-- /.col-lg-6 -->
+		  <div class="col-lg-6">
+		  
+		  <p:growl id="msgs2" showDetail="true" /> 
+		    
+		    <p:outputLabel value="Nome Aluno" for="acSimple" />
+		    <p:autoComplete id="acSimple1" value="#{autoCompleteView.txt1}" completeMethod="#{autoCompleteView.completeText}" />
+		        
+		    <p:dialog header="Values" resizable="false" showEffect="fade" widgetVar="dlg">
+			        <p:panelGrid id="output1" columns="2" columnClasses="label, value">
+			           
+			            <h:outputText value="Nome Curso:" />
+			            <h:outputText value="#{autoCompleteView.txt1}" />	 
+			            
+			        </p:panelGrid>
+		    </p:dialog>
+		   
+		   
+		  </div><!-- /.col-lg-6 -->
+		</div><!-- /.row -->
+		
+		
+		
+		
+				
+				<p:fieldset legend="Matérias Obrigatórias">
+				<p:dataTable var="car" value="#{dtBasicView.cars}">
+				    <p:column headerText="Periodo">
+				        
+				    </p:column>
+				 
+				    <p:column headerText="Código Disciplina">
+				       
+				    </p:column>
+				    
+				    <p:column headerText="Nome Disciplina">
+				       
+				    </p:column>
+				 
+				   
+				    
+				    		    
+				 
+				    <p:column headerText="Status">
+				        
+				    </p:column>
+				</p:dataTable>
+				</p:fieldset>
+				
+				 <p:outputLabel value="Horas Cursadas / Total:"></p:outputLabel>
+		    <p:inputText ></p:inputText>
+		    
+		    
+		    
+				<p:fieldset legend="Matérias Eletivas">
+				<p:dataTable var="car" value="#{dtBasicView.cars}">
+				    <p:column headerText="Periodo">
+				        
+				    </p:column>
+				 
+				    <p:column headerText="Código Disciplina">
+				       
+				    </p:column>
+				    
+				    <p:column headerText="Nome Disciplina">
+				       
+				    </p:column>
+				 
+				   
+				    
+				    		    
+				 
+				    <p:column headerText="Status">
+				        
+				    </p:column>
+				</p:dataTable>
+				</p:fieldset>
+				
+				 <p:outputLabel value="Horas Cursadas / Total:"></p:outputLabel>
+		    <p:inputText ></p:inputText>
+		    
+		    
+		    <p:fieldset legend="Matérias Opcionais">
+				<p:dataTable var="car" value="#{dtBasicView.cars}">
+				    <p:column headerText="Periodo">
+				        
+				    </p:column>
+				 
+				    <p:column headerText="Código Disciplina">
+				       
+				    </p:column>
+				    
+				    <p:column headerText="Nome Disciplina">
+				       
+				    </p:column>
+				 
+				   
+				    
+				    		    
+				 
+				    <p:column headerText="Status">
+				        
+				    </p:column>
+				</p:dataTable>
+				</p:fieldset>
+				
+				 <p:outputLabel value="Horas Cursadas / Total:"></p:outputLabel>
+		    <p:inputText ></p:inputText>
+				
+				
+			
+		    
+				
+				
+				
+				
+					
+						
+				
+								
+				
+		
+	</ui:define>
+</ui:composition>
+</html>

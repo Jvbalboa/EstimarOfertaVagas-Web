@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+    
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="Templete.xhtml">
+	<ui:define name="corpo">
+	
+		
+		
+		
+		
+		
+				
+				<p:fieldset legend="Aluno X Disciplina">
+				<p:dataTable var="car" value="#{dtBasicView.cars}">
+				    <p:column headerText="Disciplina">
+				        
+				    </p:column>
+				 
+				    <p:column headerText="Disciplina 1">
+				       
+				    </p:column>
+				    
+				    <p:column headerText="Disciplina 2">
+				       
+				    </p:column>
+				 
+				   
+				    
+				    <p:column headerText="Disciplina 3" width="10">
+						
+						</p:column>
+				    
+				 
+				    <p:column headerText="Disciplina 4">
+				        
+				    </p:column>
+				</p:dataTable>
+				</p:fieldset>
+				
+				
+				
+				<p:outputLabel value="%Matriculados:"></p:outputLabel>
+		    <p:inputText ></p:inputText>
+		    
+		    <p:outputLabel value="%Repr. nota:"></p:outputLabel>
+		    <p:inputText ></p:inputText>
+		    <p:outputLabel value="%Habilitados:"></p:outputLabel>
+		    <p:inputText ></p:inputText>
+		    <p:outputLabel value="%Quase habilit.:"></p:outputLabel>
+		    <p:inputText ></p:inputText>
+		    
+		    <p:outputLabel value="%Necess. bruta:"></p:outputLabel>
+		    <p:inputText ></p:inputText>
+		    <p:commandButton value="Aplicar Filtro"  
+							>
+						</p:commandButton>
+		    
+				
+				<p:fieldset legend="Projeção de Vagas">
+				<p:dataTable var="car" value="#{dtBasicView.cars}">
+				    <p:column headerText="Matriculados">
+				        
+				    </p:column>
+				 
+				    <p:column headerText="Repr. nota">
+				       
+				    </p:column>
+				    
+				    <p:column headerText="Repr. freq">
+				       
+				    </p:column>
+				 
+				   
+				    
+				    <p:column headerText="Habilitados" width="10">
+						
+						</p:column>
+				    
+				 
+				    <p:column headerText="Quase habilit.">
+				        
+				    </p:column>
+				    
+				    <p:column headerText="Necess. bruta">
+				        
+				    </p:column>
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				    
+				</p:dataTable>
+				</p:fieldset>
+				
+				
+					
+						
+				
+								
+				
+		
+	</ui:define>
+</ui:composition>
+</html>

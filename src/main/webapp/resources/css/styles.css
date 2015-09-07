@@ -1,0 +1,347 @@
+.paginaFundo{
+	background-color: #E9E9E9;
+	margin: 0 auto;
+}
+
+.paginaFrente {
+	width: 1340px;
+	min-height: 809px;
+	position: relative;
+	background-color: #FFFFFF;
+	margin: 0px auto auto auto;
+}
+.titulo{	
+	margin-top: -60px;
+}
+
+#list{
+margin-left: 243px;
+margin-top: 56px;	
+}
+
+#tituloList{
+	margin-left: 338px;
+	margin-top: 117px;
+}
+
+#listBotao{
+	margin-left: 242px;
+	margin-top: 22px;
+}
+
+.rodaPe {
+	border-top:1px solid #ddddde;
+	padding:10px 0 15px 0;		
+}
+.rodaPe p {
+	margin:0;
+	padding:0;
+	line-height:normal;
+}
+.rodaPe .lf {
+	float:left;
+}
+.rodaPe .rf {
+	float:right;
+}
+.rodaPe, .rodaPe a {
+	color:#828484;
+	text-decoration:none;
+	font-size:10px;
+	margin-top: 14%;
+	
+}
+.rodaPe a:hover {
+	text-decoration:none;
+}
+
+.fundoLogo{
+	background-color: #00985C;
+	height: 50px;
+}
+#Logo{
+	float: left;
+	margin: -69px 0 0 59px;
+	position: absolute;
+	width: 200px;
+}
+#topo h5{
+	margin: 1px 15px 0px 0px;
+	width: auto;
+	color: #FFFFFF;
+	text-align: right;
+	font-weight: bold;
+	font-family: Arial;
+	font-size: 12px;
+	text-shadow: 0.1em 0.1em #333;
+}
+#topo{
+	background-color: #F5781E;
+border-bottom: 2px solid #E0E0E0;
+height: 17px;
+margin-top: 0px;
+}
+
+.titulo legend{
+	margin: 70px 0px 0px 25px;
+	font-family: Arial;
+	font-size: 25px;
+	font-weight: bold;	
+	width: 500px;
+}
+.formularioCorpo{
+	width: 66%;
+	height: 836px;
+	margin: 50px auto 100px auto;
+	border-bottom: 1px solid #e5e5e5;
+	border-top: 1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-right: 1px solid #e5e5e5;
+}
+.form-horizontal .formularioCentro {
+	float: left;
+	width: 80%;
+	margin: 40px 0px auto 14%;
+}
+.form-group .col-sm-5{
+	width: 500px;
+	
+}
+
+.form-horizontal #dataHoraInicial label control-label{
+	width: 112px;
+}
+
+.form-horizontal #dataHoraFinal label control-label{
+	width: 112px;
+}
+
+.label,.glyphicon { 
+	margin-right:5px;
+}
+
+#bs-example-navbar-collapse-1 .dropdown-toggle{	
+	color: #00985C;
+}
+#subTopo{
+	background-color:#F3F3F3;
+	height: 50px;
+}
+
+
+
+/*---------------------------------------------------*/
+
+/* Tela de Login */
+
+
+.ui-messages-warn ul{
+	list-style: none;
+}
+
+.ui-messages-warn-summary{
+	
+	color: red;
+	font-weight:bold;
+	margin: 0 .5em 0 0;
+	vertical-align: top;
+	font-size: 14px;
+	margin-left: 60px;
+	
+}
+
+.container{
+	
+	min-height: 730px;
+}
+
+#logoLogin{
+	
+	height: 10px;
+	margin-top: 10px;
+	margin-left: 30px;
+	
+}
+
+.row{
+	
+	margin-top: 65px;
+}
+
+.container .row #loginCentro{
+	height: 500px;
+	width: 400px;
+	margin-top: 90px;
+	background-color: #F7F7F7;
+}
+#imagemLogin{
+	height: 100px;
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 40px;
+	border-radius: 260px 260px 260px 260px;
+}
+.formularioLogin{
+	margin-top: 80px;
+	
+}
+
+.panel-heading .panel-title{
+	font-size: 20px;
+	text-align: center;
+	font-weight:bold;
+}
+
+#botaoLogar{
+	margin-top: 35px;
+}
+
+label.error{ 
+	float: none;
+ 	color: red;
+ 	margin: 0 .5em 0 0;
+ 	vertical-align: top;
+ 	font-size: 10px
+ }
+
+/*---------------------------------------------------*/
+
+
+/* Pagina Requisição de Folga 
+Analista: Charleston Campos
+Data: 28/07/2014 */
+
+.form-group .col-sm-5{
+	margin-left: 100px;
+	width: 500px;
+	
+}
+
+
+#data{
+	width: 635px;
+	margin-left: 98px;	
+	
+}
+
+#checkBoxDia{
+	margin-left: 490px;
+	margin-top: -76px;
+	font-size: 14px; 
+	
+}
+
+#enviarSolicitacao{
+	margin-left: 355px;
+	
+}
+
+/*---------------------------------------------------*/
+
+/* Pagina Relatórios
+Analista: Charleston Campos
+Data: 28/07/2014 */
+
+
+#dataRelatorio{
+	margin: 0px 0px 0px 86px;
+	
+}
+
+#gerarRelatorio{
+	margin: 42px 0px 0px 418px;
+	
+}
+
+#tabelaRelatorio{
+	
+	width: 800px;
+	margin: 345px auto 0px auto;
+}
+
+/*---------------------------------------------------*/
+
+/* Pagina Classificar Folgas
+Analista: Charleston Campos / Rafael Silva
+Data: 31/07/2014 */
+
+
+#folgaForm{
+	
+	width: 1250px;
+	margin-top: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 90px;
+}
+
+#botoesAcao{
+	margin-top: 10px;
+	
+}
+
+
+/*---------------------------------------------------*/
+
+/* Pagina Editar Folgas
+Analista: Charleston Campos / Rafael Silva
+Data: 31/07/2014 */
+
+
+#formEditar{
+	
+	margin-left: 12%;
+	margin-top: 70px;
+}
+
+.formularioCorpoEditar{
+	width: 66%;
+	height: 700px;
+	margin: -200px auto 100px auto;
+	border-bottom: 1px solid #e5e5e5;
+	border-top: 1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-right: 1px solid #e5e5e5;
+}
+
+
+
+/*---------------------------------------------------*/
+
+/* Pagina Folgas Agendadas
+Analista: Charleston Campos / Rafael Silva
+Data: 31/07/2014 */
+
+.value {
+	width: 900px;  
+}
+#calendario{
+	margin-top: 50px;
+	margin-left: 18%;
+	margin-bottom: 100px;
+}
+
+.fc-event{
+	border: 1px solid #00985C;
+	background-color: #00985C;
+	
+}
+
+.botaoInicial {
+margin-left: 700px;
+margin-top: 300px;
+}
+/*---------------------------------------------------*/
+
+/* Pagina Relatorio Presador
+Analista: / Rafael Silva
+Data: 31/07/2014 */
+
+#ordenacao{
+	margin-left: 26%;
+margin-top: 5%;
+
+}
+
+
+

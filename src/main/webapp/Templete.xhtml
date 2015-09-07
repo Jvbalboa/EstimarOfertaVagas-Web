@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<!--  Bootstrap -->
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+
+
+	<!-- CSS Local -->
+	<link rel="stylesheet" type="text/css" href="resources/css/styles.css" />
+	<link rel="stylesheet" type="text/css" href="resources/css/drop.css" />
+	<link rel="stylesheet" type="text/css"
+		href="resources/css/jquery.datetimepicker.css" />
+
+
+	<!-- Scripts Bootstrap -->
+	<script src="resources/js/bootstrap.min.js" />
+	<script type="text/javascript" src="resources/js/drop.js" />
+
+	<!-- <script type="text/javascript" src="recursos/js/jquery-2.1.1.js"/>	-->
+	<script type="text/javascript" src="resources/js/script.js"
+		charset="charset=UTF-8" />
+	<script type="text/javascript" src="resources/js/validaCampos.js" />
+	<script type="text/javascript"
+		src="resources/js/jquery.datetimepicker.js" charset="charset=UTF-8" />
+
+</h:head>
+<h:body>
+	<div class="paginaFundo">
+		<div class="paginaFrente">
+			<div id='cssmenu'>
+				<ul>
+					<li ><a href='Home.xhtml'>Inicial</a>
+						</li>
+					<li class='active has-sub'><a href='#'>Cadastros</a>
+						<ul>
+							<li ><a href='CadastrarGrade.xhtml'>Grade</a>
+								</li>
+								<li ><a href='CadastrarCoordenador.xhtml'>Coordenador</a>
+								</li>
+							
+						</ul></li>
+					<li ><a href='VisaoCurso.xhtml'>Visão Geral</a>
+						</li>
+					
+					
+						
+						<li class='active has-sub'><a href='#'>Aluno</a>
+						<ul>
+							<li ><a href='SituacaoAtual.xhtml'>Situação Atual</a>
+								</li>
+								<li ><a href='PlanejamentoFormatura.xhtml'>Planejamento de Formatura</a>
+								</li>
+								
+								<li ><a href='Desempenho.xhtml'>Desempenho</a>
+								</li>
+							
+						</ul></li>
+						
+						
+						
+					
+					
+
+				</ul>
+			</div>
+
+
+
+			<div id="topo">
+				<h5>Sistema da Coordenação de Sistemas de Informação</h5>
+			</div>
+
+			
+
+			<div id="subTopo">
+				<div class="collapse navbar-collapse"
+					id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown"> <span
+								class="glyphicon glyphicon-user"></span>#{loginController.colaborador.nome}<b
+								class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="Help.htm"><span
+										class="glyphicon glyphicon-question-sign"></span>Ajuda</a></li>
+								<li class="divider"></li>
+								<li><a href="Login.xhtml"><span
+										class="glyphicon glyphicon-off"></span>Sair</a></li>
+							</ul></li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="page-wrapper">
+				<ui:insert name="corpo" />
+			</div>
+
+			<div class="rodaPe">
+				<p class="lf">
+					Copyright &copy; 2014 
+				</p>
+				<div style="clear: both;"></div>
+			</div>
+
+		</div>
+	</div>
+	<script type="text/javascript" src="resources/js/script.js"
+		charset="charset=UTF-8" />
+</h:body>
+
+</html>

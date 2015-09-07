@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="Templete.xhtml">
+	<ui:define name="corpo">
+
+		<div class="titulo">
+			<legend>Grades</legend>
+		</div>
+
+		<h:form class="formularioCentro" id="folgaForm" method="post"
+			role="form">
+
+			<div class="row">
+
+				<div class="col-lg-2">
+
+					<p:growl id="msgs" showDetail="true" />
+
+
+					<p:outputLabel value="Código Curso:"></p:outputLabel>
+					<p:inputText ></p:inputText>
+
+
+				</div>
+				<div class="col-lg-2">
+
+					<p:outputLabel value="Horas Eletiva:"></p:outputLabel>
+					<p:inputText></p:inputText>
+
+				</div>
+				<!-- /.col-lg-6 -->
+				<div class="col-lg-2">
+
+					<p:outputLabel value="Horas Opcionais:"></p:outputLabel>
+					<p:inputText></p:inputText>
+
+
+				</div>
+				<!-- /.col-lg-6 -->
+				<div class="col-lg-2">
+
+					<p:outputLabel value="Horas AOE:"></p:outputLabel>
+					<p:inputText></p:inputText>
+
+
+				</div>
+				<!-- /.col-lg-4 -->
+
+
+				<div class="b-cadastrar-grade"
+					style="width: 14%; float: right; margin-top: 25px;">
+					<p:commandButton class="btn btn-success btn-sm"
+						value="Buscar Grade" ajax="false" icon="ui-icon-circle-check"
+						
+						>
+					</p:commandButton>
+
+				</div>
+
+
+			</div>
+			<!-- /.row -->
+			<div class="row">
+				<div class="col-lg-2">
+					<p:outputLabel value="Código Disciplina:"></p:outputLabel>
+					<p:inputText value="#{cadastrarDisciplinaController.gradeDisciplina.disciplinaCod}"></p:inputText>
+
+				</div>
+				<!-- /.col-lg-6 -->
+				<div class="col-lg-2">
+
+
+
+					<p:outputLabel value="Nome Disciplina:"></p:outputLabel>
+					<p:inputText value="#{cadastrarDisciplinaController.gradeDisciplina.gradeCod}" ></p:inputText>
+
+
+				</div>
+				<!-- /.col-lg-6 -->
+				<div class="col-lg-2">
+
+					<p:outputLabel value="Tipo Disciplina:"></p:outputLabel>
+					<p:inputText value="#{cadastrarDisciplinaController.gradeDisciplina.tipoDisciplina}"></p:inputText>
+
+				</div>
+				<!-- /.col-lg-4 -->
+
+				<div class="col-lg-2">
+
+
+
+					<p:outputLabel value="Carga Horária Disciplina:"></p:outputLabel>
+					<p:inputText></p:inputText>
+
+
+				</div>
+				<!-- /.col-lg-4 -->
+
+
+				<div class="col-lg-2">
+
+
+					<p:outputLabel value="Periodo Disciplina:"></p:outputLabel>
+					<p:inputText></p:inputText>
+
+
+				</div>
+				<!-- /.col-lg-4 -->
+				<div class="b-cadastrar-grade"
+					style="width: 14%; float: right; margin-top: 25px;">
+					<p:commandButton class="btn btn-success btn-sm"
+						value="Incluir Matéria" ajax="false" icon="ui-icon-circle-check"
+						action="#{cadastrarDisciplinaController.salvar()}">
+					</p:commandButton>
+				</div>
+
+			</div>
+			<!-- /.row -->
+
+
+		</h:form>
+
+
+		<p:fieldset legend="Matérias Obrigatórias"
+			style="    margin-top: 50px;">
+			<p:dataTable var="car" value="#{dtBasicView.cars}">
+				<p:column headerText="Código">
+
+				</p:column>
+
+				<p:column headerText="Nome">
+
+				</p:column>
+
+				<p:column headerText="Carga Horária">
+
+				</p:column>
+
+
+
+				<p:column headerText="Período" width="10">
+
+				</p:column>
+
+
+				<p:column headerText="Ações">
+
+				</p:column>
+			</p:dataTable>
+		</p:fieldset>
+
+		<p:fieldset legend="Matérias Eletivas" style="    margin-top: 50px;">
+			<p:dataTable var="car" value="#{dtBasicView.cars}">
+				<p:column headerText="Código">
+
+				</p:column>
+
+				<p:column headerText="Nome">
+
+				</p:column>
+
+				<p:column headerText="Carga Horária">
+
+				</p:column>
+
+
+
+				<p:column headerText="Período" width="10">
+
+				</p:column>
+
+
+				<p:column headerText="Ações">
+
+				</p:column>
+			</p:dataTable>
+		</p:fieldset>
+
+
+		<div class="b-concluir" style="margin-left: 35%; margin-top: 3%;">
+			<p:commandButton class="btn btn-success btn-sm"
+				value="Cadastrar Grade" icon="ui-icon-circle-check">
+			</p:commandButton>
+			<p:commandButton class="btn btn-danger btn-sm" value="Cancelar"
+				icon="ui-icon-closethick" type="Reset">
+			</p:commandButton>
+		</div>
+
+
+
+
+	</ui:define>
+</ui:composition>
+</html>

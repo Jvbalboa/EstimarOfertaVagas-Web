@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+    
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="Templete.xhtml">
+	<ui:define name="corpo">
+	
+			
+		
+		
+		
+	<h:form id="form">
+    <p:growl id="msgs" showDetail="true" />
+ 
+    <h:panelGrid columns="3">
+        <p:tree id="tree1" value="#{treeDNDView.root1}" var="node" selectionMode="single" selection="#{treeDNDView.selectedNode1}"
+                draggable="true" droppable="true" dragdropScope="demo">
+            <p:ajax event="dragdrop" listener="#{treeDNDView.onDragDrop}" update=":form:msgs" />
+            <p:treeNode>
+                <h:outputText value="#{node}" />
+            </p:treeNode>
+        </p:tree>
+ 
+        
+ 
+        <p:tree id="tree2" value="#{treeDNDView.root2}" var="node" selectionMode="single" selection="#{treeDNDView.selectedNode2}"
+                draggable="true" droppable="true" dragdropScope="demo">
+            <p:ajax event="dragdrop" listener="#{treeDNDView.onDragDrop}" update=":form:msgs" />
+            <p:treeNode>
+                <h:outputText value="#{node}" />
+            </p:treeNode>
+        </p:tree>
+    </h:panelGrid>
+</h:form>
+				
+			
+		    
+				
+				
+				
+				
+					
+						
+				
+								
+				
+		
+	</ui:define>
+</ui:composition>
+</html>
