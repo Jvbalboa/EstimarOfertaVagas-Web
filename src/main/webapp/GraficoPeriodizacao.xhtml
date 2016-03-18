@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<h:form id="form" style="padding-left: 45px;" class="formularioCentro">
+			<p:growl id="growl" showDetail="true" />
+			<div class="titulo">
+				<legend>Periodização do Aluno</legend>
+			</div>
+			
+			<div class="ui-grid-row ">
+				<div class="ui-grid-col-6" style="width: 55%;">
+					<p:chart type="bar" model="#{graficosController.animatedModel2}"
+						style="width:700px;height:500px;">
+						<p:ajax event="itemSelect"
+							listener="#{graficosController.itemSelect}"
+							update="growl dadosConsolidadosDetalhe" />
+					</p:chart>
+					<div
+						style="padding-top: 15px; position: absolute; z-index: 10; padding-left: 89px; color: red;">
+						*Para o calculo do período foi utilizado as aprovações em somente
+						disciplinas obrigatórias</div>
+				</div>
+				<div class="ui-grid-col-6" style="width: 40%; padding-top: 23px;">
+					<p:dataTable var="registro" id="dadosConsolidadosDetalhe"
+						value="#{graficosController.listaAlunoSelecionado}"
+						emptyMessage="Nenhum registro encontrado!"
+						paginatorAlwaysVisible="false" paginator="true" rows="13"
+						filteredValue="#{graficosController.listaAlunoSelecionadoFiltrados}">
+						<f:facet name="header">
+							<div
+								style="font-size: 12px; margin-left: -125px; padding: 3px 3px;">Seleções
+								Realizadas | Quantidade Alunos:
+								#{graficosController.quantidadeSelecionados} /  #{graficosController.quantidadeTotal} | Período Incompleto:
+								#{graficosController.periodoSelecionados}</div>
+							<h:commandLink>
+								<p:graphicImage name="/img/excel.png"
+									style="float: right;    margin-top: -20px;" />
+								<p:dataExporter type="xls" target="dadosConsolidadosDetalhe"
+									fileName="periodizacao" />
+							</h:commandLink>
+						</f:facet>
+						<p:column headerText="Turma" filterMatchMode="contains"
+							style="width:105px !important;font-size: 12px;text-align: center;    margin-bottom: 0px;vertical-align: bottom; padding-right: 2px; padding-left: 2px;"
+							sortBy="#{registro.gradeIngresso}"
+							filterBy="#{registro.gradeIngresso}">
+							<p:outputLabel value="#{registro.gradeIngresso}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:column>
+						<p:column headerText="Período Corrente" filterMatchMode="contains"
+							style="width:105px !important;font-size: 12px;text-align: center;   margin-bottom: 0px;  text-align: center;vertical-align: bottom;padding-right: 2px; padding-left: 2px;"
+							sortBy="#{registro.periodoCorrente}"
+							filterBy="#{registro.periodoCorrente}">
+							<p:outputLabel value="#{registro.periodoCorrente}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:column>
+						<p:column headerText="Matrícula" filterMatchMode="contains"
+							style="width:105px !important;text-align: center; font-size: 12px; margin-bottom: 0px;  vertical-align: bottom;vertical-align: bottom;padding-right: 2px; padding-left: 2px; "
+							sortBy="#{registro.matricula}" filterBy="#{registro.matricula}">
+							<p:outputLabel value="#{registro.matricula}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:column>
+						<p:column headerText="Nome" filterMatchMode="contains"
+							style="font-size: 12px;  vertical-align: bottom; "
+							sortBy="#{registro.nomeAluno}" filterBy="#{registro.nomeAluno}">
+							<p:outputLabel value="#{registro.nomeAluno}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:column>
+					</p:dataTable>
+				</div>
+			</div>
+			<div class="ui-grid-row " style="padding-top: 25px;">
+				<div class="ui-grid-col-6" style="width: 55%;">
+					<pe:gChart value="#{graficosController.chart}" height="600"
+						width="700" title="Gráfico - Periodização do Aluno no Curso">
+						<p:ajax listener="#{graficosController.onSelectPizzaE}"
+							update="growl dadosConsolidadosDetalhe" />
+					</pe:gChart>
+				</div>
+				<div class="ui-grid-col-6" style="width: 40%; padding-top: 23px;">
+					<p:dataTable id="registrosTotal" var="registros" rendered="#{graficosController.semColuna}"
+						value="#{graficosController.listaTotalizada}"
+						emptyMessage="Nenhum registro encontrado!">
+						<f:facet name="header">
+							<div style="font-size: 12px; padding: 3px 3px;">Dados
+								Consolidados por Turma</div>
+							<h:commandLink>
+								<p:graphicImage name="/img/excel.png"
+									style="float: right;    margin-top: -20px;" />
+								<p:dataExporter type="xls" target="registrosTotal"
+									fileName="periodizacao" />
+							</h:commandLink>
+						</f:facet>
+						<p:column 
+							style="width:100px;font-size: 12px;   padding: 3px 3px;text-align: center;  "
+							sortBy="#{registros.gradeIngresso}">
+							<f:facet name="header">
+								<p:outputLabel value="Turma" />
+							</f:facet>
+							<p:outputLabel value="#{registros.gradeIngresso}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:column>
+						<p:columns value="#{graficosController.columns}" var="column"
+							style=" padding: 0px 0px;    font-size: 12px;width: 25px; text-align: center;"
+							sortBy="#{column.retornaProperty(registros)}">
+							<f:facet name="header">
+								<p:outputLabel value="#{column.header}" />
+							</f:facet>
+							<p:outputLabel value="#{column.retornaProperty(registros)}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:columns>
+					</p:dataTable>
+				</div>
+			</div>
+		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+
+
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<h:form id="form" style="padding-left: 45px;" class="formularioCentro">
+			<p:growl id="growl" autoUpdate="true" />
+			<div class="titulo">
+				<legend>Panorâmico</legend>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-2">
+					<p:outputLabel value="Matricula:" />
+					<p:autoComplete id="matriculaAluno"
+						value="#{graficosPanoramicoController.alunoSelecionado.matricula}"
+						completeMethod="#{graficosPanoramicoController.alunoMatricula}"
+						disabled="#{graficosPanoramicoController.lgMatriculaAluno}"
+						forceSelection="true">	
+						<p:ajax event="itemSelect"
+								listener="#{graficosPanoramicoController.onItemSelectMatriculaAluno()}"
+								update="@form" />					
+					</p:autoComplete>
+				</div>
+				<div class="ui-grid-col-1" style="width: 14.33333%;">
+					<p:commandButton class="btn btn-success btn-sm botao" value="Gerar"
+						style="    width: 100px;"
+						actionListener="#{graficosPanoramicoController.createBubbleModels()}"
+						update="@form" />
+				</div>				
+			</div>
+			<div class="ui-grid-row" style="padding-bottom: 20px;">
+				<div class="ui-grid-col-2 espacoLinha" style="width: 15%;">
+					<p:outputLabel value="Considerar Horas Obrigatórias?"
+						style="font-size: 12px;" />
+				</div>
+				<div class="ui-grid-col-2 espacoLinha" style="width: 3%;">
+					<p:selectBooleanCheckbox
+						value="#{graficosPanoramicoController.lgObrigatorias}" />
+				</div>
+				<div class="ui-grid-col-2 espacoLinha" style="width: 13%;">
+					<p:outputLabel value="Considerar Horas Eletivas?"
+						style="font-size: 12px;" />
+				</div>
+				<div class="ui-grid-col-2 espacoLinha" style="width: 3%;">
+					<p:selectBooleanCheckbox
+						value="#{graficosPanoramicoController.lgOEletivas}" />
+				</div>
+				<div class="ui-grid-col-2 espacoLinha" style="width: 14%;">
+					<p:outputLabel value="Considerar Horas Opcionais?"
+						style="font-size: 12px;" />
+				</div>
+				<div class="ui-grid-col-2 espacoLinha" style="width: 3%;">
+					<p:selectBooleanCheckbox
+						value="#{graficosPanoramicoController.lgOpcionais}" />
+				</div>
+				<div class="ui-grid-col-2 espacoLinha" style="width: 11%;">
+					<p:outputLabel value="Considerar Horas Ace?"
+						style="font-size: 12px;" />
+				</div>
+				<div class="ui-grid-col-2 espacoLinha" style="width: 3%;">
+					<p:selectBooleanCheckbox
+						value="#{graficosPanoramicoController.lgAce}" />
+				</div>
+			</div>
+			<p:chart type="line"
+				model="#{graficosPanoramicoController.lineChartModel}"
+				style="height:430px;    width: 1200px;" widgetVar="chart">
+				<p:ajax event="itemSelect" 	listener="#{graficosPanoramicoController.itemSelect}" />
+			</p:chart>
+			<p:commandButton type="button" value="Reset Zoom"
+				icon="ui-icon-cancel" onclick="PF('chart').resetZoom()" />
+		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

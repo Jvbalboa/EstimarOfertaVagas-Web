@@ -3,52 +3,137 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.SequenceGenerator;
 
 
 
 @Entity
-//@Table(name="postgres.V_SSF_COLABORADOR_LOTACAO")
+@SequenceGenerator(name="grade_sequencia", sequenceName="grade_seq", allocationSize=1)
 public class Grade {
 	// ==========================VARIÃ�VEIS=================================================================================================================//
-		
-		private String cod;
-		private String cursoCodigo;
-		
-		
 
+	private String codigo;
+	private List<Aluno> grupoAlunos = new ArrayList<Aluno>();
+	private List<Equivalencia> grupoEquivalencia = new ArrayList<Equivalencia>();
+	private List<GradeDisciplina> grupoGradeDisciplina = new ArrayList<GradeDisciplina>();
+	private Curso curso;
+	private Long id;
+	private int horasAce;
+	private int horasOpcionais;
+	private int horasEletivas;
+	private int numeroMaximoPeriodos;
+	private Integer periodoInicio;
 
-		// ==========================MÃ‰TODOS===================================================================================================================//
-		public Grade() {
-			super();
-		}
+	// ==========================GETTERS_AND_SETTERS======================================================================================================//
 
-		// ==========================GETTERS_AND_SETTERS======================================================================================================//
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="grade_sequencia")
+	public Long getId() {
+		return id;
+	}
 
-		@Column (name="COD")
-		@Id
-		public String getCod() {
-			return cod;
-		}
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-		public void setCod(String cod) {
-			this.cod = cod;
-		}
+	@Column (name="CODIGO" , nullable = false)
+	public String getCodigo() {
+		return codigo;
+	}
 
-		@Column(name="CURSO_CODIGO")
-		public String getCursoCodigo() {
-			return cursoCodigo;
-		}
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}	
 
-		public void setCursoCodigo(String cursoCodigo) {
-			this.cursoCodigo = cursoCodigo;
-		}
+	@OneToMany(mappedBy = "grade", targetEntity = Aluno.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<Aluno> getGrupoAlunos() {
+		return grupoAlunos;
+	}
 
-		
+	@Column (name="HORAS_ACE" )
+	public int getHorasAce() {
+		return horasAce;
+	}
 
+	public void setHorasAce(int horasAce) {
+		this.horasAce = horasAce;
+	}
+
+	@Column (name="HORAS_OPCIONAIS" )
+	public int getHorasOpcionais() {
+		return horasOpcionais;
+	}
+
+	public void setHorasOpcionais(int horasOpcionais) {
+		this.horasOpcionais = horasOpcionais;
+	}
+
+	@Column (name="HORAS_ELETIVAS" )
+	public int getHorasEletivas() {
+		return horasEletivas;
+	}
+
+	public void setHorasEletivas(int horasEletivas) {
+		this.horasEletivas = horasEletivas;
+	}
+
+	@Column (name="PERIODOS" )
+	public int getNumeroMaximoPeriodos() {
+		return numeroMaximoPeriodos;
+	}
+
+	public void setNumeroMaximoPeriodos(int numeroMaximoPeriodos) {
+		this.numeroMaximoPeriodos = numeroMaximoPeriodos;
+	}
+
+	public void setGrupoAlunos(List<Aluno> grupoAlunos) {
+		this.grupoAlunos = grupoAlunos;
+	}
+
+	@ManyToOne
+	@JoinColumn(name="ID_CURSO" , referencedColumnName="ID")
+	public Curso getCurso() {
+		return curso;
+	}
+
+	public void setCurso(Curso curso) {
+		this.curso = curso;
+	}
+
+	@OneToMany(mappedBy = "grade", targetEntity = Equivalencia.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<Equivalencia> getGrupoEquivalencia() {
+		return grupoEquivalencia;
+	}
+
+	public void setGrupoEquivalencia(List<Equivalencia> grupoEquivalencia) {
+		this.grupoEquivalencia = grupoEquivalencia;
+	}
+
+	@OneToMany(mappedBy = "grade", targetEntity = GradeDisciplina.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<GradeDisciplina> getGrupoGradeDisciplina() {
+		return grupoGradeDisciplina;
+	}
+
+	public void setGrupoGradeDisciplina(List<GradeDisciplina> grupoGradeDisciplina) {
+		this.grupoGradeDisciplina = grupoGradeDisciplina;
+	}
+
+	@Column (name="PERIODO_INICIO" )
+	public Integer getPeriodoInicio() {
+		return periodoInicio;
+	}
+
+	public void setPeriodoInicio(Integer periodoInicio) {
+		this.periodoInicio = periodoInicio;
+	}	
 }
-

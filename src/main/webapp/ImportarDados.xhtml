@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui">
+	
+		<p:growl autoUpdate="true" />
+		<h:form class="formularioCentro" id="principalForm" method="post"
+			role="form" style="padding-left: 45px;height: 500px;">
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row ">
+					<div class="ui-grid-col-12 "
+						style="font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;">
+						<div style="padding-bottom: 10px;">Você está logado com o
+							curso de código #{usuarioController.autenticacao.cursoSelecionado.codigo} de nome
+							#{usuarioController.autenticacao.cursoSelecionado.nome} com data de ultima importação
+							#{usuarioController.autenticacao.cursoSelecionado.dataAtualizacao}.</div>
+						<div style="padding-bottom: 10px;">A importação dos dados
+							deve ser feita uma vez a cada semestre visto que durante o mesmo
+							os dados não são alterados.</div>
+						<div style="padding-bottom: 10px;">Caso não seja este curso
+							que você deseja importar, mude o perfil que se encontra logo após
+							seu nome no canto superior esquerdo desta tela.</div>
+						<div style="padding-bottom: 10px;">Para realizar uma nova
+							importação para o autenticacao.cursoSelecionado #{usuarioController.autenticacao.cursoSelecionado.codigo} –
+							#{usuarioController.autenticacao.cursoSelecionado.nome} clique no botão abaixo:</div>
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Importar Dados" action="#{importarHistorico.chamarTudo()}"
+							oncomplete="javascript:location.reload(true)">
+						</p:commandButton>
+						<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+							oncomplete="PF('start').hide();">
+						</p:ajaxStatus>
+						<p:dialog widgetVar="start" modal="true" draggable="false"
+							closable="false" resizable="false" showHeader="false">
+							<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+						</p:dialog>
+					</div>
+				</div>
+			</div>
+		</h:form>
+</html>
