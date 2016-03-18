@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link href="resources/css/bootstrap.css" rel="stylesheet"
+		media="screen" />
+	<link href="resources/css/styles.css" rel="stylesheet" media="screen" />
+	<link href="resources/css/cssmenu.css" rel="stylesheet" media="screen" />
+	<script type="text/javascript" src="resources/js/jquery-2.1.1.js" />
+	<script type="text/javascript"
+		src="resources/js/jquery.validate.min.js" charset="charset=UTF-8" />
+	<script type="text/javascript" src="resources/js/validaLogin.js"
+		charset="charset=UTF-8" />
+
+
+	<script type="text/javascript">  
+function limpar() {  
+            document.getElementById('j_password').value = "123";  
+}  
+</script>
+
+</h:head>
+
+<h:body onload='loadValidate()'>
+<p:growl autoUpdate="true" />
+	<div id="page-wrapper">
+		<div class="container">
+			<div id="logoLogin"></div>
+			<div class="row">
+				<div class="col-md-4 col-md-offset-4">
+					<div id="loginCentro" class="login-panel panel panel-default">
+						<div class="panel-heading">
+							<h2 class="panel-title">Sistema de Gestão de Curso V1.9</h2>
+						</div>
+						<div class="panel-body">
+							<div id="imagemLogin">
+								<img src="resources/img/siga.png" />
+							</div>
+							<h:form id="formularioLogin" prependId="false">
+								<p:messages id="mensagemErro" autoUpdate="true"
+									for="destinoErro" />
+								<fieldset>
+									<div class="form-groupsiga">
+									
+
+										<p:outputLabel class="control-label" value="Login (CPF)"
+											for="j_username" />
+										<p:inputText class="loginsiga" id="j_username" maxlength="40"
+											name="colaborador" value="#{usuarioController.autenticacao.login}"
+											pt:placeholder="Usuário de Rede" required="true" />
+									</div>
+									<div class="form-groupsiga">
+										<p:outputLabel class="control-label" value="Senha"
+											for="j_password" />
+										<h:inputSecret class="loginsiga" id="senha" maxlength="30"
+											value="#{usuarioController.autenticacao.senha}" pt:placeholder="Senha"
+											required="true" />
+										<h:inputHidden class="form-control" id="j_password"
+											maxlength="30" />
+									</div>
+									<div id="botaoLogar">
+										<p:commandButton class="btn btn-lg btn-success btn-block"
+											action="#{usuarioController.login()}" ajax="false"
+											onclick="limpar()" value="Entrar"
+											style="    background-color: #3b5998;    border-color: #3b5998;">
+										</p:commandButton>
+									</div>
+								</fieldset>
+							</h:form>
+							<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+								oncomplete="PF('start').hide();">
+							</p:ajaxStatus>
+							<p:dialog widgetVar="start" modal="true" draggable="false"
+								closable="false" resizable="false" showHeader="false">
+								<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+							</p:dialog>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="rodaPe">
+			<p class="lf">Copyright &copy; 2014</p>
+			<div style="clear: both;"></div>
+		</div>
+	</div>
+</h:body>
+</html>

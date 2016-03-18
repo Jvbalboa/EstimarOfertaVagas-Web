@@ -3,75 +3,148 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 
 
 
 @Entity
-//@Table(name="postgres.V_SSF_COLABORADOR_LOTACAO")
+@SequenceGenerator(name="grade_disciplina_sequencia", sequenceName="grade_disciplina_seq", allocationSize=1)
 public class GradeDisciplina {
 	// ==========================VARIÃ�VEIS=================================================================================================================//
+
+	private String tipoDisciplina;
+	private Long periodo;
+	private Disciplina disciplina;
+	private Grade grade;
+	private List<PreRequisito> preRequisito = new ArrayList<PreRequisito>();
+	private Boolean excluirIra;
+	private Long id = null;
+	private String preRequisitos;
+	private Boolean carregou = false;
+
+	// ==========================GETTERS_AND_SETTERS======================================================================================================//
+
+	
+	
+	
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="grade_disciplina_sequencia")
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@Column(name="TIPO_DISCIPLINA")
+	public String getTipoDisciplina() {
+		return tipoDisciplina;
+	}
+
+	public void setTipoDisciplina(String tipoDisciplina) {
+		this.tipoDisciplina = tipoDisciplina;
+	}
+	@Column(name="PERIODO")
+	public Long getPeriodo() {
+		return periodo;
+	}
+
+	public void setPeriodo(Long periodo) {
+		this.periodo = periodo;
+	}
+
+	@ManyToOne
+	@JoinColumn(name="ID_DISCIPLINA" , referencedColumnName="ID",nullable = false)
+	public Disciplina getDisciplina() {
+		return disciplina;
+	}
+
+	public void setDisciplina(Disciplina disciplina) {
+		this.disciplina = disciplina;
+	}
+
+	@ManyToOne
+	@JoinColumn(name="ID_GRADE" , referencedColumnName="ID",nullable = false)
+	public Grade getGrade() {
+		return grade;
+	}
+
+	public void setGrade(Grade grade) {
+		this.grade = grade;
+	}
+
+	@OneToMany(mappedBy = "gradeDisciplina", targetEntity = PreRequisito.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<PreRequisito> getPreRequisito() {
+		return preRequisito;
+	}
+
+	public void setPreRequisito(List<PreRequisito> preRequisito) {
+		this.preRequisito = preRequisito;
+	}
+
+	@Column(name="EXCLUIR_IRA")
+	public Boolean getExcluirIra() {
+		return excluirIra;
+	}
+
+	public void setExcluirIra(Boolean excluirIra) {
+		this.excluirIra = excluirIra;
+	}
+
+	@Transient
+	public String getPreRequisitos() {
+		if (carregou == false){
+			preRequisitos = "";
+			for (PreRequisito preRequisito : this.preRequisito){			
+				preRequisitos = preRequisitos + preRequisito.getDisciplina().getCodigo() + " : ";			
+			}		
+			carregou = true;
+		}
 		
-		private String gradeCod;
-		private String disciplinaCod;
-		private String tipoDisciplina;
-		private Long periodo;
-		
+		return preRequisitos;
+	}
 
+	public void setPreRequisitos(String preRequisitos) {
+		this.preRequisitos = preRequisitos;
+	}
 
-		// ==========================MÃ‰TODOS===================================================================================================================//
-		public GradeDisciplina() {
-			super();
-		}
+	@Transient
+	public Boolean getCarregou() {
+		return carregou;
+	}
 
-		// ==========================GETTERS_AND_SETTERS======================================================================================================//
+	public void setCarregou(Boolean carregou) {
+		this.carregou = carregou;
+	}
 
-		@Column (name="GRADE_COD")
-		@Id
-		public String getGradeCod() {
-			return gradeCod;
-		}
+	
 
-		public void setGradeCod(String gradeCod) {
-			this.gradeCod = gradeCod;
-		}
-
-		@Column(name="DISCIPLINA_COD")
-		public String getDisciplinaCod() {
-			return disciplinaCod;
-		}
-
-		public void setDisciplinaCod(String disciplinaCod) {
-			this.disciplinaCod = disciplinaCod;
-		}
-		@Column(name="TIPO_DISCIPLINA")
-		public String getTipoDisciplina() {
-			return tipoDisciplina;
-		}
-
-		public void setTipoDisciplina(String tipoDisciplina) {
-			this.tipoDisciplina = tipoDisciplina;
-		}
-		@Column(name="PERIODO")
-		public Long getPeriodo() {
-			return periodo;
-		}
-
-		public void setPeriodo(Long periodo) {
-			this.periodo = periodo;
-		}
-
-
-		
-		
-		
-		
-		
-		
-
+	//@Transient
+	/*public String getPreRequisitos() {		
+		String pre = "";		
+		for (PreRequisito preRequisito : this.preRequisito){			
+			pre = pre + preRequisito.getDisciplina().getCodigo() + " : ";			
+		}		
+		return pre;
+	}*/
+	
+	
+	
+	
+	
+	
+	
 }
-

@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<p:growl autoUpdate="true" />
+		<h:form class="formularioCentro" id="FolgaFormRelatorio"
+				method="post" action="teste" role="form">
+				<div class="titulo">
+					<legend>Página de Erro</legend>
+				</div>
+				<div style="margin-right: auto; margin-left: auto;">
+					<img src="resources/img/negado.jpg"
+						class="img-responsive center-block" />
+				</div>
+				<div><label for="Colaborador" class="control-label"
+					style="margin-left: 37%; color: crimson; font-size: larger;">Você
+					não possui permissão de acesso.</label>
+					</div>
+					<div>
+				<label for="Colaborador" class="control-label"
+					style="margin-left: 33%; color: crimson; font-size: larger;">Por
+					favor entre em contato com o setor responsável.</label>
+					</div>
+			</h:form>
+	</ui:define>
+</ui:composition>
+</html>

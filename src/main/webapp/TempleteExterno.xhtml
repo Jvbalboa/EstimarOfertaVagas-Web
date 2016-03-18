@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<!--  Bootstrap -->
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="resources/css/styles.css" />
+	<link rel="stylesheet" type="text/css" href="resources/css/drop.css" />
+	<link rel="stylesheet" type="text/css"
+		href="resources/css/jquery.datetimepicker.css" />
+
+	<!-- Scripts Bootstrap -->
+	<script src="resources/js/bootstrap.min.js" />
+	<script type="text/javascript" src="resources/js/drop.js" />
+
+	<script type="text/javascript" src="resources/js/script.js"
+		charset="charset=UTF-8" />
+	<script type="text/javascript" src="resources/js/validaCampos.js" />
+	<script type="text/javascript"
+		src="resources/js/jquery.datetimepicker.js" charset="charset=UTF-8" />
+
+
+</h:head>
+<h:body>
+	<div class="paginaFundo">
+		<div class="paginaFrente">
+			<div id='cssmenu'>
+				<ul>
+					<li><a href='Home.xhtml'>Home</a></li>
+					<li class='active has-sub'><a href='#'>Aluno</a>
+						<ul>
+							<li class='active has-sub'><a href='#'>Gráficos</a>
+								<ul>
+									<li><a href='GraficoAlunoIra.xhtml'>IRA</a></li>
+									<li><a href='GraficoSituacaoAluno.xhtml'>Situação</a></li>
+								</ul></li>
+							<li><a href='Historico.xhtml'>Histórico</a></li>
+							<li><a href='SituacaoAluno.xhtml'>Situação</a></li>
+							<li><a href='PlanejamentoFormatura.xhtml'>Planejamento
+									de Formatura</a></li>
+						</ul></li>
+					<li class='active has-sub'><a href='#'>Cadastros</a>
+						<ul>
+							<li><a href='CadastroDisciplina.xhtml'>Disciplina</a></li>
+							<li><a href='CadastroGrade.xhtml'>Grade</a></li>
+						</ul></li>
+					<li class='active has-sub'><a href='#'>Curso</a>
+						<ul>
+							<li class='active has-sub'><a href='#'>Gráficos</a>
+								<ul>
+									<li><a href='GraficoDisciplinasAprovada.xhtml'>Disciplinas
+											Aprovadas</a></li>
+									<li><a href='GraficoDisciplinasReprovadas.xhtml'>Disciplinas
+											Reprovadas</a></li>
+									<li><a href='GraficoIra.xhtml'>IRA</a></li>
+									<li><a href='GraficoIraQuantidade.xhtml'>IRA Faixas</a></li>
+									<li><a href='GraficoPanoramico.xhtml'>Panorâmico</a></li>
+									<li><a href='GraficoPeriodizacao.xhtml'>Periodização</a></li>
+								</ul></li>
+							<li><a href='VisaoGeral.xhtml'>Visão Geral</a></li>
+						</ul></li>
+				</ul>
+			</div>
+			<div id="Logo">
+				<div style="margin-right: auto; margin-left: auto; float: left;">
+					<img src="resources/img/logo.jpg"
+						class="img-responsive center-block" />
+				</div>
+				<div id="textosistema">
+					<h5>Sistema de Gestão Curso</h5>
+				</div>
+			</div>
+			<h:form>
+
+
+
+				<div class="ui-grid-row">
+
+					<div id="dados">
+						<div id="sair">
+							<a href="j_spring_security_logout"><span
+								class="glyphicon glyphicon-off" />Sair</a>
+						</div>
+						<div id="sair">
+							<p:commandLink ajax="true" onclick="PF('alterarSenha').show();"
+								title="Alterar Senha" styleClass="ui-icon ui-icon-key">
+							</p:commandLink>
+						</div>
+						<div id="perfilExterno">
+							
+
+								<h:selectOneMenu class="form-control" id="perfilCurso"
+									required="true"
+									value="#{usuarioController.autenticacao.selecaoCurso}">
+
+									<f:selectItems
+										value="#{usuarioController.autenticacao.perfisCursos}" />
+								</h:selectOneMenu>
+							
+							
+
+						</div>
+						<div id="nomepessoa">
+							<p:outputLabel
+								value="#{usuarioController.autenticacao.pessoa.nome}"></p:outputLabel>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-4"
+						style="width: 8%; float: right; font-size: 12px; padding-top: 6px; padding-right: 8px;">
+						<p:outputLabel value="Semestre Atual: " />
+
+						<h:selectOneMenu class="form-control" id="semestreAtual"
+							value="#{usuarioController.autenticacao.semestreSelecionado}">
+							<f:selectItems value="#{usuarioController.periodos}" />
+							<p:ajax listener="#{usuarioController.mudarPeriodo()}"
+								update="@form" event="change" partialSubmit="true"
+								oncomplete="javascript:location.reload(true)" />
+						</h:selectOneMenu>
+
+
+
+
+					</div>
+				</div>
+
+
+
+
+
+			</h:form>
+			<h:form class="formularioAlterarSenha" id="alterarSenha"
+				style="padding-left: 45px;">
+				<p:dialog header="Alterar Senha" widgetVar="alterarSenha"
+					modal="true" height="200" width="500" id="dlg_resetar_senha"
+					closeOnEscape="true">
+					<h:panelGroup id="pnl_Dialogo">
+						<div class="ui-grid ui-grid-responsive"
+							style="padding-left: 15px;">
+							<div class="ui-grid-row espacoLinha">
+								<div style="width: 35%;">
+									<p:outputLabel value="Senha Atual:"></p:outputLabel>
+									<p:password value="#{usuarioController.senha}" id="senha"
+										size="10" type="" />
+								</div>
+								<div style="width: 35%;">
+									<p:outputLabel value="Nova Senha:"></p:outputLabel>
+									<p:password value="#{usuarioController.senhaNova}"
+										id="novaSenha" size="10" />
+								</div>
+								<div style="width: 35%;">
+									<p:outputLabel value="Confirmação:"></p:outputLabel>
+									<p:password value="#{usuarioController.senhaConf}"
+										id="novaSenhaConf" size="10" />
+								</div>
+							</div>
+							<div class="ui-grid-row espacoLinha">
+								<div style="padding-top: 24px;">
+									<h:commandButton value="Alterar" class="btn btn-success btn-sm"
+										style="margin-right: 5px; margin-top: -7px;">
+
+										<f:ajax listener="#{usuarioController.mudarSenha()}"
+											execute="senha novaSenha novaSenhaConf"
+											render="senha novaSenha novaSenhaConf" />
+									</h:commandButton>
+								</div>
+							</div>
+						</div>
+					</h:panelGroup>
+				</p:dialog>
+			</h:form>
+			<div id="page-wrapper">
+				<ui:insert name="corpo" />
+			</div>
+			<div id="rodapefora">
+				<div id="rodape"></div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="resources/js/script.js"
+		charset="charset=UTF-8" />
+</h:body>
+
+</html>

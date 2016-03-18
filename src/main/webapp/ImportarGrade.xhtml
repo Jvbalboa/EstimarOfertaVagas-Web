@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<!--  Bootstrap -->
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="resources/css/styles.css" />
+	<link rel="stylesheet" type="text/css" href="resources/css/drop.css" />
+	<link rel="stylesheet" type="text/css"
+		href="resources/css/jquery.datetimepicker.css" />
+
+	<!-- Scripts Bootstrap -->
+	<script src="resources/js/bootstrap.min.js" />
+	<script type="text/javascript" src="resources/js/drop.js" />
+
+	<script type="text/javascript" src="resources/js/script.js"
+		charset="charset=UTF-8" />
+	<script type="text/javascript" src="resources/js/validaCampos.js" />
+	<script type="text/javascript"
+		src="resources/js/jquery.datetimepicker.js" charset="charset=UTF-8" />
+
+</h:head>
+
+<h:body style="overflow: hidden !important;">
+	    <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+	
+		<h:form class="formularioCentro" id="principalForm" method="post"
+			role="form" style="padding-left: 45px;">
+			<div class="titulo">
+				<legend>Importar Grade</legend>
+			</div>
+			
+		<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<div class="ui-grid-col-2 ">
+						<p:outputLabel value="Código da Nova Grade:" />
+						<p:inputText value="#{importarGradeController.novaGrade}"/>
+					</div>
+					
+					<div class="ui-grid-col-2">
+					<p:outputLabel value="Grade a Ser Importada:" />
+						<p:autoComplete id="codigoGrade"
+							value="#{importarGradeController.codImportar}"
+							completeMethod="#{cadastroGradeController.gradeCodigos}"
+							disabled="#{cadastroGradeController.lgCodigoGrade}">
+						</p:autoComplete>
+					</div>
+					
+					
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Importar"
+							actionListener="#{importarGradeController.importaGrade}"
+							ajax="true">
+						</p:commandButton>
+					
+						<p:outputLabel value="Grade: " rendered="#{importarGradeController.achouGrade}" />
+						<p:outputLabel value="#{importarGradeController.grade.codigo}" rendered="#{importarGradeController.achouGrade}" />
+					</div>
+				</div>
+		
+		</h:form>
+</h:body>	
+</html>

@@ -1,0 +1,978 @@
+.paginaFundo {
+	background-color: #E9E9E9;
+	margin: 0 auto;
+}
+
+.paginaFrente {
+	width: 1340px;
+	min-height: 809px;
+	position: relative;
+	background-color: #FFFFFF;
+	margin: 0px auto auto auto;
+}
+
+.titulo {
+	margin-top: -60px;
+	height: 60px;
+	margin-left: -25px;
+}
+
+.subtitulo {
+	height: 60px;
+}
+
+.botao {
+	margin-top: 18px;
+}
+body {
+	
+	line-height: 1 !important;
+}
+
+.espacoLinha {
+	padding-top: 30px;
+}
+
+.espacoEntre {
+	padding-right: 10px;
+}
+
+.gridTamanho {
+	width: 96%;
+}
+
+#list {
+	margin-left: 243px;
+	margin-top: 56px;
+}
+
+#tituloList {
+	margin-left: 338px;
+	margin-top: 117px;
+}
+
+#listBotao {
+	margin-left: 242px;
+	margin-top: 22px;
+}
+
+.rodaPe {
+	padding: 10px 0 100px 0;
+}
+
+.rodaPe p {
+	margin: 0;
+	padding: 0;
+	line-height: normal;
+}
+
+.rodaPe .lf {
+	float: left;
+}
+
+.rodaPe .rf {
+	float: right;
+}
+
+.rodaPe,.rodaPe a {
+	color: #828484;
+	text-decoration: none;
+	font-size: 10px;
+	margin-top: 14%;
+}
+
+.rodaPe a:hover {
+	text-decoration: none;
+}
+
+.fundoLogo {
+	background-color: #00985C;
+	height: 50px;
+}
+
+#Logo {
+	float: left;
+	margin: -69px 0 0 59px;
+	position: absolute;
+	width: 200px;
+}
+
+#topo h5 {
+	margin: 1px 15px 0px 0px;
+	width: auto;
+	color: #FFFFFF;
+	text-align: right;
+	font-weight: bold;
+	font-family: Arial;
+	font-size: 12px;
+	text-shadow: 0.1em 0.1em #333;
+}
+
+#topo {
+	background-color: #F5781E;
+	border-bottom: 2px solid #E0E0E0;
+	height: 17px;
+	margin-top: 0px;
+}
+
+.titulo legend {
+	margin: 70px 0px 0px 25px;
+	font-family: Arial;
+	font-size: 25px;
+	font-weight: bold;
+	width: 500px;
+}
+
+.formularioCorpo {
+	width: 66%;
+	height: 836px;
+	margin: 50px auto 100px auto;
+	border-bottom: 1px solid #e5e5e5;
+	border-top: 1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-right: 1px solid #e5e5e5;
+}
+
+.form-horizontal .formularioCentro {
+	float: left;
+	width: 80%;
+	margin: 40px 0px auto 14%;
+}
+
+.form-group .col-sm-5 {
+	width: 500px;
+}
+
+.form-horizontal #dataHoraInicial label control-label {
+	width: 112px;
+}
+
+.form-horizontal #dataHoraFinal label control-label {
+	width: 112px;
+}
+
+.label,.glyphicon {
+	margin-right: 5px;
+}
+
+#bs-example-navbar-collapse-1 .dropdown-toggle {
+	color: #00985C;
+}
+
+#subTopo {
+	background-color: #F3F3F3;
+	height: 80px;
+}
+
+/*---------------------------------------------------*/
+
+/* Tela de Login */
+.ui-messages-warn ul {
+	list-style: none;
+}
+
+.ui-messages-warn-summary {
+	color: red;
+	font-weight: bold;
+	margin: 0 .5em 0 0;
+	vertical-align: top;
+	font-size: 14px;
+	margin-left: 60px;
+}
+
+.container {
+	min-height: 730px;
+}
+
+#logoLogin {
+	height: 10px;
+	margin-top: 10px;
+	margin-left: 30px;
+}
+
+.row {
+	margin-top: 65px;
+}
+
+.container .row #loginCentro {
+	height: 445px;
+    width: 305px;
+    margin-top: 90px;
+    background-color: #F7F7F7;
+}
+
+#imagemLogin {
+	height: 100px;
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 40px;
+	border-radius: 260px 260px 260px 260px;
+}
+
+.formularioLogin {
+	margin-top: 80px;
+}
+
+.panel-heading .panel-title {
+	font-size: 20px;
+	text-align: center;
+	font-weight: bold;
+}
+
+#botaoLogar {
+	margin-top: 35px;
+}
+
+label.error {
+	float: none;
+	color: red;
+	margin: 0 .5em 0 0;
+	vertical-align: top;
+	font-size: 10px
+}
+
+/*---------------------------------------------------*/
+
+/* Pagina Requisição de Folga 
+Analista: Charleston Campos
+Data: 28/07/2014 */
+.form-group .col-sm-5 {
+	margin-left: 100px;
+	width: 500px;
+}
+
+#data {
+	width: 635px;
+	margin-left: 98px;
+}
+
+#checkBoxDia {
+	margin-left: 490px;
+	margin-top: -76px;
+	font-size: 14px;
+}
+
+#enviarSolicitacao {
+	margin-left: 355px;
+}
+
+/*---------------------------------------------------*/
+
+/* Pagina Relatórios
+Analista: Charleston Campos
+Data: 28/07/2014 */
+#dataRelatorio {
+	margin: 0px 0px 0px 86px;
+}
+
+#gerarRelatorio {
+	margin: 42px 0px 0px 418px;
+}
+
+#tabelaRelatorio {
+	width: 800px;
+	margin: 345px auto 0px auto;
+}
+
+/*---------------------------------------------------*/
+
+/* Pagina Classificar Folgas
+Analista: Charleston Campos / Rafael Silva
+Data: 31/07/2014 */
+#folgaForm {
+	width: 1250px;
+	margin-top: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 90px;
+}
+
+#folgaForm2 {
+	width: 1250px;
+	margin-top: 50px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 90px;
+}
+
+#botoesAcao {
+	margin-top: 10px;
+}
+
+/*---------------------------------------------------*/
+
+/* Pagina Editar Folgas
+Analista: Charleston Campos / Rafael Silva
+Data: 31/07/2014 */
+#formEditar {
+	margin-left: 12%;
+	margin-top: 70px;
+}
+
+.formularioCorpoEditar {
+	width: 66%;
+	height: 700px;
+	margin: -200px auto 100px auto;
+	border-bottom: 1px solid #e5e5e5;
+	border-top: 1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-right: 1px solid #e5e5e5;
+}
+
+/*---------------------------------------------------*/
+
+/* Pagina Folgas Agendadas
+Analista: Charleston Campos / Rafael Silva
+Data: 31/07/2014 */
+.value {
+	width: 900px;
+}
+
+#calendario {
+	margin-top: 50px;
+	margin-left: 18%;
+	margin-bottom: 100px;
+}
+
+.fc-event {
+	border: 1px solid #00985C;
+	background-color: #00985C;
+}
+
+.botaoInicial {
+	margin-left: 700px;
+	margin-top: 300px;
+}
+/*---------------------------------------------------*/
+
+/* Pagina Relatorio Presador
+Analista: / Rafael Silva
+Data: 31/07/2014 */
+#ordenacao {
+	margin-left: 26%;
+	margin-top: 5%;
+}
+
+.disc span.ui-button-text.ui-c {
+	padding: .3em 1.03em;
+}
+
+.disc1 span.ui-button-text.ui-c {
+	padding: .3em 2.7em;
+}
+
+.disc2 span.ui-button-text.ui-c {
+	padding: .3em 3.6em;
+	 border-left: solid 0.3em #ccc !important;
+}
+
+.disc3 span.ui-button-text.ui-c {
+	padding: .3em 3.2em;
+}
+
+.disc4 span.ui-button-text.ui-c {
+	padding: .3em 1.03em;
+}
+
+
+.disc5 span.ui-button-text.ui-c {
+	padding: .3em 0.21em;
+}
+
+ .disc5 .ui-corner-left span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #0B2161 !important;
+	    
+}
+
+ .disc5 .ui-corner-right span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #FFA500 !important;
+	    
+}
+
+
+.disc6 .ui-corner-left span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #04B431 !important;
+	 padding: .3em 0.18em;   
+}
+
+ .disc6 .ui-corner-right span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #7777FF !important;
+	  padding: .3em 0em;  
+	    
+}
+
+.disc7 .ui-corner-left span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #FF0000 !important;
+	     padding: .3em 0.18em;
+	    
+}
+
+ .disc7 .ui-corner-right span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #FFFFFF !important;
+	     padding: .3em 0.3em;   
+}
+
+.disc9 .ui-corner-left span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.4em #FA00FF !important;
+	    
+}
+
+
+
+
+
+
+
+
+
+.disc7 span.ui-button-text.ui-c {
+	padding: .3em 0.2em;
+}
+
+.disc8 span.ui-button-text.ui-c {
+	padding: .3em 1.03em;
+}
+
+.disc9 span.ui-button-text.ui-c {
+	    padding: 0.6em 3.64em;
+}
+
+.discD3 span.ui-button-text.ui-c {
+	padding: .3em 0.605em;
+	border-left: solid 0.3em #A9E2F3 !important;
+}
+
+.discD2 span.ui-button-text.ui-c {
+	padding: .3em 0.605em;
+	border-left: solid 0.3em #A9E2F3 !important;
+}
+
+.discD1 span.ui-button-text.ui-c {
+	padding: .3em 0.605em;
+	border-left: solid 0.3em #A9E2F3 !important;
+}
+
+.rotate90 {
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	height: 100px;
+	width: 100px;
+	text-align: left;
+	padding-left: 5px;
+}
+
+.verticalHeader table thead tr th .rotate90 {
+	height: 120px;
+}
+
+.ui-datatable-scrollable-theadclone {
+
+height: 0px;
+}
+
+
+.auto .ui-autocomplete-multiple-container {
+  width: 185px;
+}
+
+.gradeSelecionadas .ui-autocomplete-multiple-container {
+  width: 590px;
+}
+
+.ui-corner-left .disc5{
+        border-left: solid 0.3em gold !important;
+}
+
+.loginsiga{
+	
+	    border-radius: 15px;
+    height: 30px;
+    width: 150px;
+    padding: 0 5px;
+    text-align: right;
+    font-size: 18px;
+	
+	
+}
+
+.form-groupsiga{
+	
+	
+	    margin-bottom: 18px;
+    width: 150px;
+    align-items: center;
+  margin-left: 65px;
+	
+}
+
+@import url(http://fonts.googleapis.com/css?family=Oxygen+Mono);
+/* Starter CSS for Menu */
+#cssmenu {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  width: auto;
+      padding-left: 35%;
+}
+#cssmenu ul,
+#cssmenu li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#cssmenu ul {
+  position: relative;
+  z-index: 597;
+}
+#cssmenu ul li {
+  float: left;
+  min-height: 1px;
+  vertical-align: middle;
+}
+#cssmenu ul li.hover,
+#cssmenu ul li:hover {
+  position: relative;
+  z-index: 599;
+  cursor: default;
+}
+#cssmenu ul ul {
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 598;
+  width: 100%;
+}
+#cssmenu ul ul li {
+  float: none;
+}
+#cssmenu ul ul ul {
+  top: 0;
+  left: 190px;
+  width: 190px;
+}
+#cssmenu ul li:hover > ul {
+  visibility: visible;
+}
+#cssmenu ul ul {
+  bottom: 0;
+  left: 0;
+}
+#cssmenu ul ul {
+  margin-top: 0;
+}
+#cssmenu ul ul li {
+  font-weight: normal;
+}
+#cssmenu a {
+  display: block;
+  line-height: 1em;
+  text-decoration: none;
+}
+/* Custom CSS Styles */
+#cssmenu {
+  background: #BBBCC0;
+  border-bottom: 4px solid #B01116;
+  font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;
+  font-size: 12px;
+}
+#cssmenu > ul {
+  *display: inline-block;
+}
+#cssmenu:after,
+#cssmenu ul:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+#cssmenu ul {
+  text-transform: uppercase;
+}
+#cssmenu ul ul {
+  border-top: 4px solid #B01116;
+  text-transform: none;
+  min-width: 190px;
+}
+#cssmenu ul ul a {
+  background: #B01116;
+  color: #ffffff;
+  border: 1px solid #9A1216;
+  border-top: 0 none;
+  line-height: 150%;
+  padding: 16px 20px;
+  font-size: 12px;
+}
+#cssmenu ul ul ul {
+  border-top: 0 none;
+}
+#cssmenu ul ul li {
+  position: relative;
+}
+#cssmenu ul ul li:first-child > a {
+  border-top: 1px solid #9A1216;
+}
+#cssmenu ul ul li:hover > a {
+  background: #D60A11;
+  color: #ffffff;
+}
+#cssmenu ul ul li:last-child > a {
+  -moz-border-radius: 0 0 3px 3px;
+  -webkit-border-radius: 0 0 3px 3px;
+  border-radius: 0 0 3px 3px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  -moz-box-shadow: 0 1px 0 #B01116;
+  -webkit-box-shadow: 0 1px 0 #B01116;
+  box-shadow: 0 1px 0 #B01116;
+}
+#cssmenu ul ul li:last-child:hover > a {
+  -moz-border-radius: 0 0 0 3px;
+  -webkit-border-radius: 0 0 0 3px;
+  border-radius: 0 0 0 3px;
+  -moz-background-clip: padding;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+#cssmenu ul ul li.has-sub > a:after {
+  content: '+';
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  margin-top: -8px;
+}
+#cssmenu ul li:hover > a,
+#cssmenu ul li.active > a {
+  background: #B01116;
+  color: #ffffff;
+}
+#cssmenu ul li.has-sub > a:after {
+  content: '+';
+  margin-left: 5px;
+}
+#cssmenu ul li.last ul {
+  left: auto;
+  right: 0;
+}
+#cssmenu ul li.last ul ul {
+  left: auto;
+  right: 99.5%;
+}
+#cssmenu a {
+  background: #BBBCC0;
+  color: black;
+  padding: 0 20px;
+  
+}
+#cssmenu > ul > li > a {
+  line-height: 48px;
+  font-size: 12px;
+}
+
+
+.paginaFundo {
+	background-color: #A6A6A6;
+	margin: 0 auto;
+}
+
+.paginaFrente {
+	width: 1340px;
+	min-height: 809px;
+	position: relative;
+	background-color: #FFFFFF;
+	margin: 0px auto auto auto;
+}
+
+#Logo {
+float: left;
+    margin: -52px 0 0 0px;
+    position: absolute;
+    width: 400px;
+}
+
+#textosistema h5 {
+    
+   color: #FFFFFF;
+    font-weight: bold;
+    font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;
+    font-size: 14px;
+    text-shadow: 0.1em 0.1em #333;
+    /* padding-left: 9px; */
+margin-left: 20%;
+    margin-top: 4%;
+}
+
+
+#nomepessoa{
+	
+	    float: right;
+    text-transform: uppercase;
+    padding-right: 10px;
+    padding-top: 7px;
+	
+}
+
+#dados{
+	    float: right;
+    position: absolute;
+    right: 0%;
+    top: 1%;
+    z-index: 1000;
+	
+	
+}
+
+#perfil{
+	
+	    width: 100px;
+    float: right;
+	
+}
+
+#sair{
+	
+	    float: right;
+    padding-top: 5px;
+    padding-right: 10px;
+        padding-left: 10px;
+	
+}
+
+#rodape{
+	
+    float: right;
+    width: 310px;
+    height: 120px;
+    background-image: url(bg_rodape.gif);
+    background-position: right center;
+    margin-right: 8%;
+	
+	
+}
+
+#rodapefora{
+	
+	    width: 100%;
+        height: 120px;
+    background-color: #666666;
+    /* margin-top: 12px; */
+     position: relative;
+    /* top: 10px; */
+        margin-top: 12%;
+	
+	
+}
+
+
+.disc span.ui-button-text.ui-c {
+	padding: .3em 1.03em;
+}
+
+.disc1 span.ui-button-text.ui-c {
+	padding: .3em 2.7em;
+}
+
+.disc2 span.ui-button-text.ui-c {
+	padding: .3em 3.6em;
+	 border-left: solid 0.3em #ccc !important;
+}
+
+.disc3 span.ui-button-text.ui-c {
+	padding: .3em 3.2em;
+}
+
+.disc4 span.ui-button-text.ui-c {
+	padding: .3em 1.03em;
+}
+
+
+.disc5 span.ui-button-text.ui-c {
+	padding: .3em 0.21em;
+}
+
+ .disc5 .ui-corner-left span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #0B2161 !important;
+	    
+}
+
+ .disc5 .ui-corner-right span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #FFA500 !important;
+	    
+}
+
+
+.disc6 .ui-corner-left span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #04B431 !important;
+	 padding: .3em 0.18em;   
+}
+
+ .disc6 .ui-corner-right span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #7777FF !important;
+	  padding: .3em 0em;  
+	    
+}
+
+.disc7 .ui-corner-left span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #FF0000 !important;
+	     padding: .3em 0.18em;
+	    
+}
+
+ .disc7 .ui-corner-right span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.3em #FFFFFF !important;
+	     padding: .3em 0.3em;   
+}
+
+.disc9 .ui-corner-left span.ui-button-text.ui-c {
+	
+	 border-left: solid 0.4em #FA00FF !important;
+	    
+}
+
+
+
+
+
+
+
+
+
+.disc7 span.ui-button-text.ui-c {
+	padding: .3em 0.2em;
+}
+
+.disc8 span.ui-button-text.ui-c {
+	padding: .3em 1.03em;
+}
+
+.disc9 span.ui-button-text.ui-c {
+	    padding: 0.6em 3.64em;
+}
+
+.discD3 span.ui-button-text.ui-c {
+	padding: .3em 0.605em;
+	border-left: solid 0.3em #A9E2F3 !important;
+}
+
+.discD2 span.ui-button-text.ui-c {
+	padding: .3em 0.605em;
+	border-left: solid 0.3em #A9E2F3 !important;
+}
+
+.discD1 span.ui-button-text.ui-c {
+	padding: .3em 0.605em;
+	border-left: solid 0.3em #A9E2F3 !important;
+}
+
+.rotate90 {
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	height: 100px;
+	width: 100px;
+	text-align: left;
+	padding-left: 5px;
+}
+
+.verticalHeader table thead tr th .rotate90 {
+	height: 120px;
+}
+
+.ui-datatable-scrollable-theadclone {
+
+height: 0px;
+}
+
+
+.auto .ui-autocomplete-multiple-container {
+  width: 185px;
+}
+
+.gradeSelecionadas .ui-autocomplete-multiple-container {
+  width: 590px;
+}
+
+.ui-corner-left .disc5{
+        border-left: solid 0.3em gold !important;
+}
+
+.loginsiga{
+	
+	    border-radius: 15px;
+    height: 30px;
+    width: 150px;
+    padding: 0 5px;
+    text-align: right;
+    font-size: 18px;
+	
+	
+}
+
+.form-groupsiga{
+	
+	
+	    margin-bottom: 18px;
+    width: 150px;
+    align-items: center;
+  margin-left: 65px;
+	
+}
+
+.espacoLinha {
+	padding-top: 30px;
+}
+
+.espacoEntre {
+	padding-right: 10px;
+}
+
+.gridTamanho {
+	width: 96%;
+}
+
+.formularioCorpo {
+	width: 66%;
+	height: 836px;
+	margin: 50px auto 100px auto;
+	border-bottom: 1px solid #e5e5e5;
+	border-top: 1px solid #e5e5e5;
+	border-left: 1px solid #e5e5e5;
+	border-right: 1px solid #e5e5e5;
+}
+
+.form-horizontal .formularioCentro {
+	float: left;
+	width: 80%;
+	margin: 40px 0px auto 14%;
+}
+
+.row {
+	margin-top: 65px;
+}
+
+div#menu-button {
+    display: none;
+}
+
+.formularioCentro{
+	
+	    width: 1340px;
+	    padding-bottom: 50px;
+	    position: relative;
+	    padding-left: 45px;
+    padding-top: 40px;
+}
