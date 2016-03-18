@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<p:growl autoUpdate="true" />
+		<h:form id="form" style="padding-left: 45px;" class="formularioCentro">
+			<div class="titulo">
+				<legend>Cadastro de Disciplinas</legend>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row ">
+
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Código:" />
+						<p:inputText
+							value="#{cadastroDisciplinasController.disciplina.codigo}"
+							id="codigoDisciplina" />
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Nome:" />
+						<p:inputText
+							value="#{cadastroDisciplinasController.disciplina.nome}"
+							id="nomeDisciplina" />
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Carga Horária:" />
+						<p:inputMask mask="9?99"
+							value="#{cadastroDisciplinasController.disciplina.cargaHoraria}"
+							id="cargaHorariaDisciplina" />
+					</div>
+					<div class="ui-grid-col-2">
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Incluir" id="incluirDisciplina"
+							update="disciplinas codigoDisciplina nomeDisciplina cargaHorariaDisciplina"
+							actionListener="#{cadastroDisciplinasController.incluirDisciplina}">
+						</p:commandButton>
+						<p:commandButton class="btn btn-info btn-sm botao" value="Limpar"
+							id="limparDisciplina"
+							actionListener="#{cadastroDisciplinasController.limpaDisciplina}"
+							update="disciplinas codigoDisciplina nomeDisciplina cargaHorariaDisciplina">
+						</p:commandButton>
+					</div>
+				</div>
+			</div>
+			<div class="gridTamanho espacoLinha">
+				<p:dataTable id="disciplinas" var="disciplina"
+					value="#{cadastroDisciplinasController.listaDisciplinas}"
+					editable="true" style="margin-bottom:20px"
+					filteredValue="#{cadastroDisciplinasController.listaDisciplinasFiltradas}"
+					paginator="true" rows="20"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorAlwaysVisible="false">
+					<f:facet name="header">
+			           Disciplinas			           
+			           <h:commandLink>
+							<p:graphicImage name="/img/excel.png" style="float: right;" />
+							<p:dataExporter type="xls" target="disciplinas"
+								fileName="cadastroDisciplinas" />
+						</h:commandLink>
+					</f:facet>
+					<p:ajax event="rowEdit"
+						listener="#{cadastroDisciplinasController.onRowEdit}" />
+					<p:ajax event="rowEditCancel"
+						listener="#{cadastroDisciplinasController.onRowCancel}" />
+					<p:column headerText="Código" filterBy="#{disciplina.codigo}"
+						filterMatchMode="contains" style="width: 20%;"
+						sortBy="#{disciplina.codigo}">
+						<h:outputText value="#{disciplina.codigo}" />
+					</p:column>
+					<p:column headerText="Nome" filterBy="#{disciplina.nome}"
+						style="width: 60%;" filterMatchMode="contains"
+						sortBy="#{disciplina.nome}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{disciplina.nome}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{disciplina.nome}" style="width:100%"
+									label="Nome Disciplina">
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column headerText="Carga Horária"
+						filterBy="#{disciplina.cargaHoraria}"
+						style="width: 20%;text-align: center;" filterMatchMode="contains"
+						sortBy="#{disciplina.cargaHoraria}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{disciplina.cargaHoraria}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{disciplina.cargaHoraria}"
+									style="width:100%" label="Year">
+									<f:validateLength minimum="1" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column style="width:32px" exportable="false">
+						<p:rowEditor />
+					</p:column>
+				</p:dataTable>
+			</div>
+		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

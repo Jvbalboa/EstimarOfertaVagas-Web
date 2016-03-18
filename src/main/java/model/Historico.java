@@ -1,78 +1,84 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 
 
 
 @Entity
-//@Table(name="postgres.V_SSF_COLABORADOR_LOTACAO")
+@SequenceGenerator(name="historico_sequencia", sequenceName="historico_seq", allocationSize=1)  
 public class Historico {
 	// ==========================VARIÃ�VEIS=================================================================================================================//
-		
-		private String alunoMatricula;
-		private String disciplinaCod;
-		private String semestreCursado;
-		
-		private String statusDisciplina ;
-		
 
+	private Disciplina disciplina;
+	private String semestreCursado;
+	private Aluno aluno;
+	private String statusDisciplina ;
+	private Long id;
+	private String nota;
 
-		// ==========================MÃ‰TODOS===================================================================================================================//
-		public Historico() {
-			super();
-		}
+	// ==========================GETTERS_AND_SETTERS======================================================================================================//
 
-		// ==========================GETTERS_AND_SETTERS======================================================================================================//
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="historico_sequencia")
+	public Long getId() {
+		return id;
+	}
 
-		@Column (name="ALUNO_MATRICULA")
-		@Id
-		public String getAlunoMatricula() {
-			return alunoMatricula;
-		}
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-		public void setAlunoMatricula(String alunoMatricula) {
-			this.alunoMatricula = alunoMatricula;
-		}
+	@Column(name="SEMESTRE_CURSADO")
+	public String getSemestreCursado() {
+		return semestreCursado;
+	}
 
-		@Column(name="DISCIPLINA_COD")
-		public String getDisciplinaCod() {
-			return disciplinaCod;
-		}
+	public void setSemestreCursado(String semestreCursado) {
+		this.semestreCursado = semestreCursado;
+	}
 
-		public void setDisciplinaCod(String disciplinaCod) {
-			this.disciplinaCod = disciplinaCod;
-		}
-		@Column(name="SEMESTRE_CURSADO")
-		public String getSemestreCursado() {
-			return semestreCursado;
-		}
+	@Column(name="STATUS_DISCIPLINA")
+	public String getStatusDisciplina() {
+		return statusDisciplina;
+	}
 
-		public void setSemestreCursado(String semestreCursado) {
-			this.semestreCursado = semestreCursado;
-		}
-		@Column(name="STATUS_DISCIPLINA")
-		public String getStatusDisciplina() {
-			return statusDisciplina;
-		}
+	public void setStatusDisciplina(String statusDisciplina) {
+		this.statusDisciplina = statusDisciplina;
+	}
 
-		public void setStatusDisciplina(String statusDisciplina) {
-			this.statusDisciplina = statusDisciplina;
-		}
+	@ManyToOne
+	@JoinColumn(name="ID_DISCIPLINA" , referencedColumnName="ID",nullable = false)
+	public Disciplina getDisciplina() {
+		return disciplina;
+	}
 
+	public void setDisciplina(Disciplina disciplina) {
+		this.disciplina = disciplina;
+	}
 
-		
-		
-		
-		
-		
-		
+	@ManyToOne
+	@JoinColumn(name="ID_MATRICULA" , referencedColumnName="ID",nullable = false)
+	public Aluno getAluno() {
+		return aluno;
+	}
 
+	public void setAluno(Aluno aluno) {
+		this.aluno = aluno;
+	}
+	
+	@Column(name="NOTA")
+	public String getNota() {
+		return nota;
+	}
+
+	public void setNota(String nota) {
+		this.nota = nota;
+	}
 }
-

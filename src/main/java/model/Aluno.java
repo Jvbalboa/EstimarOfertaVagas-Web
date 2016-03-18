@@ -1,92 +1,186 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 
 
 
 @Entity
-//@Table(name="postgres.V_SSF_COLABORADOR_LOTACAO")
+@SequenceGenerator(name="aluno_sequencia", sequenceName="aluno_seq", allocationSize=1)  
 public class Aluno {
 	// ==========================VARIÃ�VEIS=================================================================================================================//
+
+	private Long id;
+	private String matricula;
+	private Curso curso;
+	private Grade grade;
+	private String nome;
+	private Float ira;
+	private Integer periodoReal;
+	private List<Historico> grupoHistorico;
+	private List<EventoAce> listaEventosAce;
+
+	// ==========================GETTERS_AND_SETTERS======================================================================================================//
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="aluno_sequencia")  
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@Column (name="MATRICULA", unique = true, nullable = false)
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
+
+
+	@Column(name="NOME")
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}	
+
+	@Transient
+	public String getPeriodoIngresso() {
+
+		String periodoInicioLocal = "";
+		if (matricula != null){
+			periodoInicioLocal =  matricula.substring(0,4) ;
+		}		
+		return periodoInicioLocal;
+	}
+
+	@ManyToOne
+	@JoinColumn(name="ID_CURSO" , referencedColumnName="ID")
+	public Curso getCurso() {
+		return curso;
+	}
+
+	public void setCurso(Curso curso) {
+		this.curso = curso;
+	}
+
+	@ManyToOne
+	@JoinColumn(name="ID_GRADE" , referencedColumnName="ID",nullable = false)
+	public Grade getGrade() {
+		return grade;
+	}
+
+	public void setGrade(Grade grade) {
+		this.grade = grade;
+	}
+
+	@OneToMany(mappedBy = "aluno", targetEntity = Historico.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<Historico> getGrupoHistorico() {
+		return grupoHistorico;
+	}
+
+	public void setGrupoHistorico(List<Historico> grupoHistorico) {
+		this.grupoHistorico = grupoHistorico;
+	}
+
+	@OneToMany(mappedBy = "aluno", targetEntity = EventoAce.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<EventoAce> getListaEventosAce() {
+		return listaEventosAce;
+	}
+
+	public void setListaEventosAce(List<EventoAce> listaEventosAce) {
+		this.listaEventosAce = listaEventosAce;
+	}
+
+	@Transient
+	public Integer getPeriodoCorrente(String periodoAtual) {
+
+		String periodoInicioLocal;
+		if (grade.getPeriodoInicio() == 0){
+			periodoInicioLocal = matricula.substring(0,4) + "1";
+		}
+		else {
+			periodoInicioLocal =  matricula.substring(0,4)  + String.valueOf(grade.getPeriodoInicio());
+		}
+		return periodoCorrente( periodoInicioLocal,periodoAtual);
+	}
+
+	@Transient
+	public Integer getPeriodoReal() {
+		return periodoReal;
+	}
+
+	public void setPeriodoReal(Integer periodoReal) {
+		this.periodoReal = periodoReal;
+	}
+
+	@Transient
+	public Float getIra() {
+		return ira;
+	}
+
+
+	public void setIra(Float ira) {
+		this.ira = ira;
+	}
+
+	public int periodoCorrente(String ingresso,String semestreAtual){
+
+		/*Calendar now = Calendar.getInstance();
+		int anoAtual = now.get(Calendar.YEAR);
+		int mes = now.get(Calendar.MONTH) + 1;
 		
-		private String matricula;
-		private String gradeCod;
-		private String cursoCodigo;
-		private String nome;
-		private String periodoIngresso;
-		private String teste;
+		int periodoAtual = 0;
+		if(mes >= 1 && mes <= 6){
+			periodoAtual = 1;
+		}
+		else {
+			periodoAtual = 3;
+		}*/
 		
-	
+		int i = 1;
 		
-
-
+		int anoAtual = Integer.parseInt(semestreAtual.substring(0, 4));
+		int periodoAtual = Integer.parseInt(semestreAtual.substring(4, 5));
 		
-		
-
-		// ==========================MÃ‰TODOS===================================================================================================================//
-		public Aluno() {
-			super();
+		int anoIngresso = Integer.parseInt(ingresso.substring(0, 4));
+		int periodoIngresso = Integer.parseInt(ingresso.substring(4, 5));
+		while( anoIngresso != anoAtual || periodoAtual != periodoIngresso  ){
+			i++;
+			if (periodoIngresso == 3){
+				anoIngresso++;
+				periodoIngresso = 1;
+			}
+			else{
+				periodoIngresso = 3;
+			}
 		}
+		return i;
+	}
 
-		// ==========================GETTERS_AND_SETTERS======================================================================================================//
+	@Transient
+	public String getTurma() {
 
-		@Column (name="MATRICULA")
-		@Id
-		public String getMatricula() {
-			return matricula;
-		}
-
-		public void setMatricula(String matricula) {
-			this.matricula = matricula;
-		}
-
-		@Column(name="NOME")
-		public String getNome() {
-			return nome;
-		}
-
-		public void setNome(String nome) {
-			this.nome = nome;
-		}
-
-		@Column(name="GRADE_COD")
-		public String getGradeCod() {
-			return gradeCod;
-		}
-
-		public void setGradeCod(String gradeCod) {
-			this.gradeCod = gradeCod;
-		}
-
-		@Column(name="CURSO_CODIGO")
-		public String getCursoCodigo() {
-			return cursoCodigo;
-		}
-
-		public void setCursoCodigo(String cursoCodigo) {
-			this.cursoCodigo = cursoCodigo;
-		}
-
-		@Column(name="PERIODO_INGRESSO")
-		public String getPeriodoIngresso() {
-			return periodoIngresso;
-		}
-
-		public void setPeriodoIngresso(String periodoIngresso) {
-			this.periodoIngresso = periodoIngresso;
-		}
-
-
-
-
+		return matricula.substring(0,4);
+	}
 }
-

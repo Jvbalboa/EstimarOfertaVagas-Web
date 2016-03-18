@@ -7,3 +7,7 @@ function desabilitaEscrita(e){
 			
 }
 
+
+function setfocus(id){  
+	document.getElementById(id).focus() ; 
+	}  
