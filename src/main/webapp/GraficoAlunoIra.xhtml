@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<h:form id="form" style="padding-left: 45px;" class="formularioCentro">
+			<div class="titulo">
+				<legend>Variação IRA do Aluno</legend>
+			</div>
+			<p:growl autoUpdate="true" />
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Matrícula:" />
+						<p:autoComplete id="matriculaAluno"
+							value="#{graficosIraAlunoController.aluno.matricula}"
+							completeMethod="#{graficosSituacaoController.alunoMatricula}"
+							disabled="#{graficosIraAlunoController.lgMatriculaAluno}"
+							forceSelection="true">
+							<p:ajax event="itemSelect"
+								listener="#{graficosIraAlunoController.onItemSelectMatriculaAluno()}"
+								update="@form" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-4"
+						style="width: 30.333%; margin-right: 3%;">
+						<p:outputLabel value="Nome:" />
+						<p:autoComplete id="nomeAluno"
+							value="#{graficosIraAlunoController.aluno}"
+							completeMethod="#{graficosIraAlunoController.alunoNome}"
+							disabled="#{graficosIraAlunoController.lgNomeAluno}"
+							forceSelection="true" size="47" converter="entityConverter"
+							var="cl" itemValue="#{cl}" itemLabel="#{cl.nome}">
+							<p:column style="width: 78px;    color: #DCDCDC;">
+								<h:outputText value="#{cl.matricula}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{cl.nome}" />
+							</p:column>
+							<p:ajax event="itemSelect"
+								listener="#{graficosIraAlunoController.onItemSelectMatriculaAluno()}"
+								update="@form" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-1" style="width: 14.33333%;">
+						<p:commandButton class="btn btn-info btn-sm botao" value="Limpar"
+							style="    width: 100px;"
+							rendered="#{graficosIraAlunoController.lgAluno}"
+							actionListener="#{graficosIraAlunoController.limpaAluno()}"
+							update="@form" />
+					</div>
+				</div>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Grade:" />
+						<p:inputText disabled="true" id="gradeAluno"
+							value="#{graficosIraAlunoController.aluno.grade.codigo}" />
+					</div>
+					<div class="ui-grid-col-4"
+						style="width: 30.333%; margin-right: 3%;">
+						<p:outputLabel value="Curso:" />
+						<p:inputText size="47" disabled="true" id="cursoAluno"
+							value="#{graficosIraAlunoController.aluno.curso.nome}" />
+					</div>
+					<div class="ui-grid-col-1">
+						<p:outputLabel value="Código Curso:"
+							style="font-size: 13px;margin-top: 3px;" />
+						<p:inputText size="7" disabled="true" id="codigoCurso"
+							value="#{graficosIraAlunoController.aluno.curso.codigo}" />
+					</div>
+					<div class="ui-grid-col-1">
+						<p:outputLabel value="Ingresso:" />
+						<p:inputText size="7" disabled="true" id="ingressoAluno"
+							value="#{graficosIraAlunoController.aluno.periodoIngresso}" />
+					</div>
+					<div class="ui-grid-col-1">
+						<p:outputLabel value="Período:" />
+						<p:inputText size="7" disabled="true" id="periodoAtualAluno"
+							value="#{graficosIraAlunoController.periodo}" />
+					</div>
+					<div class="ui-grid-col-1">
+						<p:outputLabel value="IRA:" />
+						<p:inputText size="7" disabled="true" id="iraAtualAluno"
+							value="#{graficosIraAlunoController.ira}" />
+					</div>
+					<div class="ui-grid-col-1 espacoLinha" style="    padding-top: 16px;    width: 14%;">
+						<p:outputLabel
+							value="*Atenção: o IRA foi calculado pelo sistema e pode diferir do IRA calculado pelo SIGA."
+							style="font-size: 12px; color: red;" />
+					</div>
+				</div>
+			</div>
+			<p:messages autoUpdate="true" />
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<div class="ui-grid-col-12">
+						
+						<p:chart type="line" id="grafico"
+							model="#{graficosIraAlunoController.lineChartModel}"
+							style="width:1200px;height:400px;" widgetVar="chart">
+						</p:chart>
+						
+					</div>
+				</div>
+			</div>
+		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

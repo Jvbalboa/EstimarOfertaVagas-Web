@@ -1,0 +1,102 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<beans:bean id="appUserDetailsService" class="springSecurity.AppUserDetailsService" />
+	
+	
+	
+	<beans:bean id="exceptionTranslationFilter" class="org.springframework.security.web.access.ExceptionTranslationFilter">
+	    <beans:property name="accessDeniedHandler" ref="jsfAccessDeniedHandler"/>
+	    <beans:property name="authenticationEntryPoint" ref="authenticationEntryPoint"/>
+	</beans:bean>
+	
+	<beans:bean id="jsfAccessDeniedHandler" class="springSecurity.JsfAccessDeniedHandler">
+	    <beans:property name="loginPath" value="/Erro.xhtml" />
+	    <beans:property name="contextRelative" value="true" />
+	</beans:bean>
+	
+	<beans:bean id="authenticationEntryPoint" class="springSecurity.JsfLoginUrlAuthenticationEntryPoint">
+	    <beans:property name="loginFormUrl" value="/Login.xhtml"/>
+	    <beans:property name="redirectStrategy" ref="jsfRedirectStrategy" />
+	</beans:bean>
+	
+	<beans:bean id="jsfRedirectStrategy" class="springSecurity.JsfRedirectStrategy"/>
+	
+	
+	<http pattern="/Login.xhtml" security="none" />
+	<http pattern="/Erro.xhtml" security="none" />
+	<http pattern="/resource/**" security="none" />
+
+
+	<http auto-config="false" use-expressions="true">
+		<custom-filter ref="exceptionTranslationFilter" before="FILTER_SECURITY_INTERCEPTOR" />
+		
+		<intercept-url pattern="/Home.xhtml" access="isAuthenticated()" />
+		<intercept-url pattern="/AlunoCargaHoraria.xhtml" access="isAuthenticated()" />	
+		<intercept-url pattern="/CadastroCurso.xhtml" access="hasAnyRole('admin')" />
+		<intercept-url pattern="/CadastroDisciplina.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		<intercept-url pattern="/CadastroGrade.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		<intercept-url pattern="/ImportarGrade.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		<intercept-url pattern="/CadastroUsuario.xhtml" access="hasAnyRole('admin')" />
+		<intercept-url pattern="/Historico.xhtml" access="isAuthenticated()" />
+		<intercept-url pattern="/ImportarDados.xhtml" access="hasAnyRole('coordenador')" />
+		<intercept-url pattern="/PlanejamentoFormatura.xhtml" access="isAuthenticated()" />
+		<intercept-url pattern="/SituacaoAluno.xhtml" access="isAuthenticated()" />
+		<intercept-url pattern="/VisaoGeral.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		<intercept-url pattern="/GraficoDisciplinasAprovada.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		<intercept-url pattern="/GraficoIra.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		<intercept-url pattern="/GraficoPeriodizacao.xhtml" access="hasAnyRole('admin','externo','coordenador')" />		
+		<intercept-url pattern="/GraficoIraQuantidade.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		<intercept-url pattern="/GraficoAlunoIra.xhtml" access="isAuthenticated()" />
+		<intercept-url pattern="/GraficoSituacaoAluno.xhtml" access="isAuthenticated()" />
+		<intercept-url pattern="/GraficoDisciplinasReprovadas.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		<intercept-url pattern="/GraficoPanoramico.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
+		
+		
+		
+	
+		
+	
+		
+		
+		<!--<intercept-url pattern="/EditarGrupo.xhtml" access="hasAnyRole('editargrupo')" />
+		<intercept-url pattern="/Home.xhtml" access="hasAnyRole('home')" />
+		<intercept-url pattern="/RelatorioMonitoramentoReConsulta.xhtml" access="hasAnyRole('relatoriomonitoramentoreconsulta')" />
+		<intercept-url pattern="/RelatorioPrestador.xhtml" access="hasAnyRole('relatorioprestador')" />
+		<intercept-url pattern="/RelatorioRegistrosPuericulturaPrestador.xhtml" access="hasAnyRole('relatorioregistrospuericulturaprestador')" />
+		<intercept-url pattern="/RelatoriosAtestadoMedico.xhtml" access="hasAnyRole('relatoriosatestadomedicoprestador')" />
+		<intercept-url pattern="/RelatoriosAtestadoMedicoProfissional.xhtml" access="hasAnyRole('relatoriosatestadomedicoprofissional')" />
+		<intercept-url pattern="/VincularGrupoColaborador.xhtml" access="hasAnyRole('vinculargrupocolaborador')" />
+		<intercept-url pattern="/VincularPermissaoGrupo.xhtml" access="hasAnyRole('vincularpermissaogrupo')" />-->
+		
+
+		
+		
+		<!--<intercept-url pattern="/**" access="denyAll" /> -->
+		<form-login login-page="/Login.xhtml" authentication-failure-url="/Login.xhtml?invalid=true" 
+			default-target-url="/Home.xhtml" always-use-default-target="true" />
+		<logout logout-url="/j_spring_security_logout" invalidate-session="true" logout-success-url="/Login.xhtml"/>
+	</http>
+
+	<authentication-manager>
+		<authentication-provider user-service-ref="appUserDetailsService">
+			<!-- <password-encoder hash="md5" /> -->
+		</authentication-provider>
+	</authentication-manager>
+
+</beans:beans>
+
+
+<!-- <beans:beans xmlns="http://www.springframework.org/schema/security" 
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
+	<http auto-config="true"> <intercept-url pattern="/**" access="ROLE_ADMINISTRADORES" 
+	/> </http> <authentication-manager> <authentication-provider> <user-service> 
+	<user name="joao" password="joao" authorities="ROLE_VENDEDORES" /> <user 
+	name="rafael" password="rafael" authorities="ROLE_ADMINISTRADORES" /> </user-service> 
+	</authentication-provider> </authentication-manager> </beans:beans> -->

@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<h:form id="form" style="padding-left: 45px;" class="formularioCentro">
+			<p:growl id="growl" showDetail="true" />
+			<div class="titulo">
+				<legend>Quantidade Aprovações</legend>
+			</div>
+			<div class="ui-grid-row " style="padding-bottom: 20px;">
+				<div class="ui-grid-col-6" style="width: 17%;">
+					<p:outputLabel value="Semestre Selecionado:" />
+					<p:inputMask mask="99999" required="true" requiredMessage="Insira um período valido!"
+						value="#{graficosDisciplinasAprovadaController.semestreSelecionado}"></p:inputMask>
+				</div>
+				<div class="ui-grid-col-6" style="width: 23%;">
+					<p:commandButton class="btn btn-success btn-sm botao" value="Gerar"
+						actionListener="#{graficosDisciplinasAprovadaController.buscar()}"
+						update="@form" ajax="true">
+					</p:commandButton>
+				</div>
+			</div>
+			<div class="ui-grid-row ">
+				<div class="ui-grid-col-6" style="width: 55%;">
+					<p:chart type="bar"
+						model="#{graficosDisciplinasAprovadaController.animatedModel2}"
+						style="width:700px;height:500px;">
+						<p:ajax event="itemSelect"
+							listener="#{graficosDisciplinasAprovadaController.itemSelect}"
+							update="@form" />
+					</p:chart>
+				</div>
+				<div class="ui-grid-col-6" style="width: 40%; padding-top: 23px;">
+					<p:dataTable var="registro" id="dadosConsolidadosDetalhe"
+						value="#{graficosDisciplinasAprovadaController.listaAlunoSelecionado}"
+						emptyMessage="Nenhum registro encontrado!"
+						paginatorAlwaysVisible="false" paginator="true" rows="13"
+						filteredValue="#{graficosDisciplinasAprovadaController.listaAlunoSelecionadoFiltrados}"
+						selectionMode="single"
+						selection="#{graficosDisciplinasAprovadaController.alunoSelecionadoGrid}"
+						rowKey="#{registro.matricula}">
+						<f:facet name="header">
+							<div
+								style="font-size: 12px; margin-left: -125px; padding: 3px 3px;">Seleções
+								| Quantidade Alunos:
+								#{graficosDisciplinasAprovadaController.quantidadeSelecionados}
+								/ #{graficosDisciplinasAprovadaController.quantidadeTotal} |
+								Quantidade Aprovações:
+								#{graficosDisciplinasAprovadaController.quantidadeAprovacoesSelecionados}</div>
+							<h:commandLink>
+								<p:graphicImage name="/img/excel.png"
+									style="float: right;    margin-top: -20px;" />
+								<p:dataExporter type="xls" target="dadosConsolidadosDetalhe"
+									fileName="aprovacaoDisciplina" />
+							</h:commandLink>
+						</f:facet>
+						<p:ajax event="rowSelect"
+							listener="#{graficosDisciplinasAprovadaController.onRowSelect}"
+							update=":form:dadosConsolidadosDetalheAluno" />
+						<p:column headerText="Turma"
+							style="width:105px !important;font-size: 12px;text-align: center;   margin-bottom: 0px;vertical-align: bottom; padding-right: 2px; padding-left: 2px;"
+							sortBy="#{registro.gradeIngresso}"
+							filterBy="#{registro.gradeIngresso}" filterMatchMode="contains">
+							<h:outputText value="#{registro.gradeIngresso}"
+								style="    font-weight: 100;margin-bottom: 0px;    text-align: center;color: black !important; " />
+						</p:column>
+						<p:column headerText="Matrícula"
+							style="width:105px !important;font-size: 12px; margin-bottom: 0px;  vertical-align: bottom;text-align: center;vertical-align: bottom;padding-right: 2px; padding-left: 2px; "
+							sortBy="#{registro.matricula}" filterBy="#{registro.matricula}"
+							filterMatchMode="contains">
+
+							<h:outputText value="#{registro.matricula}"
+								style="    font-weight: 100;margin-bottom: 0px;color: black !important;     " />
+						</p:column>
+						<p:column headerText="Nome"
+							style="font-size: 12px;  vertical-align: bottom; "
+							sortBy="#{registro.nomeAluno}" filterBy="#{registro.nomeAluno}"
+							filterMatchMode="contains">
+							<h:outputText value="#{registro.nomeAluno}"
+								style="    font-weight: 100;margin-bottom: 0px;color: black !important; " />
+						</p:column>
+					</p:dataTable>
+				</div>
+			</div>
+			<div class="ui-grid-row ">
+				<div class="ui-grid-col-6" style="width: 55%;">
+					<div class="ui-grid-col-6" style="width: 40%; padding-top: 23px;">
+						<pe:gChart value="#{graficosDisciplinasAprovadaController.chart}"
+							height="600" width="700"
+							title="Gráfico - Quantidade Aprovações no Curso no Período Selecionado">
+							<p:ajax
+								listener="#{graficosDisciplinasAprovadaController.onSelectPizzaE}"
+								update="@form" />
+						</pe:gChart>
+					</div>
+				</div>
+				<div class="ui-grid-col-6" style="width: 40%; padding-top: 23px;">
+					<p:dataTable var="registro" id="dadosConsolidadosDetalheAluno"
+						value="#{graficosDisciplinasAprovadaController.listaHistoricoSelecionado}"
+						emptyMessage="Nenhum registro encontrado!"
+						paginatorAlwaysVisible="false" paginator="true" rows="13"
+						filteredValue="#{graficosDisciplinasAprovadaController.listaHistoricoSelecionadoFiltrados}">
+						<f:facet name="header">
+							<div
+								style="font-size: 12px; margin-left: -125px; padding: 3px 3px;">Seleções
+								| Aluno:
+								#{graficosDisciplinasAprovadaController.alunoSelecionadoGrid.aluno.matricula}
+								| Quantidade Aprovações:
+								#{graficosDisciplinasAprovadaController.quantidadeAprovacoesSelecionados}</div>
+							<h:commandLink>
+								<p:graphicImage name="/img/excel.png"
+									style="float: right;    margin-top: -20px;" />
+								<p:dataExporter type="xls"
+									target="dadosConsolidadosDetalheAluno"
+									fileName="aprovacaoDisciplinaDetalhe" />
+							</h:commandLink>
+						</f:facet>
+						<p:column headerText="Código Disciplina"
+							style="font-size: 12px;   margin-bottom: 0px;vertical-align: bottom;text-align: center; padding-right: 2px; padding-left: 2px;"
+							sortBy="#{registro.disciplina.codigo}"
+							filterBy="#{registro.disciplina.codigo}"
+							filterMatchMode="contains">
+							<p:outputLabel value="#{registro.disciplina.codigo}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:column>
+						<p:column headerText="Nome"
+							style="width:200px !important;font-size: 12px; margin-bottom: 0px;  vertical-align: bottom;vertical-align: bottom;padding-right: 2px; padding-left: 2px; "
+							sortBy="#{registro.disciplina.nome}"
+							filterBy="#{registro.disciplina.nome}" filterMatchMode="contains">
+							<p:outputLabel value="#{registro.disciplina.nome}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:column>
+						<p:column headerText="Status"
+							style="font-size: 12px;  vertical-align: bottom;text-align: center; "
+							sortBy="#{registro.statusDisciplina}"
+							filterBy="#{registro.statusDisciplina}"
+							filterMatchMode="contains">
+							<p:outputLabel value="#{registro.statusDisciplina}"
+								style="    font-weight: 100;margin-bottom: 0px; " />
+						</p:column>
+					</p:dataTable>
+				</div>
+			</div>
+		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>
