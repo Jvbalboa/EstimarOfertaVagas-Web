@@ -96,52 +96,68 @@ public class AlunoSituacaoController implements Serializable {
 	@Inject
 	private UsuarioController usuarioController;
 
+	public void preencheSobraHoras()
+	{
+		if(this.aluno.getSobraHorasEletivas() > 0)
+		{
+			SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
+			disciplinaSituacao.setCodigo("");
+			disciplinaSituacao.setSituacao("");
+			disciplinaSituacao.setCargaHoraria(this.aluno.getSobraHorasEletivas() + "");
+			disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
+			listaDisciplinaOpcionais.add(disciplinaSituacao);
+		}
+		
+	}
+	
 	@PostConstruct
 	public void init()  {
+		try {
+			estruturaArvore = EstruturaArvore.getInstance();		
+			Grade grade = new Grade();
+			grade.setHorasEletivas(0);
+			grade.setHorasOpcionais(0);
+			grade.setHorasAce(0);
+			aluno.setGrade(grade);
+			disciplinaDAO = estruturaArvore.getDisciplinaDAO();
+			cursoDAO = estruturaArvore.getCursoDAO();
+			alunoDAO = estruturaArvore.getAlunoDAO();
+			eventosAceDAO = estruturaArvore.getEventosAceDAO();	
+			usuarioController.atualizarPessoaLogada();
 
-
-		estruturaArvore = EstruturaArvore.getInstance();		
-		Grade grade = new Grade();
-		grade.setHorasEletivas(0);
-		grade.setHorasOpcionais(0);
-		grade.setHorasAce(0);
-		aluno.setGrade(grade);
-		cursoDAO = estruturaArvore.getCursoDAO();
-		alunoDAO = estruturaArvore.getAlunoDAO();
-		disciplinaDAO = estruturaArvore.getDisciplinaDAO();
-		eventosAceDAO = estruturaArvore.getEventosAceDAO();	
-		usuarioController.atualizarPessoaLogada();
-
-		if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
-			List<Curso> listaCurso = (List<Curso>) cursoDAO.recuperarTodos();	
-			for (Curso cursoQuestao : listaCurso){
-				for (Aluno alunoQuestao : cursoQuestao.getGrupoAlunos()){
-					if(alunoQuestao.getMatricula().contains(usuarioController.getAutenticacao().getSelecaoIdentificador())){
-						aluno = alunoQuestao;
-						break;
-					}
-				}	
-			}		
-			if (aluno.getMatricula() == null){
-				FacesMessage msg = new FacesMessage("Matr’cula n‹o cadastrada na base!");
-				FacesContext.getCurrentInstance().addMessage(null, msg);
-				lgMatriculaAluno = true;
-				lgNomeAluno = true;	
-				return;
-			}			
-			curso = aluno.getCurso();
-			onItemSelectMatriculaAluno();
-			lgAluno = false;
-		}
-		else{
-			//curso = usuarioController.getAutenticacao().getCursoSelecionado().getCodigo();		
-			curso = usuarioController.getAutenticacao().getCursoSelecionado();
-			if (curso.getGrupoAlunos().size() == 0){
-
-				FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
-				FacesContext.getCurrentInstance().addMessage(null, msg);
+			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
+				List<Curso> listaCurso = (List<Curso>) cursoDAO.recuperarTodos();	
+				for (Curso cursoQuestao : listaCurso){
+					for (Aluno alunoQuestao : cursoQuestao.getGrupoAlunos()){
+						if(alunoQuestao.getMatricula().contains(usuarioController.getAutenticacao().getSelecaoIdentificador())){
+							aluno = alunoQuestao;
+							break;
+						}
+					}	
+				}		
+				if (aluno.getMatricula() == null){
+					FacesMessage msg = new FacesMessage("Matr’cula n‹o cadastrada na base!");
+					FacesContext.getCurrentInstance().addMessage(null, msg);
+					lgMatriculaAluno = true;
+					lgNomeAluno = true;	
+					return;
+				}			
+				curso = aluno.getCurso();
+				onItemSelectMatriculaAluno();
+				lgAluno = false;
 			}
+			else{
+				//curso = usuarioController.getAutenticacao().getCursoSelecionado().getCodigo();		
+				curso = usuarioController.getAutenticacao().getCursoSelecionado();
+				if (curso.getGrupoAlunos().size() == 0){
 
+					FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
+					FacesContext.getCurrentInstance().addMessage(null, msg);
+				}
+
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 
@@ -168,8 +184,8 @@ public class AlunoSituacaoController implements Serializable {
 	}
 
 	public void onItemSelectMatriculaAluno()  {
-		
-		
+
+
 
 		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
 			if(alunoQuestao.getMatricula().contains(aluno.getMatricula())){
@@ -181,16 +197,18 @@ public class AlunoSituacaoController implements Serializable {
 		lgNomeAluno = true;	
 		lgMatriculaAluno = true;
 		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),false);
-		
+
 		/*if (importador.getResetarStance() == true){
-			
-			
+
+
 			//importador.setResetarStance(false);
 		   // usuarioController.atualizarPessoaLogada();
-		    
-			
+
+
 		}*/
-		
+
+		System.out.println(aluno.getMatricula());
+
 		Grade gradeAluno = aluno.getGrade();
 		horasEletivas = gradeAluno.getHorasEletivas();
 		horasOpcionais = gradeAluno.getHorasOpcionais();
@@ -206,9 +224,10 @@ public class AlunoSituacaoController implements Serializable {
 			return;
 
 		}
+		
+		//listaEventosAce = new ArrayList<EventoAce>();
 
-
-		listaEventosAce = aluno.getListaEventosAce();		
+		listaEventosAce = new ArrayList<EventoAce>(aluno.getListaEventosAce());		
 		if (listaEventosAce != null){
 			for (EventoAce evento :listaEventosAce){
 				horasAceConcluidas = (int) (horasAceConcluidas + evento.getHoras());
@@ -217,7 +236,14 @@ public class AlunoSituacaoController implements Serializable {
 		else {
 			listaEventosAce = new ArrayList<EventoAce>();
 		}
+		
+		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
+		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
+		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
+		
 		gerarDadosAluno(st,curriculum);
+		this.preencheSobraHoras();
+		
 		ira = st.getIRA();
 		if(ira == -1) {
 			ira = 0;
@@ -235,10 +261,23 @@ public class AlunoSituacaoController implements Serializable {
 		if (aluno.getGrade().getHorasOpcionais() != 0  ){
 			percentualOpcionais = ((horasOpcionaisConcluidas* 100 / SomaInt) );
 		}
+		
+		
+		if(this.aluno.getSobraHorasOpcionais() > 0)
+		{
+			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
+			EventoAce evento = new EventoAce();
+			evento.setDescricao("EXCEDENTE EM DISCIPLINAS OPCIONAIS");
+			evento.setHoras((long)this.aluno.getSobraHorasOpcionais());
+			//evento.setPeriodo(this.aluno.getPeriodoReal());
+			evento.setExcluir(false);
+			listaEventosAce.add(evento);
+		}
+		
 		SomaInt = aluno.getGrade().getHorasAce();
 		if (aluno.getGrade().getHorasAce() != 0){
 			percentualAce = (horasAceConcluidas* 100 / SomaInt) ;
-		}	
+		}
 	}
 
 	public void limpaAluno(){		
@@ -288,9 +327,9 @@ public class AlunoSituacaoController implements Serializable {
 		listaDisciplinaEletivas = new ArrayList<SituacaoDisciplina>();
 		listaDisciplinaOpcionais = new ArrayList<SituacaoDisciplina>();
 		horasObrigatorias = 0;
-		horasObrigatoriasConcluidas = 0;
-		horasOpcionaisConcluidas = 0;
-		horasEletivasConcluidas = 0;
+		//horasObrigatoriasConcluidas = 0;
+		//horasOpcionaisConcluidas = 0;
+		//horasEletivasConcluidas = 0;
 		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
 		TreeSet<String> naocompletado = new TreeSet<String>();		
 		boolean lgPeriodoAtual = false;
@@ -320,7 +359,7 @@ public class AlunoSituacaoController implements Serializable {
 					listaDisciplinaObrigatorias.add(disciplinaSituacao);
 				}
 				else{
-					horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
+					//horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
 					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 					disciplinaSituacao.setCodigo(c.getId());
 					disciplinaSituacao.setSituacao("APROVADO");
@@ -339,7 +378,7 @@ public class AlunoSituacaoController implements Serializable {
 				}
 			}	
 		}
-		int creditos = 0;
+		//int creditos = 0;
 		for(Class c: cur.getElectives()){
 			if(aprovado.containsKey(c))	{
 				SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
@@ -348,13 +387,13 @@ public class AlunoSituacaoController implements Serializable {
 				disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 				disciplinaSituacao.setNome(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 				listaDisciplinaEletivas.add(disciplinaSituacao);
-				creditos += c.getWorkload();
+				//creditos += c.getWorkload();
 				aprovado.remove(c);
 			} 	
 		}
 
-		horasEletivasConcluidas = creditos;
-		creditos = 0;
+		//horasEletivasConcluidas = creditos;
+		//creditos = 0;
 		Set<Class> ap = aprovado.keySet();
 		Iterator<Class> i = ap.iterator();
 		while(i.hasNext()){
@@ -378,11 +417,14 @@ public class AlunoSituacaoController implements Serializable {
 					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 					disciplinaSituacao.setNome(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 					listaDisciplinaOpcionais.add(disciplinaSituacao);
-					creditos += c.getWorkload();
+					//creditos += c.getWorkload();
 				}
 			}
 		}
-		horasOpcionaisConcluidas = creditos;
+		
+		
+		
+		//horasOpcionaisConcluidas = creditos;
 	}
 
 	public void adicionarAce(){
@@ -405,7 +447,13 @@ public class AlunoSituacaoController implements Serializable {
 		}
 		eventosAce.setAluno(aluno);
 		eventosAce.setDescricao(eventosAce.getDescricao().toUpperCase());
+
+		System.out.println(eventosAce.getDescricao().toUpperCase() + ";" +  eventosAce.getHoras() + ";" + eventosAce.getPeriodo());
+
 		eventosAce.setExcluir(true);
+
+
+
 		eventosAceDAO.persistir(eventosAce);
 		listaEventosAce.add(eventosAce);
 		Ordenar ordenar = new Ordenar();
@@ -613,7 +661,7 @@ public class AlunoSituacaoController implements Serializable {
 	}
 
 	public List<EventoAce> getListaEventosAce() {
-		return listaEventosAce;
+		return this.listaEventosAce;
 	}
 
 	public void setListaEventosAce(List<EventoAce> listaEventosAce) {

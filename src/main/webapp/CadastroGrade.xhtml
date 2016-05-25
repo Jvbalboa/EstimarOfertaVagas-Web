@@ -21,7 +21,7 @@
 			<div class="ui-grid ui-grid-responsive">
 				<div class="ui-grid-row ">
 					<div class="ui-grid-col-5 " style="width: 39.66666%;">
-						<p:outputLabel value="Nome Curso:" />
+						<p:outputLabel value="Nome Curso: " />
 						<p:inputText
 							value="#{cadastroGradeController.curso.codigo} - #{cadastroGradeController.curso.nome}"
 							disabled="true" size="47" />
@@ -34,6 +34,10 @@
 								fileName="#{cadastroGradeController.curso.codigo}-#{cadastroGradeController.grade.codigo}"
 								datasetPadding="4" />
 						</p:commandLink>
+						<p:commandButton class="btn btn-success btn-sm botao" value="Clonar grade já existente "
+							actionListener="#{importarGradeController.abrirDialogo}"
+							update="@form" style="vertical-align: baseline;">
+						</p:commandButton>
 					</div>
 				</div>
 			</div>
@@ -55,10 +59,6 @@
 						</p:commandButton>
 						<p:commandButton class="btn btn-info btn-sm botao" value="Limpar"
 							actionListener="#{cadastroGradeController.limpaGrade()}"
-							update="@form">
-						</p:commandButton>
-						<p:commandButton class="btn btn-info btn-sm botao" value="Importar Grade"
-							actionListener="#{importarGradeController.abrirDialogo}"
 							update="@form">
 						</p:commandButton>
 						<p:commandButton class="btn btn-danger botao" value="Excluir"

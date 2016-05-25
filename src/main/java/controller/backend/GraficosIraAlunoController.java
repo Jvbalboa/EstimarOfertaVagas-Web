@@ -71,7 +71,7 @@ public class GraficosIraAlunoController implements Serializable {
 
 	@PostConstruct
 	public void init()  {
-
+		try {
 		lineChartModel = initBarModel();
 		lineChartModel.setTitle("Gráfico de Evolução do IRA por Período");
 		Axis yAxis = lineChartModel.getAxis(AxisType.Y);
@@ -115,6 +115,9 @@ public class GraficosIraAlunoController implements Serializable {
 				FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 			}
+		}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 

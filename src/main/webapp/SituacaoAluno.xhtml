@@ -173,6 +173,7 @@
 					</div>
 				</div>
 			</div>
+			<h:outputText value="#{alunoSituacaoCOntroller.aluno.sobraHorasEletivas}" />
 			<div class="gridTamanho espacoLinha">
 				<p:dataTable var="disciplinas" id="gridEletivas"
 					emptyMessage="Nenhuma Disciplina"
@@ -302,7 +303,7 @@
 			</div>
 			<div class="gridTamanho espacoLinha">
 				<p:dataTable var="eventosAce" id="gridAce"
-					emptyMessage="Nenhuma Evento"
+					emptyMessage="Nenhum Evento"
 					value="#{alunoSituacaoController.listaEventosAce}"
 					filteredValue="#{alunoSituacaoController.listaEventosAceSelecionadas}"
 					paginator="true" rows="20"
