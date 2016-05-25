@@ -1,4 +1,4 @@
-package controller.backend;
+/*package controller.backend;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -24,6 +24,10 @@ import br.ufjf.ice.integra3.rs.restclient.RSCursoAlunosDiscSituacao;
 import br.ufjf.ice.integra3.rs.restclient.RSCursoAlunosDiscSituacao.ServiceVersion;
 import br.ufjf.ice.integra3.rs.restclient.model.v2.AlunoCurso;
 import br.ufjf.ice.integra3.rs.restclient.model.v2.CursoAlunosSituacaoResponse;
+import br.ufjf.ice.integra3.ws.login.interfaces.IWsLogin;
+import br.ufjf.ice.integra3.ws.login.interfaces.WsException_Exception;
+import br.ufjf.ice.integra3.ws.login.interfaces.WsLoginResponse;
+import br.ufjf.ice.integra3.ws.login.service.WSLogin;
 import controller.util.EstruturaArvore;
 import controller.util.UsuarioController;
 import dao.ImportaDAOImpl;
@@ -68,7 +72,7 @@ public class ImportarHistorico implements Serializable{
 			return;
 		}
 		try {
-			/*IWsLogin integra = new WSLogin().getWsLoginServicePort();
+			IWsLogin integra = new WSLogin().getWsLoginServicePort();
 			//WsLoginResponse user = integra.login("***REMOVED***", "***REMOVED***","***REMOVED***");
 			WsLoginResponse user = integra.login(usuarioController.getAutenticacao().getLogin(), usuarioController.getAutenticacao().getSenha(), usuarioController.getAutenticacao().getToken());
 			System.out.println("Recuperando dados do curso "+ curso.getCodigo() +"...");
@@ -148,7 +152,7 @@ public class ImportarHistorico implements Serializable{
 			disciplinaList.setDisciplina(listaDisciplinaIntegraNovo);			
 			alunoCursoNovo.setDisciplinas(disciplinaList);	
 			listaAlunoCurso.add(alunoCursoNovo);*/
-			/*
+/*
 			listaGrade.addAll(curso.getGrupoGrades());
 			
 			System.out.println(curso.getCodigo());
@@ -236,13 +240,17 @@ public class ImportarHistorico implements Serializable{
 			for (Grade grade:listaGrades){
 				estruturaArvore.removerEstrutura(grade);
 			}
-		*/
+
 
 		} catch (NotAuthorizedException e) {
 			FacesMessage msg = new FacesMessage("Voce não tem permissão para importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			
-			} catch (Exception e) {
+			} catch (WsException_Exception e) {
+			FacesMessage msg = new FacesMessage("Ocorreu um problema ao importartar dados!");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			
+		} catch (Exception e) {
 			FacesMessage msg = new FacesMessage("Ocorreu um problema ao importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 						
@@ -269,4 +277,4 @@ public class ImportarHistorico implements Serializable{
 	public void setUsuarioController(UsuarioController usuarioController) {
 		this.usuarioController = usuarioController;
 	}
-}
+}*/

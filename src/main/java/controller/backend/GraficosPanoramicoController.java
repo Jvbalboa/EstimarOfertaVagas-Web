@@ -185,8 +185,6 @@ public class GraficosPanoramicoController implements Serializable {
 			listaGrades.add(grade.getCodigo().substring(1,5));
 			importador = estruturaArvore.recuperarArvore(grade,false);
 			for(Aluno aluno : grade.getGrupoAlunos()){
-				
-
 
 				horasAceConcluidas = 0;
 				horasObrigatorias = 0;
@@ -214,7 +212,12 @@ public class GraficosPanoramicoController implements Serializable {
 
 				}		
 				
-				gerarDadosAluno(st,curriculum);
+				//gerarDadosAluno(st,curriculum);
+				horasAceConcluidas += aluno.getHorasAceConcluidas() + aluno.getSobraHorasOpcionais();
+				horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
+				horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
+				horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
+				horasObrigatorias = aluno.getGrade().getHorasObrigatorias();
 
 				ira = st.getIRA();
 				

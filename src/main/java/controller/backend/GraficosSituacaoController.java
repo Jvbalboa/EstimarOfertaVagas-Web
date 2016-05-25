@@ -98,10 +98,23 @@ public class GraficosSituacaoController implements Serializable {
 
 	@Inject
 	private UsuarioController usuarioController;
+	
+	public void preencheSobraHoras()
+	{
+		if(this.aluno.getSobraHorasEletivas() > 0)
+		{
+			SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
+			disciplinaSituacao.setCodigo("");
+			disciplinaSituacao.setSituacao("");
+			disciplinaSituacao.setCargaHoraria(this.aluno.getSobraHorasEletivas() + "");
+			disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
+			listaDisciplinaOpcionais.add(disciplinaSituacao);
+		}
+	}
 
 	@PostConstruct
 	public void init()  {
-
+		try {
 		animatedModel2 = initBarModel();
 		animatedModel2.setTitle("Gr‡fico - Quantidade de Horas por Atividades");
 		animatedModel2.setLegendPosition("se");
@@ -158,6 +171,9 @@ public class GraficosSituacaoController implements Serializable {
 				FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 			}
+		}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 
@@ -316,6 +332,8 @@ public class GraficosSituacaoController implements Serializable {
 				.addRow("Horas Ace Incompletas",(horasIncompletasAce))
 				.build();
 		dadosGraficoAluno();
+		
+		preencheSobraHoras();
 	}
 
 	public void limpaAluno(){		
@@ -358,9 +376,9 @@ public class GraficosSituacaoController implements Serializable {
 		listaDisciplinaEletivas = new ArrayList<SituacaoDisciplina>();
 		listaDisciplinaOpcionais = new ArrayList<SituacaoDisciplina>();
 		horasObrigatorias = 0;
-		horasObrigatoriasConcluidas = 0;
-		horasOpcionaisConcluidas = 0;
-		horasEletivasConcluidas = 0;
+		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
+		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
+		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
 		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED)); 
 		TreeSet<String> naocompletado = new TreeSet<String>();
 		boolean lgPeriodoAtual = false;
@@ -382,7 +400,7 @@ public class GraficosSituacaoController implements Serializable {
 					listaDisciplinaObrigatorias.add(disciplinaSituacao);
 				}
 				else{
-					horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
+					//horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
 					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 					disciplinaSituacao.setCodigo(c.getId());
 					disciplinaSituacao.setSituacao("APROVADO");
@@ -394,7 +412,7 @@ public class GraficosSituacaoController implements Serializable {
 				}
 			}	
 		}
-		int creditos = 0;
+		//int creditos = 0;
 		for(Class c: cur.getElectives()){
 			if(aprovado.containsKey(c))	{
 				SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
@@ -403,11 +421,11 @@ public class GraficosSituacaoController implements Serializable {
 				disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 				disciplinaSituacao.setNome(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 				listaDisciplinaEletivas.add(disciplinaSituacao);
-				creditos += c.getWorkload();
+				//creditos += c.getWorkload();
 				aprovado.remove(c);
 			} 	
 		}
-		horasEletivasConcluidas = creditos;
+		//horasEletivasConcluidas = creditos;
 		if (horasEletivasConcluidas <= aluno.getGrade().getHorasEletivas()){
 
 		}
@@ -415,7 +433,7 @@ public class GraficosSituacaoController implements Serializable {
 			horasEletivasConcluidas = aluno.getGrade().getHorasEletivas();
 		}
 
-		creditos = 0;
+		//creditos = 0;
 		Set<Class> ap = aprovado.keySet();
 		Iterator<Class> i = ap.iterator();
 		while(i.hasNext()){
@@ -440,11 +458,11 @@ public class GraficosSituacaoController implements Serializable {
 					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 					disciplinaSituacao.setNome(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 					listaDisciplinaOpcionais.add(disciplinaSituacao);
-					creditos += c.getWorkload();
+					//creditos += c.getWorkload();
 				}
 			}
 		}
-		horasOpcionaisConcluidas = creditos;
+		//horasOpcionaisConcluidas = creditos;
 
 		if (horasOpcionaisConcluidas <= aluno.getGrade().getHorasOpcionais()){
 
