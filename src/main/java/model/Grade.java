@@ -1,7 +1,9 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,6 +16,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
+
+import controller.util.EstruturaArvore;
 
 
 
@@ -132,7 +137,24 @@ public class Grade {
 	public Integer getPeriodoInicio() {
 		return periodoInicio;
 	}
-
+	
+	//TODO: necessario alterar o modo de calcular
+	@Transient
+	public int getHorasObrigatorias()
+	{
+		int horas = 0;
+		HashMap<Integer, TreeSet<model.arvore.Class>> obrig = EstruturaArvore.getInstance().recuperarArvore(this,false).get_cur().getMandatories();
+		for(int i: obrig.keySet())
+		{
+			for(model.arvore.Class c: obrig.get(i))
+			{
+				horas += c.getWorkload();
+			}
+		}
+		
+		return horas;
+	}
+	
 	public void setPeriodoInicio(Integer periodoInicio) {
 		this.periodoInicio = periodoInicio;
 	}	

@@ -11,6 +11,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import model.Aluno;
 import model.Curso;
 import model.Disciplina;
 import model.Equivalencia;
@@ -120,14 +121,14 @@ public class CadastroGradeController implements Serializable {
 		
 		codigo = codigo.toUpperCase();
 		List<String> todos = new ArrayList<String>();
-		for (Grade gradeQuestao : curso.getGrupoGrades()){
-			if(gradeQuestao.getCodigo().contains(codigo)){
-				todos.add(gradeQuestao.getCodigo()); 
+		
+			for (Grade gradeQuestao : this.gradeDAO.buscarTodosCodigosGradePorCurso(this.curso.getId())){
+				if(gradeQuestao.getCodigo().contains(codigo)){
+					todos.add(gradeQuestao.getCodigo()); 
+				}
 			}
-		}
+		
 		return todos;
-
-
 	}
 
 	public void buscarGrade(){
@@ -319,7 +320,8 @@ public class CadastroGradeController implements Serializable {
 		gradeDAO.editar(grade);
 		estruturaArvore.removerEstrutura(grade);
 		usuarioController.setReseta(true);
-		//usuarioController.atualizarPessoaLogada();
+		
+		usuarioController.atualizarPessoaLogada();
 	}
 
 	public void alteraCampoPeriodo(){
@@ -414,6 +416,13 @@ public class CadastroGradeController implements Serializable {
 			FacesMessage msg = new FacesMessage("Disciplina cadastrada!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			disciplinaNova =  new Disciplina();
+			
+
+			for(Aluno a: grade.getGrupoAlunos())
+			{
+				a.dadosAlterados();
+			}
+			
 		}
 	}
 
@@ -545,6 +554,12 @@ public class CadastroGradeController implements Serializable {
 
 		disciplina = new Disciplina();
 		gradeDisciplina = new GradeDisciplina();
+		
+
+		for(Aluno a: grade.getGrupoAlunos())
+		{
+			a.dadosAlterados();
+		}
 
 		lgCodigoDisciplina = false;
 		lgNomeDisciplina = false;	

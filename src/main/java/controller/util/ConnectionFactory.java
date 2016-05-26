@@ -8,7 +8,7 @@ public class ConnectionFactory {
 	
 	 public Connection getConnection() {
 	     try {
-	         return DriverManager.getConnection("jdbc:mysql://localhost/sgc", "root", "tcc2016");
+	         return DriverManager.getConnection("DATABASE", "USER", "PASSWORD");
 	     } catch (SQLException e) {
 	         throw new RuntimeException(e);
 	     }
