@@ -1,4 +1,4 @@
-/*package controller.backend;
+package controller.backend;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,7 +25,6 @@ import br.ufjf.ice.integra3.rs.restclient.RSCursoAlunosDiscSituacao.ServiceVersi
 import br.ufjf.ice.integra3.rs.restclient.model.v2.AlunoCurso;
 import br.ufjf.ice.integra3.rs.restclient.model.v2.CursoAlunosSituacaoResponse;
 import br.ufjf.ice.integra3.ws.login.interfaces.IWsLogin;
-import br.ufjf.ice.integra3.ws.login.interfaces.WsException_Exception;
 import br.ufjf.ice.integra3.ws.login.interfaces.WsLoginResponse;
 import br.ufjf.ice.integra3.ws.login.service.WSLogin;
 import controller.util.EstruturaArvore;
@@ -58,14 +57,7 @@ public class ImportarHistorico implements Serializable{
 	}
 
 	public void chamarTudo()  {
-		
-		
-		
-		
 
-
-		
-		
 		if (usuarioController.getAutenticacao().getTipoAcesso().equals("externo")){
 			FacesMessage msg = new FacesMessage("Voce não tem permissão para importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -73,7 +65,6 @@ public class ImportarHistorico implements Serializable{
 		}
 		try {
 			IWsLogin integra = new WSLogin().getWsLoginServicePort();
-			//WsLoginResponse user = integra.login("01172222673", "4ca1e4a4616ef374d6e431835f5d6815","d6189421e0278587f113ca4b9e258c4a9f8de468");
 			WsLoginResponse user = integra.login(usuarioController.getAutenticacao().getLogin(), usuarioController.getAutenticacao().getSenha(), usuarioController.getAutenticacao().getToken());
 			System.out.println("Recuperando dados do curso "+ curso.getCodigo() +"...");
 			RSCursoAlunosDiscSituacao rsClient = new RSCursoAlunosDiscSituacao(user.getToken(), ServiceVersion.V2);
@@ -113,46 +104,7 @@ public class ImportarHistorico implements Serializable{
 			int contador = 0;
 			int total = rsResponse.getAluno().size();
 
-			/*List<AlunoCurso> listaAlunoCurso = new ArrayList<AlunoCurso>();
-			AlunoCurso alunoCursoNovo;
-			br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina disciplinaIntegraNovo;
-			List<br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina> listaDisciplinaIntegraNovo;
-			AlunoDisciplina disciplinaList;
-			alunoCursoNovo = new AlunoCurso();			
-			alunoCursoNovo.setCurriculo("12009");
-			alunoCursoNovo.setCurso("35A");
-			alunoCursoNovo.setMatricula("209195001");
-			alunoCursoNovo.setNome("JOAO PEDRO");			
-			disciplinaIntegraNovo = new br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina();			
-			disciplinaIntegraNovo.setAnoSemestre("20091");
-			disciplinaIntegraNovo.setDisciplina("DCC120");
-			disciplinaIntegraNovo.setHorasAula("60");
-			disciplinaIntegraNovo.setNota("60");
-			disciplinaIntegraNovo.setSituacao("Aprovado");			
-			listaDisciplinaIntegraNovo = new ArrayList<br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina>();
-			listaDisciplinaIntegraNovo.add(disciplinaIntegraNovo);
-			disciplinaList = new AlunoDisciplina();
-			disciplinaList.setDisciplina(listaDisciplinaIntegraNovo);			
-			alunoCursoNovo.setDisciplinas(disciplinaList);
-			listaAlunoCurso.add(alunoCursoNovo);
-			alunoCursoNovo = new AlunoCurso();			
-			alunoCursoNovo.setCurriculo("12009");
-			alunoCursoNovo.setCurso("35A");
-			alunoCursoNovo.setMatricula("208195001");
-			alunoCursoNovo.setNome("JOAO PEDRO");			
-			disciplinaIntegraNovo = new br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina();			
-			disciplinaIntegraNovo.setAnoSemestre("20091");
-			disciplinaIntegraNovo.setDisciplina("DCC120");
-			disciplinaIntegraNovo.setHorasAula("60");
-			disciplinaIntegraNovo.setNota("60");
-			disciplinaIntegraNovo.setSituacao("Aprovado");			
-			listaDisciplinaIntegraNovo = new ArrayList<br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina>();
-			listaDisciplinaIntegraNovo.add(disciplinaIntegraNovo);
-			disciplinaList = new AlunoDisciplina();
-			disciplinaList.setDisciplina(listaDisciplinaIntegraNovo);			
-			alunoCursoNovo.setDisciplinas(disciplinaList);	
-			listaAlunoCurso.add(alunoCursoNovo);*/
-/*
+			/**/
 			listaGrade.addAll(curso.getGrupoGrades());
 			
 			System.out.println(curso.getCodigo());
@@ -246,11 +198,15 @@ public class ImportarHistorico implements Serializable{
 			FacesMessage msg = new FacesMessage("Voce não tem permissão para importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			
-			} catch (WsException_Exception e) {
+			} 
+		
+		//Exception removida na nova versao da API do Integra
+		/*catch (WsException_Exception e) {
 			FacesMessage msg = new FacesMessage("Ocorreu um problema ao importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			
-		} catch (Exception e) {
+		}*/
+		catch (Exception e) {
 			FacesMessage msg = new FacesMessage("Ocorreu um problema ao importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 						
@@ -277,4 +233,4 @@ public class ImportarHistorico implements Serializable{
 	public void setUsuarioController(UsuarioController usuarioController) {
 		this.usuarioController = usuarioController;
 	}
-}*/
+}
