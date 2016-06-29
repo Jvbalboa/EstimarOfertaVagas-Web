@@ -175,15 +175,10 @@ public class GraficosPanoramicoController implements Serializable {
 		listaGrupoElementoGrafico = new ArrayList<GrupoElementoGrafico>();
 		listaGrades = new ArrayList<String>();
 		for(Grade grade : curso.getGrupoGrades()){
-			if (
-					grade.getNumeroMaximoPeriodos() == 0 ||
-					grade.getHorasEletivas() == 0 ||
-					grade.getGrupoGradeDisciplina().size() == 0 ||
-					grade.getGrupoAlunos().size() == 0
-					) continue;
+			if (!grade.estaCompleta()) continue;
 
 			listaGrades.add(grade.getCodigo().substring(1,5));
-			importador = estruturaArvore.recuperarArvore(grade,false);
+			importador = estruturaArvore.recuperarArvore(grade,true);
 			for(Aluno aluno : grade.getGrupoAlunos()){
 
 				horasAceConcluidas = 0;

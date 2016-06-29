@@ -87,7 +87,7 @@ public class GraficosIraController implements Serializable {
 		listaGrupoElementoGrafico = new ArrayList<GrupoElementoGrafico>();
 		LineChartModel  model = new LineChartModel ();
 		for(Grade grade : curso.getGrupoGrades()){
-			importador = estruturaArvore.recuperarArvore(grade,false);
+			importador = estruturaArvore.recuperarArvore(grade,true);
 			for(Aluno aluno : grade.getGrupoAlunos()){
 								
 				StudentsHistory sh = importador.getSh();

@@ -198,6 +198,8 @@ public class GraficosController implements Serializable {
 				}
 			}
 			naoEntrouPrimeira = true;
+			
+			//if(i != curso.gr)
 			gChartModelBuilder.addRow(String.valueOf(i) + "¼ - Per’odo Incompleto", contadorAluno);
 			model.addSeries(f);
 			i++;
@@ -215,12 +217,7 @@ public class GraficosController implements Serializable {
 	public void buscarDados (){
 		for (Grade gradeSelecionado : curso.getGrupoGrades()){
 
-			if (
-					gradeSelecionado.getNumeroMaximoPeriodos() == 0 ||
-					gradeSelecionado.getHorasEletivas() == 0 ||
-					gradeSelecionado.getGrupoGradeDisciplina().size() == 0 ||
-					gradeSelecionado.getGrupoAlunos().size() == 0
-					) continue;
+			if (!gradeSelecionado.estaCompleta()) continue;
 
 			//List<Aluno> listaAlunos = alunoDAO.buscarTodosAlunoCursoGradeObjeto(curso.getId(), gradeSelecionado.getId());
 			
@@ -228,7 +225,7 @@ public class GraficosController implements Serializable {
 			
 			
 			
-			importador = estruturaArvore.recuperarArvore(gradeSelecionado,false);
+			importador = estruturaArvore.recuperarArvore(gradeSelecionado,true);
 			for (Aluno alunoSelecionado : listaAlunos){
 				curriculum = importador.get_cur();
 				StudentsHistory sh = importador.getSh();		
@@ -288,7 +285,9 @@ public class GraficosController implements Serializable {
 				}
 			}	
 		}
-		return 1;
+		//return cur.getMandatories().keySet().size()+1;
+		
+		return cur.getMandatories().keySet().size();
 	}
 
 	public void itemSelect(ItemSelectEvent event) {
