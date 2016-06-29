@@ -444,6 +444,9 @@ public class PlanejamentoFormaturaController implements Serializable {
 				break;
 			}
 		}
+		
+		
+		
 		lgMatriculaAluno = true;
 		lgNomeAluno = true;	
 		lgCampoHrsPeriodo = false;
@@ -470,31 +473,19 @@ public class PlanejamentoFormaturaController implements Serializable {
 		importador.considerarCo();
 		curriculum = importador.get_cur();		
 
-
-
-		if (
-				aluno.getGrade().getNumeroMaximoPeriodos() == 0 ||
-				aluno.getGrade().getHorasEletivas() == 0 ||
-				aluno.getGrade().getGrupoGradeDisciplina().size() == 0 ||
-				aluno.getGrade().getGrupoAlunos().size() == 0
-				) {
+		if (!aluno.getGrade().estaCompleta()) {
 			FacesMessage msg = new FacesMessage("Grade Incompleta verifique o menu Cadastros > Grade!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
-
+		
 		gerarExpectativa();
 		
 	}
 
 	public void gerarExpectativa(){
 
-		if (
-				aluno.getGrade().getNumeroMaximoPeriodos() == 0 ||
-				aluno.getGrade().getHorasEletivas() == 0 ||
-				aluno.getGrade().getGrupoGradeDisciplina().size() == 0 ||
-				aluno.getGrade().getGrupoAlunos().size() == 0
-				) {
+		if (!aluno.getGrade().estaCompleta()) {
 			FacesMessage msg = new FacesMessage("Grade Incompleta verifique o menu Cadastros > Grade!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;

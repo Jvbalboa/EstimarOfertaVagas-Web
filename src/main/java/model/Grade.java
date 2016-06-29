@@ -155,6 +155,14 @@ public class Grade {
 		return horas;
 	}
 	
+	@Transient
+	public boolean estaCompleta()
+	{
+		return !(this.getNumeroMaximoPeriodos() == 0 ||
+		this.getGrupoGradeDisciplina().size() == 0 ||
+		this.getGrupoAlunos().size() == 0);			
+	}
+	
 	public void setPeriodoInicio(Integer periodoInicio) {
 		this.periodoInicio = periodoInicio;
 	}	
