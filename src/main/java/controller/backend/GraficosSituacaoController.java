@@ -269,7 +269,7 @@ public class GraficosSituacaoController implements Serializable {
 		lgAce = false;
 		lgNomeAluno = true;	
 		lgMatriculaAluno = true;
-		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),false);
+		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),true);
 		curriculum = importador.get_cur();
 		StudentsHistory sh = importador.getSh();		
 		Student st = sh.getStudents().get(aluno.getMatricula());
