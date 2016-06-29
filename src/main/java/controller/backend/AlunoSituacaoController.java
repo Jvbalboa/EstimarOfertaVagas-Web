@@ -196,7 +196,7 @@ public class AlunoSituacaoController implements Serializable {
 		lgAce = false;
 		lgNomeAluno = true;	
 		lgMatriculaAluno = true;
-		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),false);
+		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),true);
 
 		/*if (importador.getResetarStance() == true){
 

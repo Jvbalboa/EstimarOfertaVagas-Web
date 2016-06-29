@@ -1,13 +1,11 @@
 package estimate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 import model.arvore.Class;
-import model.arvore.ClassContainer;
-import model.arvore.ClassStatus;
-import model.arvore.Curriculum;
-import model.arvore.Student;
+import model.arvore.*;
 
 public class StudentCoursePlan {
 
@@ -33,8 +31,45 @@ public class StudentCoursePlan {
 		_enrolled = showEnrolled;
 		//_skipClasses = new ArrayList<Class>();
 		
+		//Cria os containers de disciplinas que s‹o corequisitos
+		//TODO verificar se h‡ alguma incompatibilidade e evitar 2 "for"
+		for(int i: cur.getMandatories().keySet())
+		{
+			//for(Class c: _cur.getMandatories().get(i))
+			Iterator<Class> it = cur.getMandatories().get(i).iterator();
+			
+			ArrayList<Class> duplicated = new ArrayList<Class>();
+			ArrayList<Class> insert = new ArrayList<Class>();
+			while(it.hasNext())
+			{			
+				Class c = it.next();
+				if(!c.getCorequisite().isEmpty())
+				{
+					ClassContainer cc = new ClassContainer("Co-requisitos");
+					cc.addClass(c);
+					
+					for(Class cr: c.getCorequisite())
+					{
+						//_cur.getMandatories().get(i).remove(cr);
+						//it.remove();
+						duplicated.add(cr);
+						cc.addClass(cr);
+					}
+					
+					//_cur.getMandatories().get(i).remove(c);
+					it.remove();
+					insert.add(cc);
+				}
+			}
+			
+			cur.getMandatories().get(i).removeAll(duplicated);
+			cur.getMandatories().get(i).addAll(insert);
+		}
+		
+		
 		// Retira do curriculum as disciplinas que ainda nao forma cursadas
 		int courseCount = 1;
+		
 		
 		for (int i : cur.getMandatories().keySet()) 
 		{
@@ -70,9 +105,9 @@ public class StudentCoursePlan {
 						}
 					}
 
-					if (cc.getClasses().size() == 0)
+					/*if (cc.getClasses().size() == 0)
 						continue;
-
+					*/
 					if (cc.getClasses().size() == 1) {
 						t.add(cc.getClasses().get(0));
 						courseCount++;

@@ -131,7 +131,7 @@ public class HistoricoController implements Serializable {
 		lgMatriculaAluno = true;
 		lgNomeAluno = true;	
 		listaHistorico = aluno.getGrupoHistorico();
-		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),false);
+		importador = estruturaArvore.recuperarArvore(aluno.getGrade(), true);
 		StudentsHistory sh = importador.getSh();
 		Student st = sh.getStudents().get(aluno.getMatricula());
 		
