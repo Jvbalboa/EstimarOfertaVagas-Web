@@ -9,7 +9,6 @@ import java.util.List;
 import javax.ws.rs.NotAuthorizedException;
 
 import br.ufjf.ice.integra3.ws.login.interfaces.IWsLogin;
-import br.ufjf.ice.integra3.ws.login.interfaces.WsException_Exception;
 import br.ufjf.ice.integra3.ws.login.interfaces.WsLoginResponse;
 import br.ufjf.ice.integra3.ws.login.interfaces.WsUserInfoResponse;
 import br.ufjf.ice.integra3.ws.login.service.WSLogin;
@@ -69,7 +68,6 @@ public class AutenticacaoController {
 			return autenticacao;
 
 		} catch (NotAuthorizedException e) {
-		} catch (WsException_Exception e) {
 		} catch (Exception e) {
 		}
 
