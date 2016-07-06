@@ -21,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.Aluno;
 import model.Curso;
 import model.PessoaCurso;
 import model.estrutura.Autenticacao;
@@ -269,6 +270,11 @@ public class UsuarioController implements Serializable  {
 		Curso cursoAtualizado = cursoDAO.recuperarPorId(autenticacao.getCursoSelecionado().getId());		
 		autenticacao.setCursoSelecionado(cursoAtualizado);	
 		reseta = false;
+		
+		for(Aluno a: cursoAtualizado.getGrupoAlunos())
+		{
+			a.dadosAlterados();
+		}
 		}
 	}
 	

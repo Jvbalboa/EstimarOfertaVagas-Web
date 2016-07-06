@@ -106,6 +106,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 
 	@PostConstruct
 	public void init() {
+		try {
 		estruturaArvore = EstruturaArvore.getInstance();
 		usuarioController.atualizarPessoaLogada();
 
@@ -154,6 +155,9 @@ public class PlanejamentoFormaturaController implements Serializable {
 				FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 			}
+		}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 
 
@@ -440,6 +444,9 @@ public class PlanejamentoFormaturaController implements Serializable {
 				break;
 			}
 		}
+		
+		
+		
 		lgMatriculaAluno = true;
 		lgNomeAluno = true;	
 		lgCampoHrsPeriodo = false;
@@ -466,30 +473,19 @@ public class PlanejamentoFormaturaController implements Serializable {
 		importador.considerarCo();
 		curriculum = importador.get_cur();		
 
-
-
-		if (
-				aluno.getGrade().getNumeroMaximoPeriodos() == 0 ||
-				aluno.getGrade().getHorasEletivas() == 0 ||
-				aluno.getGrade().getGrupoGradeDisciplina().size() == 0 ||
-				aluno.getGrade().getGrupoAlunos().size() == 0
-				) {
+		if (!aluno.getGrade().estaCompleta()) {
 			FacesMessage msg = new FacesMessage("Grade Incompleta verifique o menu Cadastros > Grade!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
-
+		
 		gerarExpectativa();
+		
 	}
 
 	public void gerarExpectativa(){
 
-		if (
-				aluno.getGrade().getNumeroMaximoPeriodos() == 0 ||
-				aluno.getGrade().getHorasEletivas() == 0 ||
-				aluno.getGrade().getGrupoGradeDisciplina().size() == 0 ||
-				aluno.getGrade().getGrupoAlunos().size() == 0
-				) {
+		if (!aluno.getGrade().estaCompleta()) {
 			FacesMessage msg = new FacesMessage("Grade Incompleta verifique o menu Cadastros > Grade!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
@@ -545,7 +541,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
-		horasFaltamEletivas =     aluno.getGrade().getHorasEletivas() - horasEletivasConcluidas ;
+		horasFaltamEletivas =     aluno.getGrade().getHorasEletivas() - aluno.getHorasEletivasCompletadas();
 		horasFaltamOpcionais =   aluno.getGrade().getHorasOpcionais() - horasOpcionaisConcluidas;
 		int contadorPeriodosGerados = 0;
 		for(int i : curriculumAluno.getMandatories().keySet()){			
@@ -628,7 +624,23 @@ public class PlanejamentoFormaturaController implements Serializable {
 			recuperarLg(ultimoPeriodoPreenchido+ 1, true);
 			gerarEletivasObrigatorias (recuperarLista(ultimoPeriodoPreenchido+1),(ultimoPeriodoPreenchido+1));
 			listaCargaHorariaPeriodo.add(Integer.toString(contadorPorPeriodo));
-		}		
+		}
+		
+		if(this.listaDisciplinaSelecionadas.isEmpty() && this.listaDisciplinaSelecionadasDois.isEmpty()
+				&& this.listaDisciplinaSelecionadasTres.isEmpty()
+				&& this.listaDisciplinaSelecionadasQuatro.isEmpty()
+				&& this.listaDisciplinaSelecionadasCinco.isEmpty()
+				&& this.listaDisciplinaSelecionadasSeis.isEmpty()
+				&& this.listaDisciplinaSelecionadasSete.isEmpty()
+				&& this.listaDisciplinaSelecionadasOito.isEmpty()
+				&& this.listaDisciplinaSelecionadasNove.isEmpty()
+				&& this.listaDisciplinaSelecionadasDez.isEmpty()
+				&& this.listaDisciplinaSelecionadasOnze.isEmpty()
+				&& this.listaDisciplinaSelecionadasDoze.isEmpty())
+		{
+			FacesMessage msg = new FacesMessage("N‹o h‡ disciplinas para serem exibidas!");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
 	}
 
 	public String cargaHorariaPeriodo(int periodo){
@@ -807,9 +819,9 @@ public class PlanejamentoFormaturaController implements Serializable {
 		HashMap<Class, ArrayList<String[]>> aprovado;
 		HashMap<Class, ArrayList<String[]>> matriculadosGrade;
 		horasObrigatorias = 0;
-		horasObrigatoriasConcluidas = 0;
-		horasOpcionaisConcluidas = 0;
-		horasEletivasConcluidas = 0;
+		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
+		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
+		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
 		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED)); 
 		matriculadosGrade = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.ENROLLED)); 
 		TreeSet<String> naocompletado = new TreeSet<String>();
@@ -817,46 +829,46 @@ public class PlanejamentoFormaturaController implements Serializable {
 			for(Class c: cur.getMandatories().get(i)){
 				horasObrigatorias = horasObrigatorias + c.getWorkload();
 				if (matriculadosGrade.containsKey(c) && matriculados){
-					horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
+					//horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
 					matriculadosGrade.remove(c);
 				}
 				if(!aprovado.containsKey(c)) {
 					naocompletado.add(c.getId());
 				}
 				else{
-					horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
+					//horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
 					aprovado.remove(c);
 				}
 			}	
 		}
-		int creditos = 0;
+		//int creditos = 0;
 		for(Class c: cur.getElectives()){
 			if(aprovado.containsKey(c))	{
-				creditos += c.getWorkload();
+				//creditos += c.getWorkload();
 				aprovado.remove(c);
 			}
 			if (matriculadosGrade.containsKey(c) && matriculados){
-				creditos += c.getWorkload();
+				//creditos += c.getWorkload();
 				matriculadosGrade.remove(c);
 			}
 		}
-		horasEletivasConcluidas = creditos;
-		creditos = 0;
+		//horasEletivasConcluidas = creditos;
+		//creditos = 0;
 		Set<Class> ap = aprovado.keySet();
 		Iterator<Class> i = ap.iterator();
 		while(i.hasNext()){
 			Class c = i.next();
-			creditos += c.getWorkload();
+			//creditos += c.getWorkload();
 		}
 		if (matriculados){
 			Set<Class> apm = matriculadosGrade.keySet();
 			Iterator<Class> im = apm.iterator();
 			while(im.hasNext())	{
 				Class c = im.next();
-				creditos += c.getWorkload();
+				//creditos += c.getWorkload();
 			}
 		}
-		horasOpcionaisConcluidas = creditos;
+		//horasOpcionaisConcluidas = creditos;
 	}
 
 	//========================================================= GET - SET ==================================================================================//

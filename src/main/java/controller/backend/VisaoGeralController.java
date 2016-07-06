@@ -118,7 +118,7 @@ public class VisaoGeralController implements Serializable {
 					break;
 				}				
 			}			
-			importador = estruturaArvore.recuperarArvore(grade,false);
+			importador = estruturaArvore.recuperarArvore(grade,true);
 			curriculum = importador.get_cur();
 			printTableHeader();
 		}
@@ -166,7 +166,7 @@ public class VisaoGeralController implements Serializable {
 					break;
 				}				
 			}				
-			importador = estruturaArvore.recuperarArvore(grade,false);
+			importador = estruturaArvore.recuperarArvore(grade,true);
 			StudentsHistory sh = importador.getSh();
 			ArrayList<String> student = new ArrayList<String>();
 			student.addAll(sh.getStudents().keySet());

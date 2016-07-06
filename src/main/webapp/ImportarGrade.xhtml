@@ -41,7 +41,7 @@
 		<h:form class="formularioCentro" id="principalForm" method="post"
 			role="form" style="padding-left: 45px;">
 			<div class="titulo">
-				<legend>Importar Grade</legend>
+				<legend>Clonar Grade Existente</legend>
 			</div>
 			
 		<div class="ui-grid ui-grid-responsive">
@@ -52,7 +52,7 @@
 					</div>
 					
 					<div class="ui-grid-col-2">
-					<p:outputLabel value="Grade a Ser Importada:" />
+					<p:outputLabel value="Grade a Ser Clonada:" />
 						<p:autoComplete id="codigoGrade"
 							value="#{importarGradeController.codImportar}"
 							completeMethod="#{cadastroGradeController.gradeCodigos}"
@@ -62,13 +62,11 @@
 					
 					
 						<p:commandButton class="btn btn-success btn-sm botao"
-							value="Importar"
+							value="Clonar"
 							actionListener="#{importarGradeController.importaGrade}"
 							ajax="true">
 						</p:commandButton>
 					
-						<p:outputLabel value="Grade: " rendered="#{importarGradeController.achouGrade}" />
-						<p:outputLabel value="#{importarGradeController.grade.codigo}" rendered="#{importarGradeController.achouGrade}" />
 					</div>
 				</div>
 		

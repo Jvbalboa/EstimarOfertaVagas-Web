@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -66,14 +67,8 @@ public class ImportarGradeController implements Serializable {
 		this.equivalenciaDAO =  new EquivalenciaDAOImpl();		
 		
 		this.grade = new Grade();
-		
-		//TODO alterar para curso selecionado com usuarioController.getAutenticacao().getCursoSelecionado().getCodigo() 
-		this.curso = cursoDAO.buscarPorCodigo("35A");//usuarioController.getAutenticacao().getCursoSelecionado().getCodigo());
-	}
-	
-	public void duplicaGrade()
-	{
-		
+		 
+		this.curso = usuarioController.getAutenticacao().getCursoSelecionado();
 	}
 	
 	public void buscarGrade(){
@@ -184,7 +179,16 @@ public class ImportarGradeController implements Serializable {
 				usuarioController.atualizarPessoaLogada();
 				curso.getGrupoGrades().add(novaGrade);
 				
-				FacesMessage msg = new FacesMessage("Grade importada com sucesso!");
+				this.grade = new Grade();
+				
+				this.codImportar = "";
+				this.novaGrade = "";
+				achouGrade = false;
+				
+				/*usuarioController.setReseta(true);
+				usuarioController.atualizarPessoaLogada();
+				*/
+				FacesMessage msg = new FacesMessage("Grade clonada com sucesso!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 			
 		}

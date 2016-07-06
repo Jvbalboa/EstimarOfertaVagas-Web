@@ -57,6 +57,7 @@ public class HistoricoController implements Serializable {
 
 	@PostConstruct
 	public void init() {
+		try {
 		estruturaArvore = EstruturaArvore.getInstance();
 		cursoDAO = estruturaArvore.getCursoDAO();
 		usuarioController.atualizarPessoaLogada();
@@ -92,6 +93,9 @@ public class HistoricoController implements Serializable {
 			
 			
 		}
+	} catch (Exception e) {
+		// TODO: handle exception
+	}
 	}	
 
 	public List<String> alunoMatricula(String codigo) {		
@@ -127,7 +131,7 @@ public class HistoricoController implements Serializable {
 		lgMatriculaAluno = true;
 		lgNomeAluno = true;	
 		listaHistorico = aluno.getGrupoHistorico();
-		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),false);
+		importador = estruturaArvore.recuperarArvore(aluno.getGrade(), true);
 		StudentsHistory sh = importador.getSh();
 		Student st = sh.getStudents().get(aluno.getMatricula());
 		
