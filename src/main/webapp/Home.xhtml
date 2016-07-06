@@ -62,7 +62,7 @@
 								<h:outputText value="#{gerais.dataUltimaImportacao}" />
 							</p:column>
 
-							<p:column headerText="Alunos" sortBy="#{gerais.quantidadeAlunosGrade}" style="    font-size: 14px;    text-align: center;">
+							<p:column headerText="Alunos" sortBy="#{gerais.alunosTotaisCurso}" style="    font-size: 14px;    text-align: center;">
 								<h:outputText value="#{gerais.alunosTotaisCurso}"  />
 							</p:column>
 
@@ -91,14 +91,15 @@
 							</p:column>
 
 
-
+						
 						</p:dataTable>
+						
 					</div>
 				</div>
 			</div>
-
-
+			
 		</h:form>
+		<br />
 	</ui:define>
 </ui:composition>
 </html>

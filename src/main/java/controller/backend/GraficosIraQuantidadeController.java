@@ -79,7 +79,7 @@ public class GraficosIraQuantidadeController implements Serializable {
 	private LineChartModel  initBubbleModel(){
 		LineChartModel  model = new LineChartModel ();
 		for(Grade grade : curso.getGrupoGrades()){
-			importador = estruturaArvore.recuperarArvore(grade,false);
+			importador = estruturaArvore.recuperarArvore(grade,true);
 			for(Aluno aluno : grade.getGrupoAlunos()){
 				StudentsHistory sh = importador.getSh();
 				Student st = sh.getStudents().get(aluno.getMatricula());

@@ -149,7 +149,7 @@ public class ImportarArvore {
 
 	public void considerarCo(){
 
-		for(int i: _cur.getMandatories().keySet())
+		/*for(int i: _cur.getMandatories().keySet())
 		{
 			Iterator<Class> it = _cur.getMandatories().get(i).iterator();
 
@@ -175,7 +175,7 @@ public class ImportarArvore {
 
 			_cur.getMandatories().get(i).removeAll(duplicated);
 			_cur.getMandatories().get(i).addAll(insert);
-		}
+		}*/
 	}
 
 	public Grade getGrade() {
