@@ -52,7 +52,7 @@ public class DisciplinaDAOimpl extends HibernateGenericDAO<Disciplina, Long> imp
 	public ArrayList<Disciplina> buscarTodosNomesDisciplinaObjeto(String variavel){
 		ArrayList<Disciplina> listaCodigos;
 		try {
-			listaCodigos =  (ArrayList<Disciplina>) em.createQuery("Select nome FROM Disciplina WHERE nome like :codigo", Disciplina.class)
+			listaCodigos =  (ArrayList<Disciplina>) em.createQuery("FROM Disciplina WHERE nome like :codigo", Disciplina.class)
 					.setParameter("codigo", "%" + variavel + "%")
 					.getResultList();
 		}  catch(NoResultException e){
