@@ -46,7 +46,7 @@ public class Class implements Comparable<Class> {
 		String o = id + "(" + workload + ")";
 		if (!prerequisite.isEmpty()) {
 			o += " -> [pre  ";
-			for (Class _class : prerequisite) o += _class +",";
+			for (Class _class : prerequisite) o += _class.getId() +",";
 			o = o.substring(0,o.length()-1) + "]";
 		}
 		return o;
