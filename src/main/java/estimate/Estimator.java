@@ -145,8 +145,6 @@ public class Estimator {
 					qtdPrereqEnrolled++;
 			}
 			
-			System.out.println(prerequisites);
-			
 			if(qtdPrereqCompleted == prerequisites.size()) retorno = 4;
 			else if (qtdPrereqCompleted + qtdPrereqEnrolled == prerequisites.size())	retorno = 5;
 	
