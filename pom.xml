@@ -12,6 +12,30 @@
 
 	<dependencies>
 	
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.2.3.Final</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- JPA Hibernate EntityManager -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>4.2.3.Final</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- Driver MySQL/JDBC -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.25</version>
+			<scope>compile</scope>
+		</dependency>
+		
 		<!-- Weld -->
 		<dependency>
 			<groupId>org.jboss.weld.servlet</groupId>
