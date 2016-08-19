@@ -49,7 +49,6 @@ public class JsfExceptionHandler extends ExceptionHandlerWrapper {
 					events.remove();
 			}
 		}
-		
 		getWrapped().handle();
 	}
 
