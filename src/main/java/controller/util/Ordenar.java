@@ -23,6 +23,14 @@ public class Ordenar {
 	public class EventoAcePeriodo implements Comparator<EventoAce> {
 		@Override
 		public int compare(EventoAce o1, EventoAce o2) {
+			//Verificacao necessaria para manter as ACEs sem periodo sempre no fim
+			//e evita de gerar um NullPointer
+			if(o1.getPeriodo() == null)
+				return 1;
+			
+			if(o2.getPeriodo() == null)
+				return -1;
+			
 			return o1.getPeriodo().compareTo(o2.getPeriodo());
 		}
 	}
