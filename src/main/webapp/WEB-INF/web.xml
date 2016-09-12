@@ -20,6 +20,10 @@
     <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
   </listener>
   
+    <welcome-file-list>
+  	<welcome-file>Home.xhtml</welcome-file>
+  </welcome-file-list>
+  
   <resource-env-ref>
     <resource-env-ref-name>BeanManager</resource-env-ref-name>
     <resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
