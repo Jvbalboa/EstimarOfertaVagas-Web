@@ -28,6 +28,9 @@ function limpar() {
 }  
 </script>
 
+	<f:metadata>
+     		<f:event type="preRenderView" listener="#{loginController.onPageLoad}"/>
+  	</f:metadata>
 </h:head>
 
 <h:body onload='loadValidate()'>
