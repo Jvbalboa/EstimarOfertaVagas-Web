@@ -136,7 +136,7 @@ public class AlunoSituacaoController implements Serializable {
 					}	
 				}		
 				if (aluno.getMatricula() == null){
-					FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");
+					FacesMessage msg = new FacesMessage("Matr‚Äôcula n‚Äπo cadastrada na base!");
 					FacesContext.getCurrentInstance().addMessage(null, msg);
 					lgMatriculaAluno = true;
 					lgNomeAluno = true;	
@@ -219,7 +219,7 @@ public class AlunoSituacaoController implements Serializable {
 
 		if (st == null){
 
-			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
+			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " n‚Äπo tem nenhum hist‚Äîrico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 
@@ -430,18 +430,18 @@ public class AlunoSituacaoController implements Serializable {
 	public void adicionarAce(){
 
 		if (eventosAce.getPeriodo() == 0) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Período!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Per‚Äôodo!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		eventosAce.setDescricao(eventosAce.getDescricao().trim());
 		if (eventosAce.getDescricao().isEmpty()) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Descrição!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Descri¬ç‚Äπo!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		if (eventosAce.getHoras() == 0) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Carga Horária!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Carga Hor‚Ä°ria!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -455,7 +455,9 @@ public class AlunoSituacaoController implements Serializable {
 
 
 		eventosAceDAO.persistir(eventosAce);
+		aluno.getListaEventosAce().add(eventosAce);
 		listaEventosAce.add(eventosAce);
+		
 		Ordenar ordenar = new Ordenar();
 		ordenar.EventoAceOrdenarPeriodo(listaEventosAce);
 		horasAceConcluidas = (int) (horasAceConcluidas + eventosAce.getHoras());
@@ -476,6 +478,7 @@ public class AlunoSituacaoController implements Serializable {
 			percentualAce = (horasAceConcluidas* 100 / aluno.getGrade().getHorasAce()) ;
 		}		
 		listaEventosAce.remove(eventoAceSelecionado);
+		aluno.getListaEventosAce().remove(eventoAceSelecionado);
 	}
 
 
