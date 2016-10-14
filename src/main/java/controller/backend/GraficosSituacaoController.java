@@ -283,7 +283,7 @@ public class GraficosSituacaoController implements Serializable {
 		}
 
 
-		listaEventosAce = aluno.getListaEventosAce();
+		listaEventosAce = estruturaArvore.getEventosAceDAO().buscarPorMatricula(aluno.getMatricula());
 		if (listaEventosAce != null){
 			for (EventoAce evento :listaEventosAce){
 				horasAceConcluidas = (int) (horasAceConcluidas + evento.getHoras());

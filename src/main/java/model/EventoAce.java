@@ -19,6 +19,7 @@ public class EventoAce {
 	private Long id;
 	private Long horas;
 	private Aluno aluno;
+	private String matricula;
 	private String descricao;
 	private Integer periodo;
 	private Boolean excluir;
@@ -78,5 +79,14 @@ public class EventoAce {
 
 	public void setExcluir(Boolean excluir) {
 		this.excluir = excluir;
-	}	
+	}
+
+	@Column(name="MATRICULA", nullable=false)
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
 }

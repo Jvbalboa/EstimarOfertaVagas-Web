@@ -136,7 +136,7 @@ public class AlunoSituacaoController implements Serializable {
 					}	
 				}		
 				if (aluno.getMatricula() == null){
-					FacesMessage msg = new FacesMessage("Matr’cula n‹o cadastrada na base!");
+					FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");
 					FacesContext.getCurrentInstance().addMessage(null, msg);
 					lgMatriculaAluno = true;
 					lgNomeAluno = true;	
@@ -196,7 +196,7 @@ public class AlunoSituacaoController implements Serializable {
 		lgAce = false;
 		lgNomeAluno = true;	
 		lgMatriculaAluno = true;
-		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),true);
+		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),false);
 
 		/*if (importador.getResetarStance() == true){
 
@@ -219,7 +219,7 @@ public class AlunoSituacaoController implements Serializable {
 
 		if (st == null){
 
-			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " n‹o tem nenhum hist—rico de matricula cadastrado!");
+			FacesMessage msg = new FacesMessage("O aluno " + aluno.getMatricula() + " não possui nenhum histórico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 
@@ -227,8 +227,8 @@ public class AlunoSituacaoController implements Serializable {
 		
 		//listaEventosAce = new ArrayList<EventoAce>();
 
-		listaEventosAce = new ArrayList<EventoAce>(aluno.getListaEventosAce());		
-		if (listaEventosAce != null){
+		listaEventosAce = new ArrayList<EventoAce>(eventosAceDAO.buscarPorMatricula(aluno.getMatricula()));//new ArrayList<EventoAce>(aluno.getListaEventosAce());		
+		/*if (listaEventosAce != null){
 			for (EventoAce evento :listaEventosAce){
 				horasAceConcluidas = (int) (horasAceConcluidas + evento.getHoras());
 			}
@@ -236,11 +236,13 @@ public class AlunoSituacaoController implements Serializable {
 		else {
 			listaEventosAce = new ArrayList<EventoAce>();
 		}
+		*/
+		
 		
 		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
 		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
 		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
-		
+		horasAceConcluidas = estruturaArvore.getEventosAceDAO().recuperarHorasConcluidasPorMatricula(aluno.getMatricula());
 		gerarDadosAluno(st,curriculum);
 		this.preencheSobraHoras();
 		
@@ -430,18 +432,18 @@ public class AlunoSituacaoController implements Serializable {
 	public void adicionarAce(){
 
 		if (eventosAce.getPeriodo() == 0) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Per’odo!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Período!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		eventosAce.setDescricao(eventosAce.getDescricao().trim());
 		if (eventosAce.getDescricao().isEmpty()) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Descri‹o!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Descrição!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		if (eventosAce.getHoras() == 0) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Carga Hor‡ria!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Carga Horária!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -452,10 +454,10 @@ public class AlunoSituacaoController implements Serializable {
 
 		eventosAce.setExcluir(true);
 
-
+		eventosAce.setMatricula(aluno.getMatricula());
 
 		eventosAceDAO.persistir(eventosAce);
-		aluno.getListaEventosAce().add(eventosAce);
+		//aluno.getListaEventosAce().add(eventosAce);
 		listaEventosAce.add(eventosAce);
 		
 		Ordenar ordenar = new Ordenar();
@@ -478,7 +480,7 @@ public class AlunoSituacaoController implements Serializable {
 			percentualAce = (horasAceConcluidas* 100 / aluno.getGrade().getHorasAce()) ;
 		}		
 		listaEventosAce.remove(eventoAceSelecionado);
-		aluno.getListaEventosAce().remove(eventoAceSelecionado);
+		//aluno.getListaEventosAce().remove(eventoAceSelecionado);
 	}
 
 

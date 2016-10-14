@@ -68,7 +68,6 @@ public class GraficosPanoramicoController implements Serializable {
 	private boolean lgOpcionais = true;
 	private boolean lgAce = true;
 	private LineChartModel  lineChartModel;
-	private List<EventoAce> listaEventosAce = new ArrayList<EventoAce>();
 	private List<GrupoElementoGrafico> listaGrupoElementoGrafico = new ArrayList<GrupoElementoGrafico>();
 	private List<String> listaGrades = new ArrayList<String>();
 	private String cores = "";
@@ -119,7 +118,6 @@ public class GraficosPanoramicoController implements Serializable {
 	public void limpaAluno(){		
 		lgNomeAluno  = false;
 		lgMatriculaAluno = false;
-		listaEventosAce = new ArrayList<EventoAce>();
 		alunoSelecionado = new Aluno();
 	}
 
@@ -187,13 +185,15 @@ public class GraficosPanoramicoController implements Serializable {
 				horasOpcionaisConcluidas = 0;
 				horasEletivasConcluidas = 0;
 
-				listaEventosAce = aluno.getListaEventosAce();
+				/*listaEventosAce = estruturaArvore.getEventosAceDAO().buscarPorMatricula(aluno.getMatricula());//aluno.getListaEventosAce();
 
 				if (listaEventosAce != null){
 					for (EventoAce evento :listaEventosAce){
 						horasAceConcluidas = (int) (horasAceConcluidas + evento.getHoras());
 					}
-				}
+				}*/
+				
+				horasAceConcluidas = estruturaArvore.getEventosAceDAO().recuperarHorasConcluidasPorMatricula(aluno.getMatricula());
 
 				/**************************** DADOS ALUNO *******************/
 				StudentsHistory sh = importador.getSh();
@@ -554,14 +554,6 @@ public class GraficosPanoramicoController implements Serializable {
 
 	public void setLineChartModel(LineChartModel lineChartModel) {
 		this.lineChartModel = lineChartModel;
-	}
-
-	public List<EventoAce> getListaEventosAce() {
-		return listaEventosAce;
-	}
-
-	public void setListaEventosAce(List<EventoAce> listaEventosAce) {
-		this.listaEventosAce = listaEventosAce;
 	}
 
 	public UsuarioController getUsuarioController() {

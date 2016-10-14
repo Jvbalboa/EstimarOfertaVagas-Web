@@ -3,7 +3,9 @@
 package dao;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.NoResultException;
 
@@ -25,4 +27,24 @@ public class EventoAceDAOImpl extends HibernateGenericDAO<EventoAce, Long> imple
 		}
 		return eventoAces;
 	}
+	
+	public List<EventoAce> buscarPorMatricula(String matricula)
+	{
+		return em.createQuery("FROM EventoAce WHERE matricula = :matricula", EventoAce.class)
+				.setParameter("matricula", matricula)
+				.getResultList();
+	}
+
+	@Override
+	public int recuperarHorasConcluidasPorMatricula(String matricula) {
+		BigDecimal result = ((BigDecimal)em.createNativeQuery("SELECT SUM( HORAS ) AS horas_totais FROM `EventoAce` WHERE MATRICULA = :matricula")
+				.setParameter("matricula", matricula)
+				.getSingleResult());
+		
+		if(result != null)
+			return result.intValue();
+		else
+			return 0;
+	}
+
 }
