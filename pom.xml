@@ -106,18 +106,40 @@
 		</dependency>
 
 		<!-- Spring Security -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
 			<version>4.1.3.RELEASE</version>
 		</dependency>
 		
-		<!-- Spring Framework -->
 		<dependency>
-        	<groupId>org.springframework</groupId>
-        	<artifactId>spring-context</artifactId>
-        	<version>4.3.3.RELEASE</version>
-    	</dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>4.1.3.RELEASE</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>4.1.3.RELEASE</version>
+		</dependency>
+		 -->
+		 
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>3.1.4.RELEASE</version>
+		</dependency> 
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>3.1.4.RELEASE</version>
+		</dependency> 
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>3.1.4.RELEASE</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -133,6 +155,15 @@
     			<name>SouzaJBR MVN Repo</name>
     			<url>http://github.com/SouzaJBR/mvn-repo/raw/master/</url>
 		</repository>
+		
+		<repository>
+        	<id>spring-milestones</id>
+        	<name>Spring Milestones</name>
+        	<url>https://repo.spring.io/libs-milestone</url>
+        	<snapshots>
+            	<enabled>false</enabled>
+       		</snapshots>
+    	</repository>
 	</repositories>
 
 	<build>
