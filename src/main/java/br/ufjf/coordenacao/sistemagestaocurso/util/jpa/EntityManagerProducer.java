@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.util.jpa;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
@@ -12,12 +13,11 @@ public class EntityManagerProducer {
 
 	private EntityManagerFactory factory;
 	
-	public EntityManagerProducer()
-	{
+	public EntityManagerProducer() {
 		factory = Persistence.createEntityManagerFactory("sgcPU");
 	}
 	
-	@Produces
+	@Produces @RequestScoped
 	public EntityManager createEntityManager()
 	{
 		return factory.createEntityManager();

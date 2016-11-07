@@ -9,17 +9,19 @@ import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
-@Interceptor
-@Transactional
+import org.apache.log4j.Logger;
+
+@Transactional @Interceptor
 public class TransactionInterceptor implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private Logger logger = Logger.getLogger(TransactionInterceptor.class);
+	
 	private @Inject EntityManager manager;
 	
 	@AroundInvoke
 	public Object invoke(InvocationContext context) throws Exception {
-		System.out.println("Interceptado...");
 		EntityTransaction trx = manager.getTransaction();
 		boolean criador = false;
 
@@ -27,11 +29,14 @@ public class TransactionInterceptor implements Serializable {
 			if (!trx.isActive()) {
 				// truque para fazer rollback no que já passou
 				// (senão, um futuro commit, confirmaria até mesmo operações sem transação)
+				logger.info("Iniciado transacao dummy");
 				trx.begin();
+				logger.info("Rollback na transacao dummy");
 				trx.rollback();
-				
+				logger.info("Dummy OK. Iniciando transcacao");
 				// agora sim inicia a transação
 				trx.begin();
+				logger.info("Transação iniciada. Retornando a execucao");
 				
 				criador = true;
 			}
@@ -46,6 +51,7 @@ public class TransactionInterceptor implements Serializable {
 		} finally {
 			if (trx != null && trx.isActive() && criador) {
 				trx.commit();
+				logger.info("Transação fechada");
 			}
 		}
 	}
