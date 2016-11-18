@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Disciplina;
 
@@ -39,8 +40,12 @@ public class DisciplinaRepository implements Serializable {
 	}
 
 	public Disciplina buscarPorCodigoDisciplina(String variavel) {
-		return manager.createQuery("FROM Disciplina WHERE codigo = :codigo", Disciplina.class)
-				.setParameter("codigo", variavel).getSingleResult();
+		try {
+			return manager.createQuery("FROM Disciplina WHERE codigo = :codigo", Disciplina.class)
+					.setParameter("codigo", variavel).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public List<String> buscarTodosNomesDisciplina(String variavel) {
@@ -54,7 +59,11 @@ public class DisciplinaRepository implements Serializable {
 	}
 
 	public Disciplina buscarPorNomeDisciplina(String variavel) {
-		return manager.createQuery("FROM Disciplina WHERE nome = :codigo", Disciplina.class)
-				.setParameter("codigo", variavel).getSingleResult();
+		try {
+			return manager.createQuery("FROM Disciplina WHERE nome = :codigo", Disciplina.class)
+					.setParameter("codigo", variavel).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 }

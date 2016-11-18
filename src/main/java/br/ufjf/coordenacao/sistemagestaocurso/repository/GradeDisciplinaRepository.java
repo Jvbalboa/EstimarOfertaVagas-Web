@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 public class GradeDisciplinaRepository implements Serializable {
 
@@ -30,56 +31,64 @@ public class GradeDisciplinaRepository implements Serializable {
 	public List<GradeDisciplina> listarTodos() {
 		return manager.createQuery("FROM GradeDisciplina", GradeDisciplina.class).getResultList();
 	}
-	
-	public List<GradeDisciplina> buscarTodasGradeDisciplinaPorGrade(long codigo){
-		return manager.createQuery("FROM GradeDisciplina WHERE id_grade = :codigo order by periodo", GradeDisciplina.class)
-					.setParameter("codigo",  codigo )
-					.getResultList();
+
+	public List<GradeDisciplina> buscarTodasGradeDisciplinaPorGrade(long codigo) {
+		return manager
+				.createQuery("FROM GradeDisciplina WHERE id_grade = :codigo order by periodo", GradeDisciplina.class)
+				.setParameter("codigo", codigo).getResultList();
 	}
 
-	public List<GradeDisciplina> buscarTodasGradeDisciplinaPorGradeId(long idGrade){
-		return manager.createQuery("FROM GradeDisciplina WHERE id_grade = :idGrade order by periodo", GradeDisciplina.class)
-					.setParameter("idGrade",  idGrade )
-					.getResultList();
+	public List<GradeDisciplina> buscarTodasGradeDisciplinaPorGradeId(long idGrade) {
+		return manager
+				.createQuery("FROM GradeDisciplina WHERE id_grade = :idGrade order by periodo", GradeDisciplina.class)
+				.setParameter("idGrade", idGrade).getResultList();
 	}
 
-	public GradeDisciplina buscarPorPK(String tipo,Long periodo,Long idGrade,Long idDisciplina) {
-		return manager.createQuery("FROM GradeDisciplina WHERE tipo = :tipo and periodo = :periodo", GradeDisciplina.class)
-			.setParameter("tipo", tipo)
-			.setParameter("periodo", periodo)			    
-			.getSingleResult();
-		
+	public GradeDisciplina buscarPorPK(String tipo, Long periodo, Long idGrade, Long idDisciplina) {
+		try {
+			return manager
+					.createQuery("FROM GradeDisciplina WHERE tipo = :tipo and periodo = :periodo",
+							GradeDisciplina.class)
+					.setParameter("tipo", tipo).setParameter("periodo", periodo).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+
 	}
 
-	public GradeDisciplina buscarPorDisciplinaGrade(Long idGrade,Long idDisciplina) {
-		return manager.createQuery("FROM GradeDisciplina WHERE id_disciplina = :idDisciplina and id_grade = :idGrade", GradeDisciplina.class)
-			.setParameter("idGrade", idGrade)
-			.setParameter("idDisciplina", idDisciplina)	    
-			.getSingleResult();
-		
+	public GradeDisciplina buscarPorDisciplinaGrade(Long idGrade, Long idDisciplina) {
+		try {
+			return manager
+					.createQuery("FROM GradeDisciplina WHERE id_disciplina = :idDisciplina and id_grade = :idGrade",
+							GradeDisciplina.class)
+					.setParameter("idGrade", idGrade).setParameter("idDisciplina", idDisciplina).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
-	
-	public GradeDisciplina buscarPorDisciplinaGradeIra(Long idGrade,Long idDisciplina) {
-		return manager.createQuery("FROM GradeDisciplina WHERE id_disciplina = :idDisciplina and id_grade = :idGrade and excluir_ira = true", GradeDisciplina.class)
-			.setParameter("idGrade", idGrade)
-			.setParameter("idDisciplina", idDisciplina)
-			.getSingleResult();
+
+	public GradeDisciplina buscarPorDisciplinaGradeIra(Long idGrade, Long idDisciplina) {
+		try {
+			return manager
+					.createQuery(
+							"FROM GradeDisciplina WHERE id_disciplina = :idDisciplina and id_grade = :idGrade and excluir_ira = true",
+							GradeDisciplina.class)
+					.setParameter("idGrade", idGrade).setParameter("idDisciplina", idDisciplina).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<GradeDisciplina> buscarPorTipoGrade(Long idGrade,String tipo){
+	public List<GradeDisciplina> buscarPorTipoGrade(Long idGrade, String tipo) {
 		return manager.createQuery("FROM GradeDisciplina WHERE id_grade = :idGrade and tipo_disciplina = :tipo")
-			.setParameter("idGrade", idGrade)
-			.setParameter("tipo", tipo)	    
-			.getResultList();
-		
+				.setParameter("idGrade", idGrade).setParameter("tipo", tipo).getResultList();
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<GradeDisciplina> buscarPorIra(Long idGrade,boolean ira){
+	public List<GradeDisciplina> buscarPorIra(Long idGrade, boolean ira) {
 		return manager.createQuery("FROM GradeDisciplina WHERE id_grade = :idGrade and excluir_ira = :ira")
-			.setParameter("idGrade", idGrade)
-			.setParameter("ira", ira)    
-			.getResultList();
+				.setParameter("idGrade", idGrade).setParameter("ira", ira).getResultList();
 	}
 }

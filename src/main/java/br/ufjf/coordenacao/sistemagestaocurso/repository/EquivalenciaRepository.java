@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 public class EquivalenciaRepository implements Serializable {
 
@@ -37,13 +38,17 @@ public class EquivalenciaRepository implements Serializable {
 	}
 
 	public Equivalencia buscarPorEquivalencia(long idDisciplinaEsquerda, long idDisciplinaDireita, long idGrade) {
-		return manager
-				.createQuery(
-						"FROM Equivalencia WHERE id_disciplina = :iddisciplinaesquerda and id_disciplina_grade = :iddisciplinadireita and id_grade = :idgrade",
-						Equivalencia.class)
-				.setParameter("iddisciplinaesquerda", idDisciplinaEsquerda)
-				.setParameter("iddisciplinadireita", idDisciplinaDireita).setParameter("idgrade", idGrade)
-				.getSingleResult();
+		try {
+			return manager
+					.createQuery(
+							"FROM Equivalencia WHERE id_disciplina = :iddisciplinaesquerda and id_disciplina_grade = :iddisciplinadireita and id_grade = :idgrade",
+							Equivalencia.class)
+					.setParameter("iddisciplinaesquerda", idDisciplinaEsquerda)
+					.setParameter("iddisciplinadireita", idDisciplinaDireita).setParameter("idgrade", idGrade)
+					.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 }

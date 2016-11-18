@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 public class PessoaRepository implements Serializable {
 
@@ -32,14 +33,22 @@ public class PessoaRepository implements Serializable {
 	}
 
 	public Pessoa buscarPorNomePessoa(String variavel) {
-		return manager.createQuery("FROM Pessoa WHERE nome = :codigo", Pessoa.class).setParameter("codigo", variavel)
-				.getSingleResult();
+		try {
+			return manager.createQuery("FROM Pessoa WHERE nome = :codigo", Pessoa.class)
+					.setParameter("codigo", variavel).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 
 	}
 
 	public Pessoa buscarPorSiapePessoa(String variavel) {
-		return manager.createQuery("FROM Pessoa WHERE siape = :codigo", Pessoa.class).setParameter("codigo", variavel)
-				.getSingleResult();
+		try {
+			return manager.createQuery("FROM Pessoa WHERE siape = :codigo", Pessoa.class)
+					.setParameter("codigo", variavel).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 
 	}
 

@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 public class GradeRepository implements Serializable {
 
@@ -48,9 +49,12 @@ public class GradeRepository implements Serializable {
 	}
 
 	public Grade buscarPorCodigoGrade(String variavel) {
-		return manager.createQuery("FROM model.Grade WHERE id = :codigo", Grade.class).setParameter("codigo", variavel)
-				.getSingleResult();
-
+		try {
+			return manager.createQuery("FROM Grade WHERE codigo = :codigo", Grade.class)
+					.setParameter("codigo", variavel).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 }
