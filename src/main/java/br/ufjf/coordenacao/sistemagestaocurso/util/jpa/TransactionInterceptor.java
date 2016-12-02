@@ -10,6 +10,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 @Transactional @Interceptor
 public class TransactionInterceptor implements Serializable {
@@ -22,10 +24,13 @@ public class TransactionInterceptor implements Serializable {
 	
 	@AroundInvoke
 	public Object invoke(InvocationContext context) throws Exception {
-		EntityTransaction trx = manager.getTransaction();
-		boolean criador = false;
 
+		boolean criador = false;
+		//Session session = (Session) manager;
+		EntityTransaction trx = manager.getTransaction();
 		try {
+			//Session session = (Session) manager;
+
 			if (!trx.isActive()) {
 				// truque para fazer rollback no que já passou
 				// (senão, um futuro commit, confirmaria até mesmo operações sem transação)
@@ -45,6 +50,7 @@ public class TransactionInterceptor implements Serializable {
 		} catch (Exception e) {
 			if (trx != null && criador) {
 				trx.rollback();
+				logger.error("Falha. Realizado rollback da transação");
 			}
 
 			throw e;

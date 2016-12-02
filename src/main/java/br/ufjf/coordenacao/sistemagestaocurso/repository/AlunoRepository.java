@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,7 +9,9 @@ import javax.persistence.NoResultException;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 
-public class AlunoRepository {
+public class AlunoRepository implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Inject
 	private EntityManager manager;

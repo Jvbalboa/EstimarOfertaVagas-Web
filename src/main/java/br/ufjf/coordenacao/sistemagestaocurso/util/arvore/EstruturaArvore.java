@@ -1,12 +1,15 @@
 package br.ufjf.coordenacao.sistemagestaocurso.util.arvore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 
 
-public class EstruturaArvore {
+public class EstruturaArvore implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	private static EstruturaArvore instancia;
 	

@@ -69,7 +69,7 @@ public class Curso {
 			this.grupoAlunos = grupoAlunos;
 		}
 
-		@OneToMany(mappedBy = "curso", targetEntity = Grade.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+		@OneToMany(mappedBy = "curso", targetEntity = Grade.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 		public List<Grade> getGrupoGrades() {
 			return grupoGrades;
 		}

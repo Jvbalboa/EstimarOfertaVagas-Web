@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.util.arvore;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -7,9 +8,9 @@ import br.ufjf.coordenacao.OfertaVagas.model.*;
 import br.ufjf.coordenacao.OfertaVagas.model.Class;
 import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 
+public class ImportarArvore implements Serializable{
 
-
-public class ImportarArvore {
+	private static final long serialVersionUID = 1L;
 
 	private Grade grade;
 	private EstruturaArvore estruturaArvore;

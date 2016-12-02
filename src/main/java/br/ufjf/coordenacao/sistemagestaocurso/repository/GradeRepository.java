@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
+import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class GradeRepository implements Serializable {
 	}
 
 	public void remover(Grade objeto) {
-		manager.remove(objeto);
+		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
 	}
 
 	public List<Grade> listarTodos() {
@@ -48,10 +49,12 @@ public class GradeRepository implements Serializable {
 				.getResultList();
 	}
 
-	public Grade buscarPorCodigoGrade(String variavel) {
+	public Grade buscarPorCodigoGrade(String grade, Curso curso) {
 		try {
-			return manager.createQuery("FROM Grade WHERE codigo = :codigo", Grade.class)
-					.setParameter("codigo", variavel).getSingleResult();
+			return manager.createQuery("FROM Grade WHERE codigo = :codigo AND id_curso = :curso", Grade.class)
+					.setParameter("codigo", grade)
+					.setParameter("curso", curso.getId())
+					.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
 		}

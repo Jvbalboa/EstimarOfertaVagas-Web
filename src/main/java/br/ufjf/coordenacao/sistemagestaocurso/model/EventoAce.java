@@ -1,5 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,13 +14,14 @@ import javax.persistence.SequenceGenerator;
 
 @Entity
 @SequenceGenerator(name="eventoace_sequencia", sequenceName="eventoace_seq", allocationSize=1)  
-public class EventoAce {
+public class EventoAce implements Serializable {
 	
 	// ==========================VARIÃ�VEIS=================================================================================================================//
 
 	private Long id;
 	private Long horas;
 	private Aluno aluno;
+	private String matricula;
 	private String descricao;
 	private Integer periodo;
 	private Boolean excluir;
@@ -78,5 +81,14 @@ public class EventoAce {
 
 	public void setExcluir(Boolean excluir) {
 		this.excluir = excluir;
-	}	
+	}
+
+	@Column(name="MATRICULA", nullable=false)
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
 }
