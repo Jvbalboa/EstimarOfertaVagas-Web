@@ -34,7 +34,7 @@ public class AutenticacaoController implements Serializable {
 		estruturaArvore = EstruturaArvore.getInstance();
 
 		//PessoaRepository pessoaDAO = estruturaArvore.getPessoaDAO();
-		/*List<String> perfis = new ArrayList<String>();		
+		List<String> perfis = new ArrayList<String>();		
 		FileReader file = new FileReader("/opt/application.token");
 		BufferedReader bf = new BufferedReader(file);		
 		String token = bf.readLine();
