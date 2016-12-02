@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui">
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<p:growl autoUpdate="true" />
+		<h:form id="form" class="formularioCentro" style="padding-left: 45px;">
+			<div class="titulo">
+				<legend>Cadastro de Curso</legend>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row ">
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Código:" />
+						<p:inputText value="#{cadastroCursoController.curso.codigo}"
+							id="codigoCurso" />
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Nome:" />
+						<p:inputText value="#{cadastroCursoController.curso.nome}"
+							id="nomeCurso" />
+					</div>
+					<div class="ui-grid-col-2">
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Incluir" id="incluirCurso"
+							update="cursos codigoCurso nomeCurso"
+							actionListener="#{cadastroCursoController.incluirCurso}">
+						</p:commandButton>
+						<p:commandButton class="btn btn-info btn-sm botao" value="Limpar"
+							id="limparCurso"
+							actionListener="#{cadastroCursoController.limpaCurso}"
+							update="cursos codigoCurso nomeCurso">
+						</p:commandButton>
+					</div>
+				</div>
+			</div>
+			<div class="gridTamanho espacoLinha">
+				<p:dataTable id="cursos" var="curso"
+					value="#{cadastroCursoController.listaCurso}" editable="true"
+					style="margin-bottom:20px"
+					filteredValue="#{cadastroCursoController.listaCursoFiltradas}"
+					paginator="true" rows="20"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorAlwaysVisible="false">
+					<f:facet name="header">
+			         Cursos
+			         
+			          <h:commandLink>
+							<p:graphicImage name="/img/excel.png" style="float: right;" />
+							<p:dataExporter type="xls" target="cursos"
+								fileName="cadastroCurso" />
+						</h:commandLink>
+					</f:facet>
+					<p:ajax event="rowEdit"
+						listener="#{cadastroCursoController.onRowEdit}" />
+					<p:ajax event="rowEditCancel"
+						listener="#{cadastroCursoController.onRowCancel}" />
+					<p:column headerText="Código" filterBy="#{curso.codigo}"
+						filterMatchMode="contains" style="width: 20%;"
+						sortBy="#{curso.codigo}">
+						<h:outputText value="#{curso.codigo}" />
+					</p:column>
+					<p:column headerText="Nome" filterBy="#{curso.nome}"
+						style="width: 80%;" filterMatchMode="contains"
+						sortBy="#{curso.nome}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{curso.nome}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{curso.nome}" style="width:100%"
+									label="Year">
+									<f:validateLength minimum="1" />
+								</p:inputText>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					<p:column style="width:32px" exportable="false">
+						<p:rowEditor />
+					</p:column>
+				</p:dataTable>
+			</div>
+		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

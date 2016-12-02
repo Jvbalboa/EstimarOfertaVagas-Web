@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<h:form id="form" style="padding-left: 45px;" class="formularioCentro">
+			<div class="titulo">
+				<legend>Situação do Aluno</legend>
+			</div>
+			<p:growl autoUpdate="true" />
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Matrícula:" />
+						<p:autoComplete id="matriculaAluno"
+							value="#{graficosSituacaoController.aluno.matricula}"
+							completeMethod="#{graficosSituacaoController.alunoMatricula}"
+							disabled="#{graficosSituacaoController.lgMatriculaAluno}"
+							forceSelection="true">
+							<p:ajax event="itemSelect"
+								listener="#{graficosSituacaoController.onItemSelectMatriculaAluno()}"
+								update="@form" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-4"
+						style="width: 30.333%; margin-right: 3%;">
+						<p:outputLabel value="Nome:" />
+						<p:autoComplete id="nomeAluno"
+							value="#{graficosSituacaoController.aluno}"
+							completeMethod="#{graficosSituacaoController.alunoNome}"
+							disabled="#{graficosSituacaoController.lgNomeAluno}"
+							forceSelection="true" size="47" converter="entityConverter"
+							var="cl" itemValue="#{cl}" itemLabel="#{cl.nome}">
+							<p:column style="width: 78px;    color: #DCDCDC;">
+								<h:outputText value="#{cl.matricula}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{cl.nome}" />
+							</p:column>
+							<p:ajax event="itemSelect"
+								listener="#{graficosSituacaoController.onItemSelectMatriculaAluno()}"
+								update="@form" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-1" style="width: 14.33333%;">
+						<p:commandButton class="btn btn-info btn-sm botao" value="Limpar"
+							style="    width: 100px;"
+							rendered="#{graficosSituacaoController.lgAluno}"
+							actionListener="#{graficosSituacaoController.limpaAluno()}"
+							update="@form" />
+					</div>
+				</div>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Grade:" />
+						<p:inputText disabled="true" id="gradeAluno"
+							value="#{graficosSituacaoController.aluno.grade.codigo}" />
+					</div>
+					<div class="ui-grid-col-4"
+						style="width: 30.333%; margin-right: 3%;">
+						<p:outputLabel value="Curso:" />
+						<p:inputText size="47" disabled="true" id="cursoAluno"
+							value="#{graficosSituacaoController.aluno.curso.nome}" />
+					</div>
+					<div class="ui-grid-col-1">
+						<p:outputLabel value="Código Curso:"
+							style="font-size: 13px;margin-top: 3px;" />
+						<p:inputText size="7" disabled="true" id="codigoCurso"
+							value="#{graficosSituacaoController.aluno.curso.codigo}" />
+					</div>
+					<div class="ui-grid-col-1">
+						<p:outputLabel value="Ingresso:" />
+						<p:inputText size="7" disabled="true" id="ingressoAluno"
+							value="#{graficosSituacaoController.aluno.periodoIngresso}" />
+					</div>
+					<div class="ui-grid-col-1">
+						<p:outputLabel value="Período:" />
+						<p:inputText size="7" disabled="true" id="periodoAtualAluno"
+							value="#{graficosSituacaoController.periodo}" />
+					</div>
+					<div class="ui-grid-col-1">
+						<p:outputLabel value="IRA:" />
+						<p:inputText size="7" disabled="true" id="iraAtualAluno"
+							value="#{graficosSituacaoController.ira}" />
+							
+					</div>
+					<div class="ui-grid-col-1 espacoLinha" style="    padding-top: 16px;    width: 14%;">
+						<p:outputLabel
+							value="*Atenção: o IRA foi calculado pelo sistema e pode diferir do IRA calculado pelo SIGA."
+							style="font-size: 12px; color: red;" />
+					</div>
+				</div>
+			</div>
+			<p:messages autoUpdate="true" />
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<div class="ui-grid-col-6">
+					
+						<p:chart type="bar"
+							model="#{graficosSituacaoController.animatedModel2}"
+							style="width:620px;height:400px;">
+							<p:ajax event="itemSelect"
+								listener="#{graficosSituacaoController.itemSelect}"
+								update="gridObrigatorias" />
+						</p:chart>
+						<pe:gChart value="#{graficosSituacaoController.chartModelPie}"
+							id="graficoPizza"
+							title="Gráfico - Quantidade de Horas por Atividades"
+							height="450" width="650">
+							<p:ajax listener="#{graficosSituacaoController.onSelectPizza}"
+								update="gridObrigatorias" />
+						</pe:gChart>
+					</div>
+					<div class="ui-grid-col-6" style="padding-right: 40px;">
+
+						<p:dataTable var="disciplinas" id="gridObrigatorias"
+							emptyMessage="Nenhuma Atividade Selecionada"
+							value="#{graficosSituacaoController.listaDisciplinaSelecionadas}"
+							filteredValue="#{graficosSituacaoController.listaDisciplinaEletivasSelecionadas}"
+							paginator="true" rows="20"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+							paginatorAlwaysVisible="false">
+							<f:facet name="header">
+								<div style="padding-left: 0px;        margin-left: -90px;">Atividades Selecionadas |
+									#{graficosSituacaoController.selecao} |
+									#{graficosSituacaoController.status}</div>
+								<h:commandLink>
+									<p:graphicImage name="/img/excel.png"
+										style="float: right;    margin-top: -20px;" />
+									<p:dataExporter type="xls" target="gridObrigatorias"
+										fileName="#{graficosSituacaoController.aluno.matricula}_situacao" />
+								</h:commandLink>
+							</f:facet>
+							<p:column headerText="Período"
+								style="width: 12%;text-align: center;    font-size: 12px;"
+								filterBy="#{disciplinas.periodo}" filterMatchMode="contains"
+								sortBy="#{disciplinas.periodo}">
+								<h:outputText value="#{disciplinas.periodo}" />
+							</p:column>
+							<p:column headerText="Código Disciplina"
+								style="width: 12%;font-size: 12px;"
+								filterBy="#{disciplinas.codigo}" filterMatchMode="contains"
+								sortBy="#{disciplinas.codigo}">
+								<h:outputText value="#{disciplinas.codigo}" />
+							</p:column>
+							<p:column headerText="Nome Disciplina"
+								style="width: 50%;font-size: 12px;"
+								filterBy="#{disciplinas.nome}" filterMatchMode="contains"
+								sortBy="#{disciplinas.nome}">
+								<h:outputText value="#{disciplinas.nome}" />
+							</p:column>
+							<p:column headerText="Situação"
+								style="width: 14%;text-align: center;font-size: 12px;"
+								filterBy="#{disciplinas.situacao}" filterMatchMode="contains"
+								sortBy="#{disciplinas.situacao}">
+								<h:outputText value="#{disciplinas.situacao}" />
+							</p:column>
+							<p:column headerText="Carga Horária"
+								style="width: 14%;text-align: center;font-size: 12px;"
+								filterBy="#{disciplinas.cargaHoraria}"
+								filterMatchMode="contains" sortBy="#{disciplinas.cargaHoraria}">
+								<h:outputText value="#{disciplinas.cargaHoraria}" />
+							</p:column>
+						</p:dataTable>
+					</div>
+				</div>
+			</div>
+		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>

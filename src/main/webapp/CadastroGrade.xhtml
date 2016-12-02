@@ -1,0 +1,782 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:opt="http://primefaces.prime.com.tr/optimus"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<ui:composition template="#{perfilController.perfil}">
+	<ui:define name="corpo">
+		<p:growl autoUpdate="true" />
+		<h:form class="formularioCentro" id="principalForm" method="post"
+			role="form" style="padding-left: 45px;">
+			<div class="titulo">
+				<legend>Cadastro de Grades</legend>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row ">
+					<div class="ui-grid-col-5 " style="width: 39.66666%;">
+						<p:outputLabel value="Nome Curso: " />
+						<p:inputText
+							value="#{cadastroGradeController.curso.codigo} - #{cadastroGradeController.curso.nome}"
+							disabled="true" size="47" />
+						<p:commandLink id="xls" ajax="false">
+							<p:graphicImage value="/resources/img/excel.png"
+								style="    padding-left: 10px;
+    							padding-right: 10px;" />
+							<pe:exporter type="xlsx"
+								target="gridObrigatorias,gridEletivas,gridEquivalencias,gridIra"
+								fileName="#{cadastroGradeController.curso.codigo}-#{cadastroGradeController.grade.codigo}"
+								datasetPadding="4" />
+						</p:commandLink>
+						<p:commandButton class="btn btn-success btn-sm botao" value="Clonar grade já existente "
+							actionListener="#{importarGradeController.abrirDialogo}"
+							update="@form" style="vertical-align: baseline;">
+						</p:commandButton>
+					</div>
+				</div>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<div class="ui-grid-col-2 ">
+						<p:outputLabel value="Código Grade:" />
+						<p:autoComplete id="codigoGrade"
+							value="#{cadastroGradeController.grade.codigo}"
+							completeMethod="#{cadastroGradeController.gradeCodigos}"
+							disabled="#{cadastroGradeController.lgCodigoGrade}">
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-4">
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Buscar"
+							actionListener="#{cadastroGradeController.buscarGrade()}"
+							update="@form" ajax="true">
+						</p:commandButton>
+						<p:commandButton class="btn btn-info btn-sm botao" value="Limpar"
+							actionListener="#{cadastroGradeController.limpaGrade()}"
+							update="@form">
+						</p:commandButton>
+						<p:commandButton class="btn btn-danger botao" value="Excluir"
+							style="    transform: scale(0.87);margin-left: -5px;"
+							oncomplete="PF('deletarGrade').show()"
+							update="horasEletivas horasOpcionais horasAoe codigoGrade codigoDisciplina nomeDisciplina cargaHorariaDisciplina tipoDisciplina periodoDisciplina incluirDisciplina 
+							limparDisciplina gridObrigatorias gridEletivas codigoDisciplinaEquivalenciaUm nomeDisciplinaEquivalenciaUm codigoDisciplinaEquivalenciaDois nomeDisciplinaEquivalenciaDois incluirEquivalencia limparEquivalencia gridEquivalencias excluirGrade maxPeriodos"
+							disabled="#{cadastroGradeController.lgExcluirGrade}"
+							id="excluirGrade">
+						</p:commandButton>
+						<p:confirmDialog header="Deletar Grade"
+							message="Tem certeza que deseja deletar a Grade?"
+							widgetVar="deletarGrade" showEffect="fade" hideEffect="fade">
+							<p:commandButton class="btn btn-default-sm" value="Sim"
+								update="gridEquivalencias" onclick="reprovar.hide()"
+								actionListener="#{cadastroGradeController.excluirGrade()}"
+								ajax="true" />
+							<p:commandButton class="btn btn-default-sm" value="Não"
+								update="horasEletivas horasOpcionais horasAoe codigoGrade codigoDisciplina nomeDisciplina cargaHorariaDisciplina tipoDisciplina periodoDisciplina incluirDisciplina 
+								limparDisciplina gridObrigatorias gridEletivas codigoDisciplinaEquivalenciaUm nomeDisciplinaEquivalenciaUm codigoDisciplinaEquivalenciaDois nomeDisciplinaEquivalenciaDois incluirEquivalencia limparEquivalencia gridEquivalencias excluirGrade maxPeriodos"
+								onclick="reprovar.hide();" ajax="true" />
+						</p:confirmDialog>
+					</div>
+				</div>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Horas Eletiva:" />
+						<p:inputText  id="horasEletivas"
+							value="#{cadastroGradeController.grade.horasEletivas}"
+							disabled="#{cadastroGradeController.lgHorasEletivas}">
+							<p:ajax event="blur"
+								listener="#{cadastroGradeController.alterarGrade()}" />
+						</p:inputText>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Horas Opcionais:" />
+						<p:inputText mask="999?" id="horasOpcionais"
+							value="#{cadastroGradeController.grade.horasOpcionais}"
+							disabled="#{cadastroGradeController.lgHorasOpcionais}">
+							<p:ajax event="blur"
+								listener="#{cadastroGradeController.alterarGrade()}" />
+						</p:inputText>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Horas ACE:" />
+						<p:inputText mask="99?9" id="horasAoe"
+							value="#{cadastroGradeController.grade.horasAce}"
+							disabled="#{cadastroGradeController.lgHorasAoe}">
+							<p:ajax event="blur"
+								listener="#{cadastroGradeController.alterarGrade()}" />
+						</p:inputText>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Máximo Períodos:" />
+						<p:inputText mask="9?9" id="maxPeriodos"
+							value="#{cadastroGradeController.grade.numeroMaximoPeriodos}"
+							disabled="#{cadastroGradeController.lgMaxPeriodo}">
+							<p:ajax event="blur"
+								listener="#{cadastroGradeController.alterarGrade()}" />
+						</p:inputText>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Período Início:" />
+						<p:selectOneMenu size="30" style="    width: 200px;"
+							disabled="#{cadastroGradeController.lgMaxPeriodo}"
+							id="periodoInicio"
+							value="#{cadastroGradeController.grade.periodoInicio}">
+							<f:selectItem itemValue="0" itemLabel="SELECIONE O PERÍODO" />
+							<f:selectItem itemValue="1" itemLabel="1" />
+							<f:selectItem itemValue="3" itemLabel="3" />
+							<p:ajax event="change"
+								listener="#{cadastroGradeController.alterarGrade()}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+			</div>
+			<div class="subtitulo espacoLinha">
+				<legend>Cadastro Disciplinas</legend>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<p:commandButton class="btn btn-success btn-sm"
+						onclick="PF('incluirDisciplina').show();"
+						value="Inclusão Rápida Disciplina" style="padding: 0em 0em;">
+					</p:commandButton>
+				</div>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Código:  " />
+						<p:autoComplete id="codigoDisciplina"
+							value="#{cadastroGradeController.disciplina.codigo}"
+							completeMethod="#{cadastroGradeController.disciplinaCodigos}"
+							disabled="#{cadastroGradeController.lgCodigoDisciplina}"
+							forceSelection="true">
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectCodigoDisciplina()}"
+								update="codigoDisciplina nomeDisciplina cargaHorariaDisciplina tipoDisciplina periodoDisciplina incluirDisciplina limparDisciplina" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Nome:" />
+						<p:autoComplete id="nomeDisciplina"
+							value="#{cadastroGradeController.disciplina}"
+							completeMethod="#{cadastroGradeController.disciplinaNomes}"
+							disabled="#{cadastroGradeController.lgNomeDisciplina}"
+							converter="entityConverter" var="cl" itemValue="#{cl}"
+							itemLabel="#{cl.nome}" forceSelection="true">
+							<p:column style="width: 20px;    color: #DCDCDC;font-size: 12px;">
+								<h:outputText value="#{cl.codigo}" />
+							</p:column>
+							<p:column style="width: 300px;font-size: 12px;">
+								<h:outputText value="#{cl.nome}" />
+							</p:column>
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectNomeDisciplina()}"
+								update="codigoDisciplina nomeDisciplina cargaHorariaDisciplina tipoDisciplina periodoDisciplina incluirDisciplina limparDisciplina" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Carga Horária:" />
+						<p:inputMask mask="9?99" id="cargaHorariaDisciplina"
+							value="#{cadastroGradeController.disciplina.cargaHoraria}"
+							disabled="#{cadastroGradeController.lgCargaHorariaDisciplina}" />
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Tipo:" style="    width: 40px;" />
+						<p:selectOneMenu size="30" style="    width: 200px;"
+							disabled="#{cadastroGradeController.lgTipoDisciplina}"
+							id="tipoDisciplina"
+							value="#{cadastroGradeController.gradeDisciplina.tipoDisciplina}">
+							<f:selectItem itemValue="" itemLabel="SELECIONE O TIPO" />
+							<f:selectItem itemValue="Obrigatoria" itemLabel="Obrigatória" />
+							<f:selectItem itemValue="Eletiva" itemLabel="Eletiva" />
+							<p:ajax event="change"
+								listener="#{cadastroGradeController.alteraCampoPeriodo}"
+								update="periodoDisciplina" />
+						</p:selectOneMenu>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Período:" />
+						<p:inputMask mask="9?9" id="periodoDisciplina"
+							value="#{cadastroGradeController.gradeDisciplina.periodo}"
+							disabled="#{cadastroGradeController.lgPeriodoDisciplina}" />
+					</div>
+					<div class="ui-grid-col-2">
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Incluir" id="incluirDisciplina"
+							actionListener="#{cadastroGradeController.incluirGradeDisciplina}"
+							update="gridObrigatorias gridEletivas codigoDisciplina nomeDisciplina cargaHorariaDisciplina tipoDisciplina periodoDisciplina incluirDisciplina limparDisciplina"
+							disabled="#{cadastroGradeController.lgIncluirDisciplina}"></p:commandButton>
+						<p:commandButton class="btn btn-info btn-sm botao" value="Limpar"
+							id="limparDisciplina"
+							actionListener="#{cadastroGradeController.limparDisciplina}"
+							update="codigoDisciplina nomeDisciplina cargaHorariaDisciplina tipoDisciplina periodoDisciplina"
+							disabled="#{cadastroGradeController.lgLimparDisciplina}"></p:commandButton>
+					</div>
+				</div>
+			</div>
+			<div class="gridTamanho espacoLinha">
+				<p:dataTable var="disciplinasObrigatorias"
+					value="#{cadastroGradeController.listaObrigatorias}"
+					id="gridObrigatorias"
+					emptyMessage="Nenhuma Disiplina Obrigatória Cadastrada"
+					filteredValue="#{cadastroGradeController.listaObrigatoriasSelecionada}"
+					paginator="true" rows="20"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorAlwaysVisible="false">
+					<f:facet name="header">
+			           Disciplinas Obrigatórias
+			       </f:facet>
+					<p:column headerText="Código"
+						style="width: 10%;padding: 0px 10px;text-align: center;"
+						filterBy="#{disciplinasObrigatorias.disciplina.codigo}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasObrigatorias.disciplina.codigo}">
+						<h:outputText value="#{disciplinasObrigatorias.disciplina.codigo}" />
+					</p:column>
+					<p:column headerText="Nome" style="padding: 0px 10px;"
+						filterBy="#{disciplinasObrigatorias.disciplina.nome}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasObrigatorias.disciplina.nome}">
+						<h:outputText value="#{disciplinasObrigatorias.disciplina.nome}" />
+					</p:column>
+					<p:column headerText="Período"
+						style="width: 12%;text-align: center;padding: 0px 10px;"
+						filterBy="#{disciplinasObrigatorias.gradeDisciplina.periodo}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasObrigatorias.gradeDisciplina.periodo}">
+						<h:outputText
+							value="#{disciplinasObrigatorias.gradeDisciplina.periodo}" />
+					</p:column>
+					<p:column headerText="Carga Horária"
+						style="width: 12%;text-align: center;padding: 0px 10px;"
+						filterBy="#{disciplinasObrigatorias.disciplina.cargaHoraria}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasObrigatorias.disciplina.cargaHoraria}">
+						<h:outputText
+							value="#{disciplinasObrigatorias.disciplina.cargaHoraria}" />
+					</p:column>
+
+					<p:column headerText="Requisito"
+						style="text-align: center;padding: 0px 10px;"
+						filterBy="#{disciplinasObrigatorias.gradeDisciplina.preRequisitos}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasObrigatorias.gradeDisciplina.preRequisitos}">
+						<h:outputText
+							value="#{disciplinasObrigatorias.gradeDisciplina.preRequisitos}" />
+					</p:column>
+
+
+					<p:column style="width: 3%;text-align: center;padding: 0px 10px;"
+						exportable="false">
+						<p:commandLink styleClass="ui-icon ui-icon-search" ajax="true"
+							onclick="PF('editarPreRequisito').show();"
+							title="Editar Pré-requisito"
+							update=":preRequisitoForm:codigoDisiplinaSelecionada :preRequisitoForm:gridPreRequisitos :preRequisitoForm:nomeDisiplinaSelecionada"
+							action="#{cadastroGradeController.carregaPreRequisitos()}">
+							<f:setPropertyActionListener value="#{disciplinasObrigatorias}"
+								target="#{cadastroGradeController.linhaSelecionada}" />
+						</p:commandLink>
+					</p:column>
+					<p:column style="width: 3%;text-align: center;padding: 0px 10px;"
+						exportable="false">
+						<p:commandLink ajax="true" title="Excluir disciplina"
+							onclick="PF('deletarDisciplina').show()"
+							styleClass="ui-icon ui-icon-cancel">
+							<f:setPropertyActionListener value="#{disciplinasObrigatorias}"
+								target="#{cadastroGradeController.linhaSelecionada}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</div>
+			<div class="gridTamanho espacoLinha">
+				<p:dataTable var="disciplinasEletivas"
+					value="#{cadastroGradeController.listaEletivas}" id="gridEletivas"
+					emptyMessage="Nenhuma Disiplina Eletiva Cadastrada"
+					filteredValue="#{cadastroGradeController.listaEletivasSelecionada}"
+					paginator="true" rows="20"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorAlwaysVisible="false">
+					<f:facet name="header">
+			           Disciplinas Eletivas
+			       </f:facet>
+					<p:column headerText="
+						Código"
+						style="width: 10%;text-align: center; padding: 0px 10px;"
+						filterBy="#{disciplinasEletivas.disciplina.codigo}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasEletivas.disciplina.codigo}">
+						<h:outputText value="#{disciplinasEletivas.disciplina.codigo}" />
+					</p:column>
+					<p:column headerText="Nome" style="padding: 0px 10px;"
+						filterBy="#{disciplinasEletivas.disciplina.nome}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasEletivas.disciplina.nome}">
+						<h:outputText value="#{disciplinasEletivas.disciplina.nome}" />
+					</p:column>
+					<p:column headerText="Carga Horária"
+						style="width: 12%;text-align: center;padding: 0px 10px;"
+						filterBy="#{disciplinasEletivas.disciplina.cargaHoraria}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasEletivas.disciplina.cargaHoraria}">
+						<h:outputText
+							value="#{disciplinasEletivas.disciplina.cargaHoraria}" />
+					</p:column>
+					<p:column headerText="Pré/Co-Requisito"
+						style="text-align: center;padding: 0px 10px;"
+						filterBy="#{disciplinasEletivas.gradeDisciplina.preRequisitos}"
+						filterMatchMode="contains"
+						sortBy="#{disciplinasEletivas.gradeDisciplina.preRequisitos}">
+						<h:outputText
+							value="#{disciplinasEletivas.gradeDisciplina.preRequisitos}" />
+					</p:column>
+					<p:column style="width: 3%;text-align: center;padding: 0px 10px;"
+						exportable="false">
+						<p:commandLink styleClass="ui-icon ui-icon-search" ajax="true"
+							onclick="PF('editarPreRequisito').show();"
+							title="Editar Pré-requisito"
+							update=":preRequisitoForm:codigoDisiplinaSelecionada :preRequisitoForm:gridPreRequisitos :preRequisitoForm:nomeDisiplinaSelecionada"
+							action="#{cadastroGradeController.carregaPreRequisitos()}">
+							<f:setPropertyActionListener value="#{disciplinasEletivas}"
+								target="#{cadastroGradeController.linhaSelecionada}" />
+						</p:commandLink>
+					</p:column>
+					<p:column style="width: 3%;text-align: center;padding: 0px 10px;"
+						exportable="false">
+						<p:commandLink ajax="true" title="Excluir disciplina"
+							onclick="PF('deletarDisciplina').show()"
+							styleClass="ui-icon ui-icon-cancel">
+							<f:setPropertyActionListener value="#{disciplinasEletivas}"
+								target="#{cadastroGradeController.linhaSelecionada}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</div>
+			<p:confirmDialog header="Deletar Disciplina da Grade"
+				message="Tem certeza que deseja deletar a Disciplina da Grade?"
+				widgetVar="deletarDisciplina" showEffect="fade" hideEffect="fade">
+				<p:commandButton class="btn btn-default-sm" value="Sim"
+					update="gridObrigatorias gridEletivas" onclick="reprovar.hide()"
+					actionListener="#{cadastroGradeController.deletarGradeDisciplina()}"
+					ajax="true" />
+				<p:commandButton class="btn btn-default-sm" value="Não"
+					update="gridObrigatorias gridEletivas" onclick="reprovar.hide();"
+					ajax="true" />
+			</p:confirmDialog>
+			<div class="subtitulo espacoLinha">
+				<legend>Cadastro Equivalências Disciplinas</legend>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Código Disciplina Grade:"
+							style="    font-size: 13px;" />
+						<p:autoComplete id="codigoDisciplinaEquivalenciaUm"
+							value="#{cadastroGradeController.disciplinaEquivalenciaUm}"
+							completeMethod="#{cadastroGradeController.disciplinaCodigoEquivalencia}"
+							disabled="#{cadastroGradeController.lgCodigoDisciplinaEquivalenciaUm}"
+							converter="entityConverter" var="cl" itemValue="#{cl}"
+							itemLabel="#{cl.codigo}" forceSelection="true">
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectNomeDisciplinaEquivalenciaUm()}"
+								update="nomeDisciplinaEquivalenciaUm codigoDisciplinaEquivalenciaUm" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Nome Disciplina Grade:"
+							style="    font-size: 13px;" />
+						<p:autoComplete id="nomeDisciplinaEquivalenciaUm"
+							value="#{cadastroGradeController.disciplinaEquivalenciaUm}"
+							completeMethod="#{cadastroGradeController.disciplinaNomesEquivalencia}"
+							disabled="#{cadastroGradeController.lgNomeDisciplinaEquivalenciaUm}"
+							converter="entityConverter" var="cl" itemValue="#{cl}"
+							itemLabel="#{cl.nome}" forceSelection="true">
+							<p:column style="width: 20px;    color: #DCDCDC;font-size: 12px;">
+								<h:outputText value="#{cl.codigo}" />
+							</p:column>
+							<p:column style="width: 300px;font-size: 12px;">
+								<h:outputText value="#{cl.nome}" />
+							</p:column>
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectNomeDisciplinaEquivalenciaUm()}"
+								update="nomeDisciplinaEquivalenciaUm codigoDisciplinaEquivalenciaUm" />
+						</p:autoComplete>
+					</div>
+					<div>
+						<img src="resources/img/setas.jpg"
+							style="padding-top: 27px; padding-right: 6px;" />
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Código Disciplina Equivalente:"
+							style="    font-size: 13px;"></p:outputLabel>
+						<p:autoComplete id="codigoDisciplinaEquivalenciaDois"
+							value="#{cadastroGradeController.disciplinaEquivalenciaDois.codigo}"
+							completeMethod="#{cadastroGradeController.disciplinaCodigos}"
+							disabled="#{cadastroGradeController.lgCodigoDisciplinaEquivalenciaDois}"
+							forceSelection="true">
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectCodigoDisciplinaEquivalenciaDois()}"
+								update="nomeDisciplinaEquivalenciaDois codigoDisciplinaEquivalenciaDois" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Nome Disciplina Equivalente:"
+							style="    font-size: 13px;" />
+						<p:autoComplete id="nomeDisciplinaEquivalenciaDois"
+							value="#{cadastroGradeController.disciplinaEquivalenciaDois}"
+							completeMethod="#{cadastroGradeController.disciplinaNomes}"
+							disabled="#{cadastroGradeController.lgNomeDisciplinaEquivalenciaDois}"
+							converter="entityConverter" var="cl" itemValue="#{cl}"
+							itemLabel="#{cl.nome}" forceSelection="true">
+							<p:column style="width: 20px;    color: #DCDCDC;font-size: 12px;">
+								<h:outputText value="#{cl.codigo}" />
+							</p:column>
+							<p:column style="width: 300px;font-size: 12px;">
+								<h:outputText value="#{cl.nome}" />
+							</p:column>
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectNomeDisciplinaEquivalenciaDois()}"
+								update="nomeDisciplinaEquivalenciaDois codigoDisciplinaEquivalenciaDois" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Incluir"
+							actionListener="#{cadastroGradeController.incluiEquivalencia}"
+							disabled="#{cadastroGradeController.lgIncluirEquivalencia}"
+							update="gridEquivalencias codigoDisciplinaEquivalenciaDois nomeDisciplinaEquivalenciaDois nomeDisciplinaEquivalenciaUm codigoDisciplinaEquivalenciaUm"
+							id="incluirEquivalencia">
+						</p:commandButton>
+						<p:commandButton class="btn btn-info btn-sm botao"
+							id="limparEquivalencia"
+							actionListener="#{cadastroGradeController.limpaEquivalencia}"
+							disabled="#{cadastroGradeController.lgLimparEquivalencia}"
+							update="gridEquivalencias codigoDisciplinaEquivalenciaDois nomeDisciplinaEquivalenciaDois nomeDisciplinaEquivalenciaUm codigoDisciplinaEquivalenciaUm"
+							value="Limpar"></p:commandButton>
+					</div>
+				</div>
+			</div>
+			<div class="gridTamanho espacoLinha">
+				<p:dataTable var="materiasEquivalentes"
+					value="#{cadastroGradeController.listaEquivalencia}"
+					id="gridEquivalencias"
+					emptyMessage="Nenhuma Equivalência Cadastrada"
+					filteredValue="#{cadastroGradeController.listaEletivasSelecionada}"
+					paginator="true" rows="20"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorAlwaysVisible="false">
+					<f:facet name="header">
+			          Equivalência Disciplinas
+			       </f:facet>
+					<p:column headerText="Código" style="width: 15%;padding: 0px 10px;"
+						filterBy="#{materiasEquivalentes.disciplinaGrade.codigo}"
+						filterMatchMode="contains"
+						sortBy="#{materiasEquivalentes.disciplinaGrade.codigo}">
+						<h:outputText
+							value="#{materiasEquivalentes.disciplinaGrade.codigo}" />
+					</p:column>
+					<p:column headerText="Nome" style="width: 30%;padding: 0px 10px;"
+						filterBy="#{materiasEquivalentes.disciplinaGrade.nome}"
+						filterMatchMode="contains"
+						sortBy="#{materiasEquivalentes.disciplinaGrade.nome}">
+						<h:outputText value="#{materiasEquivalentes.disciplinaGrade.nome}" />
+					</p:column>
+					<p:column headerText="Código" style="width: 15%;padding: 0px 10px;"
+						filterBy="#{materiasEquivalentes.disciplinaEquivalente.codigo}"
+						filterMatchMode="contains"
+						sortBy="#{materiasEquivalentes.disciplinaEquivalente.codigo}">
+						<h:outputText
+							value="#{materiasEquivalentes.disciplinaEquivalente.codigo}" />
+					</p:column>
+					<p:column headerText="Nome" style="width: 30%;padding: 0px 10px;"
+						filterBy="#{materiasEquivalentes.disciplinaEquivalente.nome}"
+						filterMatchMode="contains"
+						sortBy="#{materiasEquivalentes.disciplinaEquivalente.nome}">
+						<h:outputText
+							value="#{materiasEquivalentes.disciplinaEquivalente.nome}" />
+					</p:column>
+					<p:column style="width: 3%;text-align: center;padding: 0px 10px;"
+						exportable="false">
+						<p:commandLink ajax="true" title="Deletar Disciplina"
+							onclick="PF('deletarEquivalencia').show()"
+							styleClass="ui-icon ui-icon-cancel">
+							<f:setPropertyActionListener value="#{materiasEquivalentes}"
+								target="#{cadastroGradeController.linhaSelecionadaEquivalencia}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</div>
+			<div class="subtitulo espacoLinha">
+				<legend>Cadastro Disciplinas Desprezadas Calculo IRA</legend>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
+
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Código Disciplina:"
+							style="    font-size: 13px;" />
+						<p:autoComplete id="codigoDisciplinaIRA"
+							value="#{cadastroGradeController.disciplinaIra}"
+							completeMethod="#{cadastroGradeController.disciplinaCodigoEquivalencia}"
+							disabled="#{cadastroGradeController.lgDisciplinaIra}"
+							converter="entityConverter" var="cl" itemValue="#{cl}"
+							itemLabel="#{cl.codigo}" forceSelection="true">
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectDisciplinaIra()}"
+								update="codigoDisciplinaIRA nomeDisciplinaIRA" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Nome Disciplina:"
+							style="    font-size: 13px;" />
+						<p:autoComplete id="nomeDisciplinaIRA"
+							value="#{cadastroGradeController.disciplinaIra}"
+							completeMethod="#{cadastroGradeController.disciplinaNomesEquivalencia}"
+							disabled="#{cadastroGradeController.lgDisciplinaIra}"
+							converter="entityConverter" var="cl" itemValue="#{cl}"
+							itemLabel="#{cl.nome}" forceSelection="true">
+							<p:column style="width: 20px;    color: #DCDCDC;font-size: 12px;">
+								<h:outputText value="#{cl.codigo}" />
+							</p:column>
+							<p:column style="width: 300px;font-size: 12px;">
+								<h:outputText value="#{cl.nome}" />
+							</p:column>
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectDisciplinaIra()}"
+								update="codigoDisciplinaIRA nomeDisciplinaIRA" />
+						</p:autoComplete>
+					</div>
+
+					<div class="ui-grid-col-2">
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Incluir"
+							actionListener="#{cadastroGradeController.incluirDisciplinaIra}"
+							disabled="#{cadastroGradeController.lgIncluirEquivalencia}"
+							update="codigoDisciplinaIRA nomeDisciplinaIRA gridIra"
+							id="incluirDisciplinaIra">
+						</p:commandButton>
+						<p:commandButton class="btn btn-info btn-sm botao"
+							id="limparDisciplinaIra"
+							actionListener="#{cadastroGradeController.limpaDisciplinaIra()}"
+							disabled="#{cadastroGradeController.lgLimparEquivalencia}"
+							update="codigoDisciplinaIRA nomeDisciplinaIRA gridIra"
+							value="Limpar"></p:commandButton>
+					</div>
+				</div>
+			</div>
+
+			<div class="gridTamanho espacoLinha">
+				<p:dataTable var="materias"
+					value="#{cadastroGradeController.listaIra}" id="gridIra"
+					emptyMessage="Nenhuma Disciplina Cadastrada"
+					filteredValue="#{cadastroGradeController.listaIraSelecionados}"
+					paginator="true" rows="20"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorAlwaysVisible="false">
+					<f:facet name="header">
+			          Disciplinas Desprezadas
+			       </f:facet>
+					<p:column headerText="Código" style="width: 15%;padding: 0px 10px;"
+						filterBy="#{materias.disciplina.codigo}"
+						filterMatchMode="contains" sortBy="#{materias.disciplina.codigo}">
+						<h:outputText value="#{materias.disciplina.codigo}" />
+					</p:column>
+					<p:column headerText="Nome" style="width: 30%;padding: 0px 10px;"
+						filterBy="#{materias.disciplina.nome}" filterMatchMode="contains"
+						sortBy="#{materias.disciplina.nome}">
+						<h:outputText value="#{materias.disciplina.nome}" />
+					</p:column>
+
+					<p:column style="width: 1.5%;text-align: center;padding: 0px 10px;"
+						exportable="false">
+						<p:commandLink ajax="true" title="Deletar Disciplina"
+							onclick="PF('deletarDisciplinaIra').show()"
+							styleClass="ui-icon ui-icon-cancel">
+							<f:setPropertyActionListener value="#{materias}"
+								target="#{cadastroGradeController.gradeDisciplinaIraSelecionada}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</div>
+			
+			
+			
+
+			<p:confirmDialog header="Deletar Disciplina"
+				message="Tem certeza que deseja deletar a disciplina?"
+				widgetVar="deletarDisciplinaIra" showEffect="fade" hideEffect="fade">
+				<p:commandButton class="btn btn-default-sm" value="Sim"
+					update="gridIra" onclick="reprovar.hide()"
+					actionListener="#{cadastroGradeController.deletarDisciplinaIra()}"
+					ajax="true" />
+				<p:commandButton class="btn btn-default-sm" value="Não"
+					update="gridIra" onclick="reprovar.hide();" ajax="true" />
+			</p:confirmDialog>
+			<p:confirmDialog header="Deletar Disciplina da Equivalencia"
+				message="Tem certeza que deseja deletar a equivalencia da grade?"
+				widgetVar="deletarEquivalencia" showEffect="fade" hideEffect="fade">
+				<p:commandButton class="btn btn-default-sm" value="Sim"
+					update="gridEquivalencias" onclick="reprovar.hide()"
+					actionListener="#{cadastroGradeController.deletarEquivalencia()}"
+					ajax="true" />
+				<p:commandButton class="btn btn-default-sm" value="Não"
+					update="gridEquivalencias" onclick="reprovar.hide();" ajax="true" />
+			</p:confirmDialog>
+		</h:form>
+		<h:form class="formularioPreRequisito" id="preRequisitoForm"
+			style="padding-left: 45px;">
+			<p:dialog header="Manutenção de Pré-Requisitos"
+				widgetVar="editarPreRequisito" modal="true" height="600" width="620"
+				id="dlg_editar" closeOnEscape="true">
+				<h:panelGroup id="pnl_Dialogo">
+					<div class="ui-grid ui-grid-responsive" style="padding-left: 15px;">
+						<div class="ui-grid-row espacoLinha">
+							<div style="width: 33%;">
+								<p:outputLabel value="Código Selecionada:" />
+								<p:inputText
+									value="#{cadastroGradeController.linhaSelecionada.disciplina.codigo}"
+									disabled="true" id="codigoDisiplinaSelecionada" size="20" />
+							</div>
+							<div style="width: 27%;">
+								<p:outputLabel value="Nome Selecionada:" />
+								<p:inputText
+									value="#{cadastroGradeController.linhaSelecionada.disciplina.nome}"
+									disabled="true" id="nomeDisiplinaSelecionada" size="45" />
+							</div>
+						</div>
+					</div>
+					<div class="ui-grid ui-grid-responsive" style="padding-left: 15px;">
+						<div class="ui-grid-row espacoLinha">
+							<div style="width: 33%;">
+								<p:outputLabel value="Código Pré-Requisito:"></p:outputLabel>
+								<p:autoComplete id="CodigoPreRequisito"
+									value="#{cadastroGradeController.disciplinaPre.codigo}"
+									completeMethod="#{cadastroGradeController.disciplinaCodigos}"
+									forceSelection="true" size="20">
+								</p:autoComplete>
+							</div>
+							<div style="width: 37%;">
+								<p:outputLabel value="Tipo:" />
+								<p:selectOneMenu size="30" style="    width: 200px;"
+									id="tipoDisciplinaPre"
+									value="#{cadastroGradeController.tipoPre}">
+
+									<f:selectItem itemValue="Pre-Requisito"
+										itemLabel="Pre-Requisito" />
+									<f:selectItem itemValue="Co-Requisito" itemLabel="Co-Requisito" />
+								</p:selectOneMenu>
+							</div>
+							<div style="padding-top: 24px;">
+
+								<h:commandButton value="Incluir" class="btn btn-success btn-sm"
+									style="margin-right: 5px; margin-top: -7px;">
+									<f:ajax
+										listener="#{cadastroGradeController.incluiPreRequisitos()}"
+										execute="CodigoPreRequisito gridPreRequisitos tipoDisciplinaPre"
+										render="CodigoPreRequisito gridPreRequisitos tipoDisciplinaPre :principalForm" />
+								</h:commandButton>
+							</div>
+						</div>
+					</div>
+					<p:fieldset legend="Pre-Requisitos"
+						style="    margin-top: 50px;     width: 580px;">
+						<p:dataTable var="materiasPre"
+							value="#{cadastroGradeController.listaPreRequisitos}"
+							id="gridPreRequisitos"
+							emptyMessage="Nenhuma Equivalência Cadastrada">
+							<p:column headerText="Código" style="    width: 20%;">
+								<h:outputText value="#{materiasPre.disciplina.codigo}" />
+							</p:column>
+							<p:column headerText="Nome">
+								<h:outputText value="#{materiasPre.disciplina.nome}" />
+							</p:column>
+							<p:column headerText="Tipo" style="    width: 20%;">
+								<h:outputText value="#{materiasPre.tipo}" />
+							</p:column>
+							<p:column style="width:32px">
+								<p:commandLink ajax="true"
+									onclick="PF('deletarPreRequisito').show();"
+									title="Deletar Pre-Requisito"
+									styleClass="ui-icon ui-icon-cancel">
+									<f:setPropertyActionListener value="#{materiasPre}"
+										target="#{cadastroGradeController.linhaSelecionadaPreRequisto}" />
+								</p:commandLink>
+								<p:confirmDialog global="true" showEffect="fade"
+									header="Deletar Pre-Requisito"
+									message="Tem certeza que deseja deletar o Pré-Requisito?"
+									widgetVar="deletarPreRequisito">
+									<p:commandButton value="Sim" type="button"
+										styleClass="ui-confirmdialog-no" ajax="true">
+										<p:ajax event="click"
+											listener="#{cadastroGradeController.deletarPreRequisito()}"
+											update="gridPreRequisitos :principalForm" />
+									</p:commandButton>
+									<p:commandButton value="Não" type="button"
+										styleClass="ui-confirmdialog-no" />
+								</p:confirmDialog>
+							</p:column>
+						</p:dataTable>
+					</p:fieldset>
+				</h:panelGroup>
+			</p:dialog>
+		</h:form>
+		<h:form class="formularioDisciplinaNova" id="novaDisciplinaForm"
+			style="padding-left: 45px;">
+			<p:dialog header="Inclusão Rápida Disciplina"
+				widgetVar="incluirDisciplina" modal="true" height="150" width="600"
+				id="dlg_incluirDisciplina" closeOnEscape="true">
+				<h:panelGroup id="pnl_Dialogo">
+					<div class="ui-grid ui-grid-responsive" style="padding-left: 15px;">
+						<div class="ui-grid-row espacoLinha">
+							<div style="width: 21%;">
+								<p:outputLabel value="Código:"></p:outputLabel>
+								<p:inputText
+									value="#{cadastroGradeController.disciplinaNova.codigo}"
+									id="codigoDisiplinaNova" size="10" />
+							</div>
+							<div style="width: 34%;">
+								<p:outputLabel value="Nome:" />
+								<p:inputText
+									value="#{cadastroGradeController.disciplinaNova.nome}"
+									id="nomeDisiplinaNova" size="20" />
+							</div>
+							<div style="width: 22%;">
+								<p:outputLabel value="Carga Horária:" />
+								<p:inputMask mask="9?99"
+									value="#{cadastroGradeController.disciplinaNova.cargaHoraria}"
+									id="cargaHorariaDisiplinaNova" size="10" />
+							</div>
+							<div style="padding-top: 24px;">
+
+
+								<h:commandButton value="Incluir" class="btn btn-success btn-sm"
+									style="margin-right: 5px; margin-top: -7px;">
+
+									<f:ajax
+										listener="#{cadastroGradeController.incluirDisciplinaNova()}"
+										execute="cargaHorariaDisiplinaNova nomeDisiplinaNova codigoDisiplinaNova"
+										render="cargaHorariaDisiplinaNova nomeDisiplinaNova codigoDisiplinaNova" />
+								</h:commandButton>
+							</div>
+						</div>
+					</div>
+				</h:panelGroup>
+			</p:dialog>
+		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>
