@@ -65,8 +65,29 @@ public class ImportarHistorico implements Serializable{
 		usuarioController.setReseta(true);
 
 	}
+	
+	private Grade criarGrade(String codigo)
+	{
+		Grade grade = new Grade();
+		grade.setCodigo(codigo);
+		grade.setCurso(curso);
+		grade.setHorasAce(0);
+		grade.setHorasEletivas(0);
+		grade.setHorasOpcionais(0);
+		grade.setNumeroMaximoPeriodos(0);
+		grade.setPeriodoInicio(1);
+		return grade;
+	}
 
 	@Transactional
+	private void atulizaDataImportação()
+	{
+		d = new Date();
+		String data = format.format(d).toString();
+		curso.setDataAtualizacao(data);
+		cursos.persistir(curso);
+	}
+	
 	public void chamarTudo()  {
 
 		if (usuarioController.getAutenticacao().getTipoAcesso().equals("externo")){
@@ -80,14 +101,6 @@ public class ImportarHistorico implements Serializable{
 			logger.info("Recuperando dados do curso "+ curso.getCodigo() +"...");
 			RSCursoAlunosDiscSituacao rsClient = new RSCursoAlunosDiscSituacao(user.getToken(), ServiceVersion.V2);
 			EstruturaArvore estruturaArvore = EstruturaArvore.getInstance();
-			
-
-			d = new Date();
-			String data = format.format(d).toString();
-			curso.setDataAtualizacao(data);
-			cursos.persistir(curso);
-			
-			
 
 			if (curso == null){
 				FacesMessage msg = new FacesMessage("Curso Inválido!");
@@ -128,16 +141,9 @@ public class ImportarHistorico implements Serializable{
 						break;
 					}
 				}
-
+				
 				if (grade == null){
-					grade = new Grade();
-					grade.setCodigo(alunoCurso.getCurriculo());
-					grade.setCurso(curso);
-					grade.setHorasAce(0);
-					grade.setHorasEletivas(0);
-					grade.setHorasOpcionais(0);
-					grade.setNumeroMaximoPeriodos(0);
-					grade.setPeriodoInicio(1);
+					grade = criarGrade(alunoCurso.getCurriculo());
 					listaGrade.add(grade);
 				}
 
@@ -153,7 +159,7 @@ public class ImportarHistorico implements Serializable{
 
 				} 
 
-				
+				logger.info("Processando aluno " + alunoCurso.getMatricula() + " - " + alunoCurso.getCurriculo());
 				for (br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina disciplinaIntegra : alunoCurso.getDisciplinas().getDisciplina()) {
 					Disciplina disciplina = disciplinas.buscarPorCodigoDisciplina(disciplinaIntegra.getDisciplina());
 					
@@ -192,7 +198,8 @@ public class ImportarHistorico implements Serializable{
 			for (Grade grade:listaGrades){
 				estruturaArvore.removerEstrutura(grade);
 			}
-
+			
+			atulizaDataImportação();
 
 		} catch (NotAuthorizedException e) {
 			FacesMessage msg = new FacesMessage("Voce não tem permissão para importartar dados!");

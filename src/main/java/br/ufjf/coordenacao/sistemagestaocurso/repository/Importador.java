@@ -9,10 +9,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
 
 public class Importador {
 
@@ -29,6 +31,11 @@ public class Importador {
 	
 	public void gravarRegistros(List<Grade> grades)
 	{
+		EntityTransaction trx = manager.getTransaction();
+		
+		trx.begin();
+		try
+		{
 		long idgrade = (long) manager.createNativeQuery("select max(id) max from grade").getSingleResult();
 		long idaluno = (long) manager.createNativeQuery("select max(id) max from aluno").getSingleResult();
 		long idhistorico = (long) manager.createNativeQuery("select max(id) max from historico").getSingleResult();
@@ -108,8 +115,15 @@ public class Importador {
 				idaluno++;
 			}
 			idgrade++;
-		}
 			
+			trx.commit();
+		}
+		}catch (Exception e)
+		{
+			trx.rollback();
+			throw e;
+		}
+		
 	}
 	
 	public void gravarRegistros2(List<Grade> gradesGravada) throws SQLException{
