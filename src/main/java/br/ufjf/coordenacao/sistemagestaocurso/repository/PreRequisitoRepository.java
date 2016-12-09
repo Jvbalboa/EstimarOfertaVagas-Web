@@ -24,7 +24,7 @@ public class PreRequisitoRepository implements Serializable {
 	}
 
 	public void remover(PreRequisito objeto) {
-		manager.remove(objeto);
+		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
 	}
 
 	public List<PreRequisito> listarTodos() {

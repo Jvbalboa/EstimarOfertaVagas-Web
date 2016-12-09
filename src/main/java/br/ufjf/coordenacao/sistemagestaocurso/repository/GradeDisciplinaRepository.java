@@ -25,7 +25,7 @@ public class GradeDisciplinaRepository implements Serializable {
 	}
 
 	public void remover(GradeDisciplina objeto) {
-		manager.remove(objeto);
+		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
 	}
 
 	public List<GradeDisciplina> listarTodos() {

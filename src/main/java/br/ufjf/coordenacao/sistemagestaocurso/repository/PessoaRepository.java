@@ -25,7 +25,7 @@ public class PessoaRepository implements Serializable {
 	}
 
 	public void remover(Pessoa objeto) {
-		manager.remove(objeto);
+		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
 	}
 
 	public List<Pessoa> listarTodos() {

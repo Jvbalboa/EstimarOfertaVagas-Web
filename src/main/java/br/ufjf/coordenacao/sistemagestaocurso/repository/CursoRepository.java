@@ -25,7 +25,7 @@ public class CursoRepository implements Serializable {
 	}
 
 	public void remover(Curso curso) {
-		manager.remove(curso);
+		manager.remove(manager.contains(curso) ? curso : manager.merge(curso));
 	}
 
 	public List<Curso> listarTodos() {

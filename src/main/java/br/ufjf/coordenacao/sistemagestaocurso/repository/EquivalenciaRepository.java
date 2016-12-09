@@ -25,7 +25,7 @@ public class EquivalenciaRepository implements Serializable {
 	}
 
 	public void remover(Equivalencia objeto) {
-		manager.remove(objeto);
+		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
 	}
 
 	public List<Equivalencia> listarTodos() {

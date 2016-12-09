@@ -1,15 +1,21 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+
+import org.apache.log4j.Logger;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
@@ -28,7 +34,7 @@ public class Importador {
 	*/
 	@Inject
 	private EntityManager manager;
-	
+	private Logger logger = Logger.getLogger(Importador.class);
 	public void gravarRegistros(List<Grade> grades)
 	{
 		EntityTransaction trx = manager.getTransaction();
@@ -36,13 +42,15 @@ public class Importador {
 		trx.begin();
 		try
 		{
-		long idgrade = (long) manager.createNativeQuery("select max(id) max from grade").getSingleResult();
-		long idaluno = (long) manager.createNativeQuery("select max(id) max from aluno").getSingleResult();
-		long idhistorico = (long) manager.createNativeQuery("select max(id) max from historico").getSingleResult();
+		/*long idgrade = ((BigInteger) manager.createNativeQuery("SELECT COALESCE(MAX(id), 0) max from Grade").getSingleResult()).longValue();
+		long idaluno = ((BigInteger) manager.createNativeQuery("SELECT COALESCE(MAX(id), 0) max from Aluno").getSingleResult()).longValue();
+		long idhistorico = ((BigInteger) manager.createNativeQuery("SELECT COALESCE(MAX(id), 0) max from Historico").getSingleResult()).longValue();
 		
 		idgrade++;
 		idaluno++;
 		idhistorico++;
+		
+		logger.info(idaluno + " " + idgrade + " " + idhistorico);
 		
 		for (Grade gradeQuestao : grades){
 			long idGradeExistente = idgrade;
@@ -111,13 +119,28 @@ public class Importador {
 
 					idhistorico++;
 				}
-
+				logger.info(alunoQuestao.getMatricula() + " OK");
 				idaluno++;
 			}
 			idgrade++;
-			
-			trx.commit();
-		}
+			logger.info(gradeQuestao.getCodigo() + " OK");
+		}*/
+			for(Grade grade : grades){
+				manager.merge(grade);
+				for(Aluno aluno: grade.getGrupoAlunos())
+				{
+					manager.merge(aluno);
+					for(Historico historico: aluno.getGrupoHistorico())
+					{
+						manager.persist(historico.getDisciplina());
+						manager.merge(historico);
+					}
+				}
+			}
+		logger.info("Tentando commit");
+		trx.commit();
+		logger.info("Commited!");
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Concluído", "Importação terminou com êxito"));
 		}catch (Exception e)
 		{
 			trx.rollback();
