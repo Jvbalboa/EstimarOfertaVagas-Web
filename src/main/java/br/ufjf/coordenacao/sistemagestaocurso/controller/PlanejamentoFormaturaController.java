@@ -29,6 +29,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Disciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.GradeDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.DisciplinaPlanejamento;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
@@ -95,6 +96,8 @@ public class PlanejamentoFormaturaController implements Serializable {
 	private EstruturaArvore estruturaArvore;
 	
 	@Inject
+	private AlunoRepository alunos;
+	@Inject
 	private CursoRepository cursoDAO ;
 	@Inject
 	private DisciplinaRepository disciplinaDAO ;
@@ -131,25 +134,19 @@ public class PlanejamentoFormaturaController implements Serializable {
 		qtdHorasPeriodo= 300;
 	
 		if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
-			List<Curso> listaCurso = (List<Curso>) cursoDAO.listarTodos();	
-			for (Curso cursoQuestao : listaCurso){
-				for (Aluno alunoQuestao : cursoQuestao.getGrupoAlunos()){
-					if(alunoQuestao.getMatricula().contains(usuarioController.getAutenticacao().getSelecaoIdentificador())){
-						aluno = alunoQuestao;
-						break;
-					}
-				}	
-			}		
-			if (aluno.getMatricula() == null){
+			aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
+			
+			lgMatriculaAluno = true;
+			lgNomeAluno = true;
+			lgAluno = false;
+			
+			if (aluno == null || aluno.getMatricula() == null){
 				FacesMessage msg = new FacesMessage("Matrcula no cadastrada na base!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
-				lgMatriculaAluno = true;
-				lgNomeAluno = true;	
 				return;
 			}			
 			curso = aluno.getCurso();
 			onItemSelectAluno();
-			lgAluno = false;
 		}
 		else{
 			curso = usuarioController.getAutenticacao().getCursoSelecionado();
@@ -441,26 +438,19 @@ public class PlanejamentoFormaturaController implements Serializable {
 	}
 
 	public void onItemSelectAluno() {
-		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getMatricula().contains(aluno.getMatricula())){
-				aluno = alunoQuestao;
-				break;
-			}
-		}
-		
-		
+		aluno = alunos.buscarPorMatricula(aluno.getMatricula());
 		
 		lgMatriculaAluno = true;
 		lgNomeAluno = true;	
 		lgCampoHrsPeriodo = false;
 		listaCargaHorariaPeriodo = new ArrayList<String>();
-		importador = estruturaArvore.recuperarArvore( aluno.getGrade(),true);
+		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),true);
 		StudentsHistory sh = importador.getSh();
 		st = sh.getStudents().get(aluno.getMatricula());
 
 		if (st == null){
 
-			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " no tem nenhum histrico de matricula cadastrado!");
+			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			lgCampoHrsPeriodo = true;
 			return;
@@ -476,11 +466,11 @@ public class PlanejamentoFormaturaController implements Serializable {
 		importador.considerarCo();
 		curriculum = importador.get_cur();		
 
-		if (!aluno.getGrade().estaCompleta()) {
+		/*if (!aluno.getGrade().estaCompleta()) {
 			FacesMessage msg = new FacesMessage("Grade Incompleta verifique o menu Cadastros > Grade!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
-		}
+		}*/
 		
 		gerarExpectativa();
 		
@@ -489,14 +479,14 @@ public class PlanejamentoFormaturaController implements Serializable {
 	public void gerarExpectativa(){
 
 		if (!aluno.getGrade().estaCompleta()) {
-			FacesMessage msg = new FacesMessage("Grade Incompleta verifique o menu Cadastros > Grade!");
+			FacesMessage msg = new FacesMessage("Não foi possível gerar o planejamento. Motivo: a grade está incompleta");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 
 
 		if(qtdHorasPeriodo < 60){
-			FacesMessage msg = new FacesMessage("A Quantidade Horas Perodo deve ser maior que 60 hrs!");
+			FacesMessage msg = new FacesMessage("A quantidade de horas por período deve ser maior que 60h!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -540,7 +530,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 
 		int ultimoPeriodoPreenchido = 0;
 		if (curriculumAluno.getMandatories().keySet().size() > 12){
-			FacesMessage msg = new FacesMessage("A Quantidade de Horas Perodo deve ser maior pois o nmero de perodos excedeu 12 perodos!");
+			FacesMessage msg = new FacesMessage("A quantidade de horas por período deve ser maior pois o número de períodos excedeu o limite de 12 períodos!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -596,7 +586,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 				ultimoPeriodoPreenchido = ultimoPeriodoPreenchido + 1;
 			
 			if (ultimoPeriodoPreenchido >= 12){
-				FacesMessage msgs = new FacesMessage("A Quantidade de Horas Perodo deve ser maior pois o nmero de perodos excedeu 12 perodos!");
+				FacesMessage msgs = new FacesMessage("A Quantidade de Horas Período deve ser maior pois o número de períodos excedeu 12 períodos!");
 				FacesContext.getCurrentInstance().addMessage(null, msgs);
 				listaDisciplinaSelecionadas = new ArrayList<DisciplinaPlanejamento>();
 				listaDisciplinaSelecionadasDois = new ArrayList<DisciplinaPlanejamento>();
@@ -641,7 +631,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 				&& this.listaDisciplinaSelecionadasOnze.isEmpty()
 				&& this.listaDisciplinaSelecionadasDoze.isEmpty())
 		{
-			FacesMessage msg = new FacesMessage("No h disciplinas para serem exibidas!");
+			FacesMessage msg = new FacesMessage("Não há disciplinas para serem exibidas!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 		}
 	}

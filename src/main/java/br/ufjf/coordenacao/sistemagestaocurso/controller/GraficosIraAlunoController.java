@@ -30,20 +30,20 @@ import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 
-
 @Named
 @ViewScoped
 public class GraficosIraAlunoController implements Serializable {
 
-	//========================================================= VARIABLES ==================================================================================//
+	// ========================================================= VARIABLES
+	// ==================================================================================//
 
 	private static final long serialVersionUID = 1L;
-	private boolean lgNomeAluno  = false;
+	private boolean lgNomeAluno = false;
 	private boolean lgMatriculaAluno = false;
-	private boolean lgAce  = true;
+	private boolean lgAce = true;
 	private boolean lgAluno = true;
 	private Aluno aluno = new Aluno();
-	private EventoAce eventosAce =  new EventoAce();
+	private EventoAce eventosAce = new EventoAce();
 	private Curriculum curriculum;
 	private ImportarArvore importador;
 	private EstruturaArvore estruturaArvore;
@@ -53,68 +53,62 @@ public class GraficosIraAlunoController implements Serializable {
 	private float ira;
 	private int periodo;
 	private int horasObrigatorias;
-	private int horasAceConcluidas;	
+	private int horasAceConcluidas;
 	private int horasEletivasConcluidas;
 	private int horasOpcionaisConcluidas;
 	private int horasObrigatoriasConcluidas;
-	private EventoAce eventoAceSelecionado;	
-	private LineChartModel  lineChartModel;
+	private EventoAce eventoAceSelecionado;
+	private LineChartModel lineChartModel;
 	private Curso curso = new Curso();
-	private AlunoRepository alunos ;
+	private AlunoRepository alunos;
 
-	//========================================================= METODOS ==================================================================================//
+	// ========================================================= METODOS
+	// ==================================================================================//
 
 	@Inject
 	private UsuarioController usuarioController;
 
 	@PostConstruct
-	public void init()  {
+	public void init() {
 		try {
-		lineChartModel = initBarModel();
-		lineChartModel.setTitle("Grfico de Evoluo do IRA por Perodo");
-		Axis yAxis = lineChartModel.getAxis(AxisType.Y);
-		yAxis.setMin(0);
-		yAxis.setMax(100);
+			lineChartModel = initBarModel();
+			lineChartModel.setTitle("Gráfico de Evolução do IRA por Período");
+			Axis yAxis = lineChartModel.getAxis(AxisType.Y);
+			yAxis.setMin(0);
+			yAxis.setMax(100);
 
-		yAxis.setTickFormat("%d");
-		estruturaArvore = EstruturaArvore.getInstance();
-		usuarioController.atualizarPessoaLogada();
-		Grade grade = new Grade();
-		grade.setHorasEletivas(0);
-		grade.setHorasOpcionais(0);
-		grade.setHorasAce(0);
-		aluno.setGrade(grade);
-		//cursoDAO = estruturaArvore.getCursoDAO();		
-		if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
-			/*List<Curso> listaCurso = (List<Curso>) cursoDAO.recuperarTodos();	
-			for (Curso cursoQuestao : listaCurso){
-				for (Aluno alunoQuestao : cursoQuestao.getGrupoAlunos()){
-					if(alunoQuestao.getMatricula().contains(usuarioController.getAutenticacao().getSelecaoIdentificador())){
-						aluno = alunoQuestao;
-						break;
-					}
-				}*/
+			yAxis.setTickFormat("%d");
+			estruturaArvore = EstruturaArvore.getInstance();
+			usuarioController.atualizarPessoaLogada();
+			Grade grade = new Grade();
+			grade.setHorasEletivas(0);
+			grade.setHorasOpcionais(0);
+			grade.setHorasAce(0);
+			aluno.setGrade(grade);
+			// cursoDAO = estruturaArvore.getCursoDAO();
+			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")) {
 				aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
-					
-			if (aluno.getMatricula() == null){
-				FacesMessage msg = new FacesMessage("Matrcula no cadastrada na base!");
-				FacesContext.getCurrentInstance().addMessage(null, msg);
-				lgMatriculaAluno = true;
-				lgNomeAluno = true;	
-				return;
-			}			
-			curso = aluno.getCurso();
-			onItemSelectMatriculaAluno();
-			lgAluno = false;
-		}
-		else{
-			curso = usuarioController.getAutenticacao().getCursoSelecionado();
-			if (curso.getGrupoAlunos().size() == 0){
 
-				FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
-				FacesContext.getCurrentInstance().addMessage(null, msg);
+				lgMatriculaAluno = true;
+				lgNomeAluno = true;
+				lgAluno = false;
+
+				if (aluno == null || aluno.getMatricula() == null) {
+					FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");
+					FacesContext.getCurrentInstance().addMessage(null, msg);
+
+					return;
+				}
+				curso = aluno.getCurso();
+				onItemSelectMatriculaAluno();
+			} else {
+				curso = usuarioController.getAutenticacao().getCursoSelecionado();
+				if (curso.getGrupoAlunos().size() == 0) {
+
+					FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
+					FacesContext.getCurrentInstance().addMessage(null, msg);
+				}
 			}
-		}
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -123,7 +117,7 @@ public class GraficosIraAlunoController implements Serializable {
 	private LineChartModel initBarModel() {
 		LineChartModel model = new LineChartModel();
 		ChartSeries f = new ChartSeries();
-		f.set("Semestre", 1);		
+		f.set("Semestre", 1);
 		model.addSeries(f);
 		return model;
 	}
@@ -132,46 +126,44 @@ public class GraficosIraAlunoController implements Serializable {
 		LineChartModel model = new LineChartModel();
 		ChartSeries fPeriodo = new ChartSeries();
 		ChartSeries fAcumulado = new ChartSeries();
-		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),false);
+		importador = estruturaArvore.recuperarArvore(aluno.getGrade(), false);
 		curriculum = importador.get_cur();
-		StudentsHistory sh = importador.getSh();		
+		StudentsHistory sh = importador.getSh();
 		Student st = sh.getStudents().get(aluno.getMatricula());
 
 		TreeSet<Integer> semestres = st.getCoursedSemesters();
-		fPeriodo.setLabel( "IRA Perodo");
-		fAcumulado.setLabel( "IRA Acumulado");
+		fPeriodo.setLabel("IRA Período");
+		fAcumulado.setLabel("IRA Acumulado");
 		ira = st.getIRA();
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
-		if(ira == -1) {
+		if (ira == -1) {
 			ChartSeries f = new ChartSeries();
 			ira = 0;
-			f.setLabel( "IRA");
-			f.set("Semestre", 1);		
+			f.setLabel("IRA");
+			f.set("Semestre", 1);
 			model.addSeries(f);
-			return model;	
+			return model;
 
 		}
 
-		for(int i: semestres)
-		{
-			if (st.getSemesterIRA(i) != -1){
-				fPeriodo.set( i, st.getSemesterIRA(i) );		
-				fAcumulado.set(i,st.getIRA(i) );
-			}		
+		for (int i : semestres) {
+			if (st.getSemesterIRA(i) != -1) {
+				fPeriodo.set(i, st.getSemesterIRA(i));
+				fAcumulado.set(i, st.getIRA(i));
+			}
 		}
-
 
 		model.addSeries(fPeriodo);
 		model.addSeries(fAcumulado);
 		return model;
 	}
 
-	public List<String> alunoMatricula(String codigo) {	
+	public List<String> alunoMatricula(String codigo) {
 		codigo = codigo.toUpperCase();
 		List<String> todos = new ArrayList<String>();
-		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getMatricula().contains(codigo)){
-				todos.add(alunoQuestao.getMatricula()); 
+		for (Aluno alunoQuestao : curso.getGrupoAlunos()) {
+			if (alunoQuestao.getMatricula().contains(codigo)) {
+				todos.add(alunoQuestao.getMatricula());
 			}
 		}
 		return todos;
@@ -180,63 +172,62 @@ public class GraficosIraAlunoController implements Serializable {
 	public List<Aluno> alunoNome(String codigo) {
 		codigo = codigo.toUpperCase();
 		List<Aluno> todos = new ArrayList<Aluno>();
-		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getNome().contains(codigo)){
-				todos.add(alunoQuestao); 
+		for (Aluno alunoQuestao : curso.getGrupoAlunos()) {
+			if (alunoQuestao.getNome().contains(codigo)) {
+				todos.add(alunoQuestao);
 			}
 		}
 		return todos;
 	}
 
-	public void onItemSelectMatriculaAluno()  {
-		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getMatricula().contains(aluno.getMatricula())){
-				aluno = alunoQuestao;
-				break;
-			}
-		}
-
-		if (aluno == null){
-			FacesMessage msg = new FacesMessage("Matrcula no cadastrada na base!");
+	public void onItemSelectMatriculaAluno() {
+		
+		if (aluno == null) {
+			FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
-			lgNomeAluno = true;	
-			lgMatriculaAluno = true;
+
+			if (lgAluno) {
+				lgNomeAluno = false;
+				lgMatriculaAluno = false;
+			}
 			return;
-		}	
+		}
+		
+		aluno = alunos.buscarPorMatricula(aluno.getMatricula());
+
 
 
 		lgAce = false;
-		lgNomeAluno = true;	
+		lgNomeAluno = true;
 		lgMatriculaAluno = true;
 
-		if (aluno.getGrupoHistorico().size() == 0){
+		if (aluno.getGrupoHistorico() == null || aluno.getGrupoHistorico().size() == 0) {
 
-			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " no tem nenhum histrico de matricula cadastrado!");
+			FacesMessage msg = new FacesMessage(
+					"O aluno " + aluno.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 
-
 		}
 
-
 		lineChartModel = gerarDados();
-		lineChartModel.setTitle("Grfico de Evoluo do IRA por Perodo");
+		lineChartModel.setTitle("Gráfico de Evolução do IRA por Período");
 		lineChartModel.setLegendPosition("se");
 		Axis yAxis = lineChartModel.getAxis(AxisType.Y);
 		Axis xAxis = new CategoryAxis();
 		lineChartModel.getAxes().put(AxisType.X, xAxis);
 		lineChartModel.setDatatipFormat("%2$.2f");
-		yAxis.setLabel("IRA");		
+		yAxis.setLabel("IRA");
 		yAxis.setTickFormat("%.2f");
 		yAxis.setMin(0);
 		yAxis.setMax(100);
 	}
 
-	public void limpaAluno(){		
+	public void limpaAluno() {
 		lgAce = true;
-		lgNomeAluno  = false;
+		lgNomeAluno = false;
 		lgMatriculaAluno = false;
-		eventosAce =  new EventoAce();
+		eventosAce = new EventoAce();
 		ira = 0;
 		periodo = 0;
 		horasObrigatorias = 0;
@@ -249,12 +240,12 @@ public class GraficosIraAlunoController implements Serializable {
 		grade.setHorasOpcionais(0);
 		grade.setHorasAce(0);
 		aluno = new Aluno();
-		aluno.setGrade(grade);		
+		aluno.setGrade(grade);
 		init();
 	}
 
-	//========================================================= GET - SET ==================================================================================//
-
+	// ========================================================= GET - SET
+	// ==================================================================================//
 
 	public boolean isLgMatriculaAluno() {
 		return lgMatriculaAluno;

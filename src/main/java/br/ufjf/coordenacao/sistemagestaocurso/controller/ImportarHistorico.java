@@ -13,6 +13,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.EntityManager;
 import javax.ws.rs.NotAuthorizedException;
 
 import org.apache.log4j.Logger;
@@ -53,14 +54,16 @@ public class ImportarHistorico implements Serializable{
 	@Inject
 	private CursoRepository cursos ;
 	@Inject
-	AlunoRepository alunos;
+	private AlunoRepository alunos;
 	@Inject
-	DisciplinaRepository disciplinas;
+	private DisciplinaRepository disciplinas;
 	@Inject
-	HistoricoRepository historicos;
+	private HistoricoRepository historicos;
+	@Inject
+	private EntityManager manager;
 	
 	@Inject
-	Importador importador;
+	private Importador importador;
 
 	@Inject
 	private GradeRepository grades;
@@ -110,7 +113,7 @@ public class ImportarHistorico implements Serializable{
 	
 	@Transactional
 	public void chamarTudo() throws Exception {
-
+		//manager.cl
 		if (usuarioController.getAutenticacao().getTipoAcesso().equals("externo")){
 			FacesMessage msg = new FacesMessage("Voce não tem permissão para importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -208,7 +211,6 @@ public class ImportarHistorico implements Serializable{
 
 					}
 					historico = historicos.persistir(historico);
-					
 					aluno.getGrupoHistorico().add(historico);
 				}
 			}

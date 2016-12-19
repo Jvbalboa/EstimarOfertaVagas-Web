@@ -48,13 +48,13 @@ import com.google.gson.JsonElement;
 @ViewScoped
 public class GraficosSituacaoController implements Serializable {
 
-	//========================================================= VARIABLES ==================================================================================//
-
+	// ========================================================= VARIABLES
+	// ==================================================================================//
 
 	private static final long serialVersionUID = 1L;
-	private boolean lgNomeAluno  = false;
+	private boolean lgNomeAluno = false;
 	private boolean lgMatriculaAluno = false;
-	private boolean lgAce  = true;
+	private boolean lgAce = true;
 	private boolean lgAluno = true;
 	private Aluno aluno = new Aluno();
 	private Curriculum curriculum;
@@ -66,7 +66,7 @@ public class GraficosSituacaoController implements Serializable {
 	private float ira;
 	private int periodo;
 	private int horasObrigatorias;
-	private int horasAceConcluidas;	
+	private int horasAceConcluidas;
 	private int horasEletivasConcluidas;
 	private int horasOpcionaisConcluidas;
 	private int horasObrigatoriasConcluidas;
@@ -87,18 +87,17 @@ public class GraficosSituacaoController implements Serializable {
 	private String status;
 
 	@Inject
-	private AlunoRepository alunoDAO ;
+	private AlunoRepository alunoDAO;
 	@Inject
-	private DisciplinaRepository disciplinaDAO ;
-	//========================================================= METODOS ==================================================================================//
+	private DisciplinaRepository disciplinaDAO;
+	// ========================================================= METODOS
+	// ==================================================================================//
 
 	@Inject
 	private UsuarioController usuarioController;
-	
-	public void preencheSobraHoras()
-	{
-		if(this.aluno.getSobraHorasEletivas() > 0)
-		{
+
+	public void preencheSobraHoras() {
+		if (this.aluno.getSobraHorasEletivas() > 0) {
 			SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 			disciplinaSituacao.setCodigo("");
 			disciplinaSituacao.setSituacao("");
@@ -109,57 +108,54 @@ public class GraficosSituacaoController implements Serializable {
 	}
 
 	@PostConstruct
-	public void init()  {
+	public void init() {
 		try {
-		animatedModel2 = initBarModel();
-		animatedModel2.setTitle("Grfico - Quantidade de Horas por Atividades");
-		animatedModel2.setLegendPosition("se");
-		animatedModel2.setStacked(true);
-		animatedModel2.setZoom(true);
-		animatedModel2.setDatatipFormat("%1$d");
-		Axis xAxis = animatedModel2.getAxis(AxisType.X);
-		xAxis.setLabel("Quantidade Horas");
-		Axis yAxis = animatedModel2.getAxis(AxisType.Y);
-		yAxis.setLabel("Tipo Atividade");
-		yAxis.setMin(0);
-		yAxis.setTickInterval("10");
-		yAxis.setMax(20);
-		chartModelPie = new GChartModelBuilder().setChartType(getChartTypePie())
-				.addColumns("Atividade", "Descrio")
-				.addRow("Dados", 1)
-				.build();
-		estruturaArvore = EstruturaArvore.getInstance();
-		usuarioController.atualizarPessoaLogada();
+			animatedModel2 = initBarModel();
+			animatedModel2.setTitle("Gráfico - Quantidade de Horas por Atividades");
+			animatedModel2.setLegendPosition("se");
+			animatedModel2.setStacked(true);
+			animatedModel2.setZoom(true);
+			animatedModel2.setDatatipFormat("%1$d");
+			Axis xAxis = animatedModel2.getAxis(AxisType.X);
+			xAxis.setLabel("Quantidade Horas");
+			Axis yAxis = animatedModel2.getAxis(AxisType.Y);
+			yAxis.setLabel("Tipo Atividade");
+			yAxis.setMin(0);
+			yAxis.setTickInterval("10");
+			yAxis.setMax(20);
+			chartModelPie = new GChartModelBuilder().setChartType(getChartTypePie())
+					.addColumns("Atividade", "Descrição").addRow("Dados", 1).build();
+			estruturaArvore = EstruturaArvore.getInstance();
+			usuarioController.atualizarPessoaLogada();
 
+			Grade grade = new Grade();
+			grade.setHorasEletivas(0);
+			grade.setHorasOpcionais(0);
+			grade.setHorasAce(0);
+			aluno.setGrade(grade);
 
-		Grade grade = new Grade();
-		grade.setHorasEletivas(0);
-		grade.setHorasOpcionais(0);
-		grade.setHorasAce(0);
-		aluno.setGrade(grade);
-		
-		if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
-			aluno = alunoDAO.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
-		
-			if (aluno.getMatricula() == null){
-				FacesMessage msg = new FacesMessage("Matrcula no cadastrada na base!");
-				FacesContext.getCurrentInstance().addMessage(null, msg);
+			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")) {
+				aluno = alunoDAO.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
 				lgMatriculaAluno = true;
-				lgNomeAluno = true;	
-				return;
-			}			
-			curso = aluno.getCurso();
-			onItemSelectMatriculaAluno();
-			lgAluno = false;
-		}
-		else{
-			curso = usuarioController.getAutenticacao().getCursoSelecionado();
-			if (curso.getGrupoAlunos().size() == 0){
+				lgNomeAluno = true;
+				lgAluno = false;
+				if (aluno.getMatricula() == null) {
+					FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");
+					FacesContext.getCurrentInstance().addMessage(null, msg);
 
-				FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
-				FacesContext.getCurrentInstance().addMessage(null, msg);
+					return;
+				}
+				curso = aluno.getCurso();
+				onItemSelectMatriculaAluno();
+
+			} else {
+				curso = usuarioController.getAutenticacao().getCursoSelecionado();
+				if (curso.getGrupoAlunos().size() == 0) {
+
+					FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
+					FacesContext.getCurrentInstance().addMessage(null, msg);
+				}
 			}
-		}
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -168,18 +164,18 @@ public class GraficosSituacaoController implements Serializable {
 	private HorizontalBarChartModel initBarModel() {
 		HorizontalBarChartModel model = new HorizontalBarChartModel();
 		ChartSeries f = new ChartSeries();
-		f.setLabel( "Horas Completas");
+		f.setLabel("Horas Completas");
 		f.set("ACE", 1);
 		f.set("Opcionais", 1);
 		f.set("Eletivas", 1);
-		f.set("Obrigatrias", 1);
+		f.set("Obrigatórias", 1);
 		model.addSeries(f);
 		ChartSeries fi = new ChartSeries();
-		fi.setLabel( "Horas Incompletas");
+		fi.setLabel("Horas Incompletas");
 		fi.set("ACE", 1);
 		fi.set("Opcionais", 1);
 		fi.set("Eletivas", 1);
-		fi.set("Obrigatrias", 1);
+		fi.set("Obrigatórias", 1);
 		model.addSeries(fi);
 		return model;
 	}
@@ -187,21 +183,21 @@ public class GraficosSituacaoController implements Serializable {
 	private void dadosGraficoAluno() {
 		HorizontalBarChartModel model = new HorizontalBarChartModel();
 		ChartSeries f = new ChartSeries();
-		f.setLabel( "Horas Completas");
+		f.setLabel("Horas Completas");
 		f.set("ACE", horasAceConcluidas);
 		f.set("Opcionais", horasOpcionaisConcluidas);
 		f.set("Eletivas", horasEletivasConcluidas);
-		f.set("Obrigatrias", horasObrigatoriasConcluidas);
+		f.set("Obrigatórias", horasObrigatoriasConcluidas);
 		model.addSeries(f);
 		ChartSeries fi = new ChartSeries();
-		fi.setLabel( "Horas Incompletas");
+		fi.setLabel("Horas Incompletas");
 		fi.set("ACE", horasIncompletasAce);
 		fi.set("Opcionais", horasIncompletasOpcionais);
 		fi.set("Eletivas", horasIncompletasEletivas);
-		fi.set("Obrigatrias", (horasObrigatorias - horasObrigatoriasConcluidas));
+		fi.set("Obrigatórias", (horasObrigatorias - horasObrigatoriasConcluidas));
 		model.addSeries(fi);
 		animatedModel2 = model;
-		animatedModel2.setTitle("Grfico - Atividades por Tipo");
+		animatedModel2.setTitle("Gráfico - Atividades por Tipo");
 		animatedModel2.setLegendPosition("se");
 		animatedModel2.setStacked(true);
 		animatedModel2.setZoom(true);
@@ -216,12 +212,12 @@ public class GraficosSituacaoController implements Serializable {
 
 	}
 
-	public List<String> alunoMatricula(String codigo) {	
+	public List<String> alunoMatricula(String codigo) {
 		codigo = codigo.toUpperCase();
 		List<String> todos = new ArrayList<String>();
-		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getMatricula().contains(codigo)){
-				todos.add(alunoQuestao.getMatricula()); 
+		for (Aluno alunoQuestao : curso.getGrupoAlunos()) {
+			if (alunoQuestao.getMatricula().contains(codigo)) {
+				todos.add(alunoQuestao.getMatricula());
 			}
 		}
 		return todos;
@@ -230,109 +226,100 @@ public class GraficosSituacaoController implements Serializable {
 	public List<Aluno> alunoNome(String codigo) {
 		codigo = codigo.toUpperCase();
 		List<Aluno> todos = new ArrayList<Aluno>();
-		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getNome().contains(codigo)){
-				todos.add(alunoQuestao); 
+		for (Aluno alunoQuestao : curso.getGrupoAlunos()) {
+			if (alunoQuestao.getNome().contains(codigo)) {
+				todos.add(alunoQuestao);
 			}
 		}
 		return todos;
 	}
 
-	public void onItemSelectMatriculaAluno()  {
+	public void onItemSelectMatriculaAluno() {
 
-		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getMatricula().contains(aluno.getMatricula())){
-				aluno = alunoQuestao;
-				break;
-			}
-		}		
+		aluno = alunoDAO.buscarPorMatricula(aluno.getMatricula());
 
-		if (aluno == null){
-			FacesMessage msg = new FacesMessage("Matrcula no cadastrada na base!");
+		if (aluno == null) {
+			FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
-			lgNomeAluno = true;	
-			lgMatriculaAluno = true;
+			if (lgAluno) {
+				lgNomeAluno = false;
+				lgMatriculaAluno = false;
+			}
 			return;
 		}
 		lgAce = false;
-		lgNomeAluno = true;	
+		lgNomeAluno = true;
 		lgMatriculaAluno = true;
-		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),true);
+		importador = estruturaArvore.recuperarArvore(aluno.getGrade(), true);
 		curriculum = importador.get_cur();
-		StudentsHistory sh = importador.getSh();		
+		StudentsHistory sh = importador.getSh();
 		Student st = sh.getStudents().get(aluno.getMatricula());
 
-		if (st == null){
+		if (st == null) {
 
-			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + "no tem nenhum histrico de matricula cadastrado!");
+			FacesMessage msg = new FacesMessage(
+					"O aluno:" + aluno.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 
 		}
 
-
 		listaEventosAce = aluno.getListaEventosAce();
-		if (listaEventosAce != null){
-			for (EventoAce evento :listaEventosAce){
+		if (listaEventosAce != null) {
+			for (EventoAce evento : listaEventosAce) {
 				horasAceConcluidas = (int) (horasAceConcluidas + evento.getHoras());
 			}
-		}
-		else {
+		} else {
 			listaEventosAce = new ArrayList<EventoAce>();
-		}		
-		if (horasAceConcluidas > aluno.getGrade().getHorasAce()){
+		}
+		if (horasAceConcluidas > aluno.getGrade().getHorasAce()) {
 
 			horasAceConcluidas = aluno.getGrade().getHorasAce();
 		}
-		gerarDadosAluno(st,curriculum);
+		gerarDadosAluno(st, curriculum);
 		ira = st.getIRA();
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
 		horasIncompletasEletivas = 0;
-		if (horasEletivasConcluidas > aluno.getGrade().getHorasEletivas()){
+		if (horasEletivasConcluidas > aluno.getGrade().getHorasEletivas()) {
 			horasIncompletasEletivas = 0;
-		}
-		else {
+		} else {
 			horasIncompletasEletivas = aluno.getGrade().getHorasEletivas() - horasEletivasConcluidas;
 		}
 		horasIncompletasOpcionais = 0;
-		if (horasOpcionaisConcluidas > aluno.getGrade().getHorasOpcionais()){
+		if (horasOpcionaisConcluidas > aluno.getGrade().getHorasOpcionais()) {
 			horasIncompletasOpcionais = 0;
-		}
-		else {
+		} else {
 			horasIncompletasOpcionais = aluno.getGrade().getHorasOpcionais() - horasOpcionaisConcluidas;
 		}
 		horasIncompletasAce = 0;
-		if (horasAceConcluidas > aluno.getGrade().getHorasAce()){
+		if (horasAceConcluidas > aluno.getGrade().getHorasAce()) {
 			horasIncompletasAce = 0;
-		}
-		else {
+		} else {
 			horasIncompletasAce = aluno.getGrade().getHorasAce() - horasAceConcluidas;
 		}
-		chartModelPie = new GChartModelBuilder().setChartType(getChartTypePie())
-				.addColumns("Atividade", "Descrio")
-				.addRow("Horas Obrigatrias Completas", horasObrigatoriasConcluidas)
-				.addRow("Horas Obrigatrias Incompletas", (horasObrigatorias - horasObrigatoriasConcluidas))
-				.addRow("Horas Eletivas Completas", horasEletivasConcluidas )
-				.addRow("Horas Eletivas Incompletas",( horasIncompletasEletivas) )
+		chartModelPie = new GChartModelBuilder().setChartType(getChartTypePie()).addColumns("Atividade", "Descrição")
+				.addRow("Horas Obrigatórias Completas", horasObrigatoriasConcluidas)
+				.addRow("Horas Obrigatórias Incompletas", (horasObrigatorias - horasObrigatoriasConcluidas))
+				.addRow("Horas Eletivas Completas", horasEletivasConcluidas)
+				.addRow("Horas Eletivas Incompletas", (horasIncompletasEletivas))
 				.addRow("Horas Opcionais Completas", horasOpcionaisConcluidas)
-				.addRow("Horas Opcionais Incompletas",(horasIncompletasOpcionais))
+				.addRow("Horas Opcionais Incompletas", (horasIncompletasOpcionais))
 				.addRow("Horas Ace Completas", horasAceConcluidas)
-				.addRow("Horas Ace Incompletas",(horasIncompletasAce))
-				.build();
+				.addRow("Horas Ace Incompletas", (horasIncompletasAce)).build();
 		dadosGraficoAluno();
-		
+
 		preencheSobraHoras();
 	}
 
-	public void limpaAluno(){		
+	public void limpaAluno() {
 		lgAce = true;
-		lgNomeAluno  = false;
+		lgNomeAluno = false;
 		lgMatriculaAluno = false;
 		listaDisciplinaSelecionadas = new ArrayList<SituacaoDisciplina>();
 		listaEventosAce = new ArrayList<EventoAce>();
 		listaDisciplinaEletivas = new ArrayList<SituacaoDisciplina>();
 		listaDisciplinaOpcionais = new ArrayList<SituacaoDisciplina>();
-		listaDisciplinaObrigatorias = new ArrayList<SituacaoDisciplina>();		
+		listaDisciplinaObrigatorias = new ArrayList<SituacaoDisciplina>();
 		selecao = "";
 		status = "";
 		ira = 0;
@@ -347,18 +334,17 @@ public class GraficosSituacaoController implements Serializable {
 		grade.setHorasOpcionais(0);
 		grade.setHorasAce(0);
 		aluno = new Aluno();
-		aluno.setGrade(grade);		
-		DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent("form:gridObrigatorias");
+		aluno.setGrade(grade);
+		DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot()
+				.findComponent("form:gridObrigatorias");
 		dataTable.clearInitialState();
 		dataTable.reset();
 		init();
-		chartModelPie = new GChartModelBuilder().setChartType(getChartTypePie())
-				.addColumns("Atividade", "Descrio")
-				.addRow("Dados", 1)
-				.build();
+		chartModelPie = new GChartModelBuilder().setChartType(getChartTypePie()).addColumns("Atividade", "Descrição")
+				.addRow("Dados", 1).build();
 	}
 
-	public void gerarDadosAluno(Student st, Curriculum cur)	{
+	public void gerarDadosAluno(Student st, Curriculum cur) {
 		HashMap<Class, ArrayList<String[]>> aprovado;
 		listaDisciplinaObrigatorias = new ArrayList<SituacaoDisciplina>();
 		listaDisciplinaEletivas = new ArrayList<SituacaoDisciplina>();
@@ -367,69 +353,68 @@ public class GraficosSituacaoController implements Serializable {
 		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
 		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
 		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
-		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED)); 
+		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
 		TreeSet<String> naocompletado = new TreeSet<String>();
 		boolean lgPeriodoAtual = false;
-		for(int i: cur.getMandatories().keySet()){
-			for(Class c: cur.getMandatories().get(i)){
+		for (int i : cur.getMandatories().keySet()) {
+			for (Class c : cur.getMandatories().get(i)) {
 				horasObrigatorias = horasObrigatorias + c.getWorkload();
-				if(!aprovado.containsKey(c)){
-					if (lgPeriodoAtual == false){
+				if (!aprovado.containsKey(c)) {
+					if (lgPeriodoAtual == false) {
 						aluno.setPeriodoReal(i);
-						lgPeriodoAtual = true;						
+						lgPeriodoAtual = true;
 					}
 					naocompletado.add(c.getId());
 					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 					disciplinaSituacao.setSituacao("NAO APROVADO");
 					disciplinaSituacao.setCodigo(c.getId());
 					disciplinaSituacao.setPeriodo(Integer.toString(i));
-					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));					
+					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 					disciplinaSituacao.setNome(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 					listaDisciplinaObrigatorias.add(disciplinaSituacao);
-				}
-				else{
-					//horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
+				} else {
+					// horasObrigatoriasConcluidas = horasObrigatoriasConcluidas
+					// + c.getWorkload();
 					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 					disciplinaSituacao.setCodigo(c.getId());
 					disciplinaSituacao.setSituacao("APROVADO");
 					disciplinaSituacao.setPeriodo(Integer.toString(i));
-					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));					
+					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 					disciplinaSituacao.setNome(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 					listaDisciplinaObrigatorias.add(disciplinaSituacao);
 					aprovado.remove(c);
 				}
-			}	
+			}
 		}
-		//int creditos = 0;
-		for(Class c: cur.getElectives()){
-			if(aprovado.containsKey(c))	{
+		// int creditos = 0;
+		for (Class c : cur.getElectives()) {
+			if (aprovado.containsKey(c)) {
 				SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 				disciplinaSituacao.setCodigo(c.getId());
 				disciplinaSituacao.setSituacao("APROVADO");
 				disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 				disciplinaSituacao.setNome(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 				listaDisciplinaEletivas.add(disciplinaSituacao);
-				//creditos += c.getWorkload();
+				// creditos += c.getWorkload();
 				aprovado.remove(c);
-			} 	
+			}
 		}
-		//horasEletivasConcluidas = creditos;
-		if (horasEletivasConcluidas <= aluno.getGrade().getHorasEletivas()){
+		// horasEletivasConcluidas = creditos;
+		if (horasEletivasConcluidas <= aluno.getGrade().getHorasEletivas()) {
 
-		}
-		else {
+		} else {
 			horasEletivasConcluidas = aluno.getGrade().getHorasEletivas();
 		}
 
-		//creditos = 0;
+		// creditos = 0;
 		Set<Class> ap = aprovado.keySet();
 		Iterator<Class> i = ap.iterator();
-		while(i.hasNext()){
+		while (i.hasNext()) {
 			Class c = i.next();
 			ArrayList<String[]> classdata = aprovado.get(c);
-			for(String[] s2: classdata)	{
-				if (s2[1].equals("APR") || s2[1].equals("A")){
-					EventoAce evento =  new EventoAce();
+			for (String[] s2 : classdata) {
+				if (s2[1].equals("APR") || s2[1].equals("A")) {
+					EventoAce evento = new EventoAce();
 					horasAceConcluidas = horasAceConcluidas + c.getWorkload();
 					evento.setDescricao(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 					evento.setHoras((long) c.getWorkload());
@@ -437,107 +422,102 @@ public class GraficosSituacaoController implements Serializable {
 					evento.setPeriodo(Integer.parseInt(periodo));
 					evento.setExcluir(false);
 					listaEventosAce.add(evento);
-				}
-				else{
+				} else {
 
 					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
-					disciplinaSituacao.setCodigo(c.getId());			
+					disciplinaSituacao.setCodigo(c.getId());
 					disciplinaSituacao.setSituacao("APROVADO");
 					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 					disciplinaSituacao.setNome(disciplinaDAO.buscarPorCodigoDisciplina(c.getId()).getNome());
 					listaDisciplinaOpcionais.add(disciplinaSituacao);
-					//creditos += c.getWorkload();
+					// creditos += c.getWorkload();
 				}
 			}
 		}
-		//horasOpcionaisConcluidas = creditos;
+		// horasOpcionaisConcluidas = creditos;
 
-		if (horasOpcionaisConcluidas <= aluno.getGrade().getHorasOpcionais()){
+		if (horasOpcionaisConcluidas <= aluno.getGrade().getHorasOpcionais()) {
 
-		}
-		else {
+		} else {
 			horasOpcionaisConcluidas = aluno.getGrade().getHorasOpcionais();
 		}
 	}
 
-	public void onSelectPizza(SelectEvent event){
+	public void onSelectPizza(SelectEvent event) {
 		listaDisciplinaSelecionadas = new ArrayList<SituacaoDisciplina>();
 		JsonArray value = (JsonArray) event.getObject();
-		if(value.size() > 0){
+		if (value.size() > 0) {
 			JsonElement element = value.get(0);
-			String label = new ArrayList<GChartModelRow>(this.getChartModelPie().getRows()).get(element.getAsJsonObject().get("row").getAsInt()).getLabel();
-			if (label.equals("Horas Obrigatrias Completas")){
+			String label = new ArrayList<GChartModelRow>(this.getChartModelPie().getRows())
+					.get(element.getAsJsonObject().get("row").getAsInt()).getLabel();
+			if (label.equals("Horas Obrigatrias Completas")) {
 				selecao = "Horas Obrigatrias Completas";
-				status = Integer.toString(horasObrigatoriasConcluidas) + " / " + Integer.toString(horasObrigatorias) ;
-				for(SituacaoDisciplina disciplinaSituacao : listaDisciplinaObrigatorias){
-					if(disciplinaSituacao.getSituacao().equals("APROVADO")){
-						listaDisciplinaSelecionadas.add(disciplinaSituacao);		
+				status = Integer.toString(horasObrigatoriasConcluidas) + " / " + Integer.toString(horasObrigatorias);
+				for (SituacaoDisciplina disciplinaSituacao : listaDisciplinaObrigatorias) {
+					if (disciplinaSituacao.getSituacao().equals("APROVADO")) {
+						listaDisciplinaSelecionadas.add(disciplinaSituacao);
 					}
 				}
-			}
-			else if (label.equals("Horas Obrigatrias Incompletas")){
+			} else if (label.equals("Horas Obrigatrias Incompletas")) {
 				selecao = "Horas Obrigatrias Incompletas";
-				status = Integer.toString(horasObrigatorias - horasObrigatoriasConcluidas) + " / " + Integer.toString(horasObrigatorias) ;
-				for(SituacaoDisciplina disciplinaSituacao : listaDisciplinaObrigatorias){
-					if(!disciplinaSituacao.getSituacao().equals("APROVADO")){
-						listaDisciplinaSelecionadas.add(disciplinaSituacao);		
+				status = Integer.toString(horasObrigatorias - horasObrigatoriasConcluidas) + " / "
+						+ Integer.toString(horasObrigatorias);
+				for (SituacaoDisciplina disciplinaSituacao : listaDisciplinaObrigatorias) {
+					if (!disciplinaSituacao.getSituacao().equals("APROVADO")) {
+						listaDisciplinaSelecionadas.add(disciplinaSituacao);
 					}
 				}
-			}
-			else if (label.equals("Horas Eletivas Completas")){
-				status = Integer.toString(horasEletivasConcluidas) + " / " + Integer.toString(aluno.getGrade().getHorasEletivas()) ;
+			} else if (label.equals("Horas Eletivas Completas")) {
+				status = Integer.toString(horasEletivasConcluidas) + " / "
+						+ Integer.toString(aluno.getGrade().getHorasEletivas());
 				selecao = "Horas Eletivas Completas";
 				listaDisciplinaSelecionadas = listaDisciplinaEletivas;
-			}
-			else if (label.equals("Horas Opcionais Completas")){
-				status = Integer.toString(horasOpcionaisConcluidas) + " / " + Integer.toString(aluno.getGrade().getHorasOpcionais()) ;
+			} else if (label.equals("Horas Opcionais Completas")) {
+				status = Integer.toString(horasOpcionaisConcluidas) + " / "
+						+ Integer.toString(aluno.getGrade().getHorasOpcionais());
 				selecao = "Horas Opcionais Completas";
 				listaDisciplinaSelecionadas = listaDisciplinaOpcionais;
-			}
-			else if (label.equals("Horas Ace Completas")){
-				status = Integer.toString(horasAceConcluidas) + " / " + Integer.toString(aluno.getGrade().getHorasAce()) ;
+			} else if (label.equals("Horas Ace Completas")) {
+				status = Integer.toString(horasAceConcluidas) + " / "
+						+ Integer.toString(aluno.getGrade().getHorasAce());
 				selecao = "Horas Ace Completas";
 				listaDisciplinaSelecionadas = new ArrayList<SituacaoDisciplina>();
-				for(EventoAce eventoAce : listaEventosAce ){
-					SituacaoDisciplina disciplinaSituacao =  new SituacaoDisciplina();
-					disciplinaSituacao.setCargaHoraria(Long.toString((eventoAce.getHoras() )));
+				for (EventoAce eventoAce : listaEventosAce) {
+					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
+					disciplinaSituacao.setCargaHoraria(Long.toString((eventoAce.getHoras())));
 					disciplinaSituacao.setNome(eventoAce.getDescricao());
 					disciplinaSituacao.setPeriodo(Integer.toString(eventoAce.getPeriodo()));
 					listaDisciplinaSelecionadas.add(disciplinaSituacao);
 				}
-			}
-			else if (label.equals("Horas Eletivas Incompletas")){
+			} else if (label.equals("Horas Eletivas Incompletas")) {
 				selecao = label;
 				int horasIncompletas = 0;
-				if (horasEletivasConcluidas > aluno.getGrade().getHorasEletivas()){
+				if (horasEletivasConcluidas > aluno.getGrade().getHorasEletivas()) {
 					horasIncompletas = 0;
-				}
-				else {	
+				} else {
 					horasIncompletas = aluno.getGrade().getHorasEletivas() - horasEletivasConcluidas;
 				}
-				status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasEletivas()) ;
-			}
-			else if (label.equals("Horas Opcionais Incompletas")){
+				status = Integer.toString(horasIncompletas) + " / "
+						+ Integer.toString(aluno.getGrade().getHorasEletivas());
+			} else if (label.equals("Horas Opcionais Incompletas")) {
 				selecao = label;
 				int horasIncompletas = 0;
-				if (horasOpcionaisConcluidas > aluno.getGrade().getHorasOpcionais()){
+				if (horasOpcionaisConcluidas > aluno.getGrade().getHorasOpcionais()) {
 					horasIncompletas = 0;
-				}
-				else {
+				} else {
 					horasIncompletas = aluno.getGrade().getHorasOpcionais() - horasOpcionaisConcluidas;
 				}
-				status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasOpcionais()) ;
-			}
-			else if (label.equals("Horas Ace Incompletas")){
+				status = Integer.toString(horasIncompletas) + " / "
+						+ Integer.toString(aluno.getGrade().getHorasOpcionais());
+			} else if (label.equals("Horas Ace Incompletas")) {
 				selecao = label;
 				int horasIncompletas = 0;
-				if (horasAceConcluidas > aluno.getGrade().getHorasAce()){
+				if (horasAceConcluidas > aluno.getGrade().getHorasAce()) {
 					horasIncompletas = 0;
-				}
-				else {
+				} else {
 					horasIncompletas = aluno.getGrade().getHorasAce() - horasAceConcluidas;
 				}
-				status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasAce()) ;
+				status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasAce());
 			}
 		}
 	}
@@ -546,86 +526,80 @@ public class GraficosSituacaoController implements Serializable {
 		listaDisciplinaSelecionadas = new ArrayList<SituacaoDisciplina>();
 		int linha = event.getItemIndex();
 		int coluna = event.getSeriesIndex() + 1;
-		if ( linha == 3 && coluna == 1){
-			selecao = "Horas Obrigatrias Completas";
-			status = Integer.toString(horasObrigatoriasConcluidas) + " / " + Integer.toString(horasObrigatorias) ;
-			for(SituacaoDisciplina disciplinaSituacao : listaDisciplinaObrigatorias){
-				if(disciplinaSituacao.getSituacao().equals("APROVADO")){
-					listaDisciplinaSelecionadas.add(disciplinaSituacao);		
+		if (linha == 3 && coluna == 1) {
+			selecao = "Horas Obrigatórias Completas";
+			status = Integer.toString(horasObrigatoriasConcluidas) + " / " + Integer.toString(horasObrigatorias);
+			for (SituacaoDisciplina disciplinaSituacao : listaDisciplinaObrigatorias) {
+				if (disciplinaSituacao.getSituacao().equals("APROVADO")) {
+					listaDisciplinaSelecionadas.add(disciplinaSituacao);
 				}
 			}
-		}
-		else if (linha == 3 && coluna == 2){
+		} else if (linha == 3 && coluna == 2) {
 			selecao = "Horas Obrigatrias Incompletas";
-			status = Integer.toString(horasObrigatorias - horasObrigatoriasConcluidas) + " / " + Integer.toString(horasObrigatorias) ;
-			for(SituacaoDisciplina disciplinaSituacao : listaDisciplinaObrigatorias){
-				if(!disciplinaSituacao.getSituacao().equals("APROVADO")){
-					listaDisciplinaSelecionadas.add(disciplinaSituacao);		
+			status = Integer.toString(horasObrigatorias - horasObrigatoriasConcluidas) + " / "
+					+ Integer.toString(horasObrigatorias);
+			for (SituacaoDisciplina disciplinaSituacao : listaDisciplinaObrigatorias) {
+				if (!disciplinaSituacao.getSituacao().equals("APROVADO")) {
+					listaDisciplinaSelecionadas.add(disciplinaSituacao);
 				}
 			}
-		}
-		else if (linha == 2 && coluna == 1){
+		} else if (linha == 2 && coluna == 1) {
 
 			selecao = "Horas Eletivas Completas";
-			status = Integer.toString(horasEletivasConcluidas) + " / " + Integer.toString(aluno.getGrade().getHorasEletivas()) ;
+			status = Integer.toString(horasEletivasConcluidas) + " / "
+					+ Integer.toString(aluno.getGrade().getHorasEletivas());
 			listaDisciplinaSelecionadas = listaDisciplinaEletivas;
-		}
-		else if (linha == 2 && coluna == 2){    
+		} else if (linha == 2 && coluna == 2) {
 			selecao = "Horas Eletivas Incompletas";
 			int horasIncompletas = 0;
-			if (horasEletivasConcluidas > aluno.getGrade().getHorasEletivas()){
+			if (horasEletivasConcluidas > aluno.getGrade().getHorasEletivas()) {
 				horasIncompletas = 0;
-			}
-			else {	
+			} else {
 				horasIncompletas = aluno.getGrade().getHorasEletivas() - horasEletivasConcluidas;
 			}
-			status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasEletivas()) ;
-		}
-		else if (linha == 1 && coluna == 1){
+			status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasEletivas());
+		} else if (linha == 1 && coluna == 1) {
 
 			selecao = "Horas Opcionais Completas";
 			listaDisciplinaSelecionadas = listaDisciplinaOpcionais;
-			status = Integer.toString(horasOpcionaisConcluidas) + " / " + Integer.toString(aluno.getGrade().getHorasOpcionais()) ;
-		}
-		else if (linha == 1 && coluna == 2){
+			status = Integer.toString(horasOpcionaisConcluidas) + " / "
+					+ Integer.toString(aluno.getGrade().getHorasOpcionais());
+		} else if (linha == 1 && coluna == 2) {
 			selecao = "Horas Opcionais Incompletas";
 			int horasIncompletas = 0;
-			if (horasOpcionaisConcluidas > aluno.getGrade().getHorasOpcionais()){
+			if (horasOpcionaisConcluidas > aluno.getGrade().getHorasOpcionais()) {
 				horasIncompletas = 0;
-			}
-			else {
+			} else {
 				horasIncompletas = aluno.getGrade().getHorasOpcionais() - horasOpcionaisConcluidas;
 			}
-			status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasOpcionais()) ;
-		}
-		else if (linha == 0 && coluna == 1){
+			status = Integer.toString(horasIncompletas) + " / "
+					+ Integer.toString(aluno.getGrade().getHorasOpcionais());
+		} else if (linha == 0 && coluna == 1) {
 			selecao = "Horas Ace Completas";
-			status = Integer.toString(horasAceConcluidas) + " / " + Integer.toString(aluno.getGrade().getHorasAce()) ;
+			status = Integer.toString(horasAceConcluidas) + " / " + Integer.toString(aluno.getGrade().getHorasAce());
 			listaDisciplinaSelecionadas = new ArrayList<SituacaoDisciplina>();
-			for(EventoAce eventoAce : listaEventosAce ){
-				SituacaoDisciplina disciplinaSituacao =  new SituacaoDisciplina();
-				disciplinaSituacao.setCargaHoraria(Long.toString((eventoAce.getHoras() )));
+			for (EventoAce eventoAce : listaEventosAce) {
+				SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
+				disciplinaSituacao.setCargaHoraria(Long.toString((eventoAce.getHoras())));
 				disciplinaSituacao.setNome(eventoAce.getDescricao());
 				disciplinaSituacao.setPeriodo(Integer.toString(eventoAce.getPeriodo()));
 				listaDisciplinaSelecionadas.add(disciplinaSituacao);
 			}
-		}
-		else if (linha == 0 && coluna == 2){
+		} else if (linha == 0 && coluna == 2) {
 			selecao = "Horas Ace Incompletas";
 			int horasIncompletas = 0;
-			if (horasAceConcluidas > aluno.getGrade().getHorasAce()){
+			if (horasAceConcluidas > aluno.getGrade().getHorasAce()) {
 				horasIncompletas = 0;
-			}
-			else {
+			} else {
 				horasIncompletas = aluno.getGrade().getHorasAce() - horasAceConcluidas;
 			}
-			status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasAce()) ;
+			status = Integer.toString(horasIncompletas) + " / " + Integer.toString(aluno.getGrade().getHorasAce());
 
 		}
 	}
 
-	//========================================================= GET - SET ==================================================================================//
-
+	// ========================================================= GET - SET
+	// ==================================================================================//
 
 	public boolean isLgMatriculaAluno() {
 		return lgMatriculaAluno;
@@ -653,7 +627,7 @@ public class GraficosSituacaoController implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
-	}	
+	}
 
 	public float getIra() {
 		return ira;
@@ -691,8 +665,7 @@ public class GraficosSituacaoController implements Serializable {
 		return listaDisciplinaObrigatorias;
 	}
 
-	public void setListaDisciplinaObrigatorias(
-			List<SituacaoDisciplina> listaDisciplinaObrigatorias) {
+	public void setListaDisciplinaObrigatorias(List<SituacaoDisciplina> listaDisciplinaObrigatorias) {
 		this.listaDisciplinaObrigatorias = listaDisciplinaObrigatorias;
 	}
 
@@ -700,8 +673,7 @@ public class GraficosSituacaoController implements Serializable {
 		return listaDisciplinaEletivas;
 	}
 
-	public void setListaDisciplinaEletivas(
-			List<SituacaoDisciplina> listaDisciplinaEletivas) {
+	public void setListaDisciplinaEletivas(List<SituacaoDisciplina> listaDisciplinaEletivas) {
 		this.listaDisciplinaEletivas = listaDisciplinaEletivas;
 	}
 
@@ -709,8 +681,7 @@ public class GraficosSituacaoController implements Serializable {
 		return listaDisciplinaOpcionais;
 	}
 
-	public void setListaDisciplinaOpcionais(
-			List<SituacaoDisciplina> listaDisciplinaOpcionais) {
+	public void setListaDisciplinaOpcionais(List<SituacaoDisciplina> listaDisciplinaOpcionais) {
 		this.listaDisciplinaOpcionais = listaDisciplinaOpcionais;
 	}
 
@@ -822,8 +793,7 @@ public class GraficosSituacaoController implements Serializable {
 		return listaDisciplinaSelecionadas;
 	}
 
-	public void setListaDisciplinaSelecionadas(
-			List<SituacaoDisciplina> listaDisciplinaSelecionadas) {
+	public void setListaDisciplinaSelecionadas(List<SituacaoDisciplina> listaDisciplinaSelecionadas) {
 		this.listaDisciplinaSelecionadas = listaDisciplinaSelecionadas;
 	}
 
@@ -879,8 +849,7 @@ public class GraficosSituacaoController implements Serializable {
 		return listaDisciplinaEletivasSelecionadas;
 	}
 
-	public void setListaDisciplinaEletivasSelecionadas(
-			List<SituacaoDisciplina> listaDisciplinaEletivasSelecionadas) {
+	public void setListaDisciplinaEletivasSelecionadas(List<SituacaoDisciplina> listaDisciplinaEletivasSelecionadas) {
 		this.listaDisciplinaEletivasSelecionadas = listaDisciplinaEletivasSelecionadas;
 	}
 
@@ -888,8 +857,7 @@ public class GraficosSituacaoController implements Serializable {
 		return listaDisciplinaOpcionaisSelecionadas;
 	}
 
-	public void setListaDisciplinaOpcionaisSelecionadas(
-			List<SituacaoDisciplina> listaDisciplinaOpcionaisSelecionadas) {
+	public void setListaDisciplinaOpcionaisSelecionadas(List<SituacaoDisciplina> listaDisciplinaOpcionaisSelecionadas) {
 		this.listaDisciplinaOpcionaisSelecionadas = listaDisciplinaOpcionaisSelecionadas;
 	}
 
@@ -901,6 +869,5 @@ public class GraficosSituacaoController implements Serializable {
 			List<SituacaoDisciplina> listaDisciplinaObrigatoriasSelecionadas) {
 		this.listaDisciplinaObrigatoriasSelecionadas = listaDisciplinaObrigatoriasSelecionadas;
 	}
-
 
 }

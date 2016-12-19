@@ -47,9 +47,9 @@ public class HistoricoController implements Serializable {
 	private ImportarArvore importador;
 	private EstruturaArvore estruturaArvore;
 	private Curso curso = new Curso();
-	
-	//@Inject
-	//private CursoRepository cursos;
+
+	// @Inject
+	// private CursoRepository cursos;
 	@Inject
 	private AlunoRepository alunos;
 
@@ -63,35 +63,34 @@ public class HistoricoController implements Serializable {
 	public void init() {
 		try {
 			estruturaArvore = EstruturaArvore.getInstance();
-			//cursos = estruturaArvore.getCursoDAO();
+			// cursos = estruturaArvore.getCursoDAO();
 			usuarioController.atualizarPessoaLogada();
 
 			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")) {
-				/*List<Curso> listaCurso = (List<Curso>) cursos.listarTodos();
-				for (Curso cursoQuestao : listaCurso) {
-					for (Aluno alunoQuestao : cursoQuestao.getGrupoAlunos()) {
-						if (alunoQuestao.getMatricula()
-								.contains(usuarioController.getAutenticacao().getSelecaoIdentificador())) {
-							aluno = alunoQuestao;
-							break;
-						}
-					}
-				}*/
+				/*
+				 * List<Curso> listaCurso = (List<Curso>) cursos.listarTodos();
+				 * for (Curso cursoQuestao : listaCurso) { for (Aluno
+				 * alunoQuestao : cursoQuestao.getGrupoAlunos()) { if
+				 * (alunoQuestao.getMatricula()
+				 * .contains(usuarioController.getAutenticacao().
+				 * getSelecaoIdentificador())) { aluno = alunoQuestao; break; }
+				 * } }
+				 */
+				
+				lgMatriculaAluno = true;
+				lgNomeAluno = true;
+				lgAluno = false;
 				
 				aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
 				
-				if (aluno.getMatricula() == null) {
+				if (aluno == null || aluno.getMatricula() == null) {
 					FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");
 					FacesContext.getCurrentInstance().addMessage(null, msg);
-					lgMatriculaAluno = true;
-					lgNomeAluno = true;
+
 					return;
 				}
 				curso = aluno.getCurso();
 				onItemSelectMatriculaAluno();
-				lgMatriculaAluno = false;
-				lgNomeAluno = false;
-				lgAluno = false;
 			} else {
 				curso = usuarioController.getAutenticacao().getCursoSelecionado();
 				if (curso.getGrupoAlunos().size() == 0) {
@@ -136,8 +135,6 @@ public class HistoricoController implements Serializable {
 			}
 		}
 
-		lgMatriculaAluno = true;
-		lgNomeAluno = true;
 		listaHistorico = aluno.getGrupoHistorico();
 		importador = estruturaArvore.recuperarArvore(aluno.getGrade(), true);
 		StudentsHistory sh = importador.getSh();
@@ -148,8 +145,11 @@ public class HistoricoController implements Serializable {
 			FacesMessage msg = new FacesMessage(
 					"O aluno:" + aluno.getMatricula() + " não possui nenhum histórico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
-			return;
 
+			lgMatriculaAluno = true;
+			lgNomeAluno = true;
+
+			return;
 		}
 
 		ira = st.getIRA();
