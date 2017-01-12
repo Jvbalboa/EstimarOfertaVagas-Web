@@ -16,6 +16,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.*;
 
+import org.hibernate.Hibernate;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.event.SelectEvent;
@@ -92,7 +93,7 @@ public class GraficosDisciplinasAprovadaController implements Serializable {
 	}
 
 	public void periodoIniciar(){
-		Calendar now = Calendar.getInstance();
+		/*Calendar now = Calendar.getInstance();
 		int anoAtual = now.get(Calendar.YEAR);
 		int mes = now.get(Calendar.MONTH) + 1;
 		int periodoAtual = 0;
@@ -107,7 +108,8 @@ public class GraficosDisciplinasAprovadaController implements Serializable {
 		}
 		else {
 			semestreSelecionado = Integer.toString(anoAtual-1) + "3";
-		}
+		}*/
+		semestreSelecionado = usuarioController.getAutenticacao().getSemestreSelecionado();
 	}
 
 	public void buscar(){
@@ -195,6 +197,7 @@ public class GraficosDisciplinasAprovadaController implements Serializable {
 				turmaAlunos = buscarTurmaAlunos(alunoSelecionadoGrade.getGrade().getCodigo(),alunoSelecionadoGrade.getPeriodoIngresso());
 				alunoQuantidade.setAluno(alunoSelecionadoGrade);
 				boolean achouHistorico = false;
+				//Hibernate.initialize(alunoSelecionadoGrade.getGrupoHistorico());
 				for (Historico historico : alunoSelecionadoGrade.getGrupoHistorico()){
 					if (historico.getSemestreCursado().equals(semestreSelecionado)){
 						achouHistorico = true;

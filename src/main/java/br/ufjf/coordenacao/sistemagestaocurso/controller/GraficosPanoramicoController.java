@@ -332,6 +332,8 @@ public class GraficosPanoramicoController implements Serializable {
 		for(String gradeSelecao : listaGrades){
 
 			for(Grade grade : curso.getGrupoGrades()){
+				if(!grade.estaCompleta())
+					continue;
 
 				if(grade.getCodigo().length() > 4 && grade.getCodigo().substring(1,5).equals(gradeSelecao)){
 
