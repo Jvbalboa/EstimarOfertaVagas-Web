@@ -7,11 +7,13 @@ import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.CategoryAxis;
@@ -60,6 +62,8 @@ public class GraficosIraAlunoController implements Serializable {
 	private EventoAce eventoAceSelecionado;
 	private LineChartModel lineChartModel;
 	private Curso curso = new Curso();
+	
+	@Inject
 	private AlunoRepository alunos;
 
 	// ========================================================= METODOS
@@ -67,10 +71,15 @@ public class GraficosIraAlunoController implements Serializable {
 
 	@Inject
 	private UsuarioController usuarioController;
+	
+	private Logger logger;
 
 	@PostConstruct
 	public void init() {
 		try {
+			logger = Logger.getLogger(GraficosIraAlunoController.class);
+		
+			
 			lineChartModel = initBarModel();
 			lineChartModel.setTitle("Gráfico de Evolução do IRA por Período");
 			Axis yAxis = lineChartModel.getAxis(AxisType.Y);
@@ -79,7 +88,7 @@ public class GraficosIraAlunoController implements Serializable {
 
 			yAxis.setTickFormat("%d");
 			estruturaArvore = EstruturaArvore.getInstance();
-			usuarioController.atualizarPessoaLogada();
+			//usuarioController.atualizarPessoaLogada();
 			Grade grade = new Grade();
 			grade.setHorasEletivas(0);
 			grade.setHorasOpcionais(0);
@@ -87,8 +96,11 @@ public class GraficosIraAlunoController implements Serializable {
 			aluno.setGrade(grade);
 			// cursoDAO = estruturaArvore.getCursoDAO();
 			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")) {
+				
 				aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
-
+			
+				logger.info("Aluno: " + aluno);
+				
 				lgMatriculaAluno = true;
 				lgNomeAluno = true;
 				lgAluno = false;
@@ -110,7 +122,15 @@ public class GraficosIraAlunoController implements Serializable {
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error(e.getMessage());
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR ,"Ocorreu um problema", e.getMessage());
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			
+			//trava os botoes da tela
+			lgMatriculaAluno = true;
+			lgNomeAluno = true;
+			lgAluno = false;
+
 		}
 	}
 
