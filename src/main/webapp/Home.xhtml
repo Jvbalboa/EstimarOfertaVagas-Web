@@ -50,7 +50,8 @@
 						<p:dataTable id="gridGeraisCurso" var="gerais"
 							value="#{homeController.listaDadosGeraisCurso}"
 							emptyMessage="Nenhum dado encontrado"
-							rendered="#{homeController.aparecerTabela}">
+							rendered="#{homeController.aparecerTabela}"
+							scrollable="true" scrollHeight="507">
 
 							<p:column headerText="Código Curso" sortBy="#{gerais.codigoCurso}" style="    font-size: 14px;    text-align: center;">
 								<h:outputText value="#{gerais.codigoCurso}" />
@@ -72,7 +73,8 @@
 						<p:dataTable id="gridGerais" var="gerais"
 							value="#{homeController.listaDadosGerais}"
 							emptyMessage="Nenhum dado encontrado"
-							rendered="#{homeController.aparecerTabela}">
+							rendered="#{homeController.aparecerTabela}"
+							scrollable="true" scrollHeight="507">
 
 							<p:column headerText="Código Curso" sortBy="#{gerais.codigoCurso}" style="    font-size: 14px;    text-align: center;">
 								<h:outputText value="#{gerais.codigoCurso}" />
