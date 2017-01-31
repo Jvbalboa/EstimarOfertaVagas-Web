@@ -26,6 +26,7 @@ public class AlunoRepository implements Serializable {
 
 	public void remover(Aluno aluno) {
 		manager.remove(manager.contains(aluno) ? aluno : manager.merge(aluno));
+		manager.createQuery("DELETE FROM Aluno WHERE matricula = :matricula").setParameter("matricula", aluno.getMatricula()).executeUpdate();
 	}
 
 	public Aluno buscarPorMatricula(String variavel) {

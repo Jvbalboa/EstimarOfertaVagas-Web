@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -121,7 +121,12 @@ public class ImportarHistorico implements Serializable{
 		}
 		try {
 			IWsLogin integra = new WSLogin().getWsLoginServicePort();
-			WsLoginResponse user = integra.login(usuarioController.getAutenticacao().getLogin(), usuarioController.getAutenticacao().getSenha(), usuarioController.getAutenticacao().getToken());
+			
+			WsLoginResponse user;
+			
+
+				user = integra.login(usuarioController.getAutenticacao().getLogin(), usuarioController.getAutenticacao().getSenha(), usuarioController.getAutenticacao().getToken());
+			
 			logger.info("Recuperando dados do curso "+ curso.getCodigo() +"...");
 			RSCursoAlunosDiscSituacao rsClient = new RSCursoAlunosDiscSituacao(user.getToken(), ServiceVersion.V2);
 			EstruturaArvore estruturaArvore = EstruturaArvore.getInstance();
@@ -133,13 +138,14 @@ public class ImportarHistorico implements Serializable{
 				return;
 			}
 			else {
-
+				int numAlunosRemovidos = cursos.removerTodosAlunos(curso);
+				logger.info(numAlunosRemovidos + " alunos removidos");
 				for (Grade grade:curso.getGrupoGrades()){
 					logger.info("Removendo alunos da grade " + grade.getCodigo());
-					for (Aluno alunoQuestao : grade.getGrupoAlunos()){
+					/*for (Aluno alunoQuestao : grade.getGrupoAlunos()){
 						alunos.remover(alunoQuestao);
 						logger.info("Removido aluno " + alunoQuestao.getMatricula());
-					}
+					}*/
 					grade.setGrupoAlunos(new ArrayList<Aluno>());
 				}
 			}

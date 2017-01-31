@@ -24,6 +24,12 @@ public class CursoRepository implements Serializable {
 		return manager.merge(curso);
 	}
 
+	public int removerTodosAlunos(Curso curso)	{
+		return manager.createQuery("DELETE FROM Aluno WHERE ID_CURSO = :curso")
+				.setParameter("curso", curso.getId())
+				.executeUpdate();
+	}
+	
 	public void remover(Curso curso) {
 		manager.remove(manager.contains(curso) ? curso : manager.merge(curso));
 	}
