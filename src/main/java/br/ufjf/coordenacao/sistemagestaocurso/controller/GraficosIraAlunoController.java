@@ -155,6 +155,8 @@ public class GraficosIraAlunoController implements Serializable {
 		fPeriodo.setLabel("IRA Período");
 		fAcumulado.setLabel("IRA Acumulado");
 		ira = st.getIRA();
+		logger.info("Gerando IRA. Aluno " + st.getNome() + ": IRA=" +ira);
+		
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
 		if (ira == -1) {
 			ChartSeries f = new ChartSeries();
@@ -168,6 +170,7 @@ public class GraficosIraAlunoController implements Serializable {
 
 		for (int i : semestres) {
 			if (st.getSemesterIRA(i) != -1) {
+				logger.info("("+ i +") IRA Semestre: " + st.getSemesterIRA(i) + "| IRA Acumulado: " + st.getIRA(i));
 				fPeriodo.set(i, st.getSemesterIRA(i));
 				fAcumulado.set(i, st.getIRA(i));
 			}

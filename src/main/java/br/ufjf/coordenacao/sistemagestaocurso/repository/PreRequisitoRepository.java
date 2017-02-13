@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 public class PreRequisitoRepository implements Serializable {
 
@@ -42,11 +43,16 @@ public class PreRequisitoRepository implements Serializable {
 	}
 
 	public Integer buscarPorDisciplanaGradeId(Long idGrade, Long idDisciplina) {
-
+		try {
 		return (int) manager .createQuery("Select id FROM PreRequisito WHERE id_grade_disciplina = :idGrade and id_disciplina = :idDisciplina")
 				.setParameter("idGrade", idGrade)
 				.setParameter("idDisciplina", idDisciplina)
 				.getSingleResult();
+		}
+		catch (NoResultException e)
+		{
+			return 0;
+		}
 
 	}
 
