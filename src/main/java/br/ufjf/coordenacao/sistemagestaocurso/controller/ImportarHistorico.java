@@ -37,23 +37,22 @@ import br.ufjf.ice.integra3.ws.login.interfaces.IWsLogin;
 import br.ufjf.ice.integra3.ws.login.interfaces.WsLoginResponse;
 import br.ufjf.ice.integra3.ws.login.service.WSLogin;
 
-
 @Named
 @ViewScoped
-public class ImportarHistorico implements Serializable{
+public class ImportarHistorico implements Serializable {
 
 	private Curso curso = new Curso();
 
 	private Logger logger = Logger.getLogger(ImportarHistorico.class);
-	
+
 	@Inject
 	private UsuarioController usuarioController;
 	private static final long serialVersionUID = 1L;
-	private Date d ;
+	private Date d;
 	private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-	
+
 	@Inject
-	private CursoRepository cursos ;
+	private CursoRepository cursos;
 	@Inject
 	private AlunoRepository alunos;
 	@Inject
@@ -62,25 +61,22 @@ public class ImportarHistorico implements Serializable{
 	private HistoricoRepository historicos;
 	@Inject
 	private EntityManager manager;
-	 /*
-	@Inject
-	private Importador importador;
-	*/
+	/*
+	 * @Inject private Importador importador;
+	 */
 	@Inject
 	private GradeRepository grades;
 
 	@PostConstruct
 	public void init() throws IOException {
-		
-		
+
 		curso = usuarioController.getAutenticacao().getCursoSelecionado();
 		usuarioController.setReseta(true);
 		logger.info("Abrindo página de importação");
 
 	}
-	
-	private Grade criarGrade(String codigo)
-	{
+
+	private Grade criarGrade(String codigo) {
 		Grade grade = new Grade();
 		grade.setCodigo(codigo);
 		grade.setCurso(curso);
@@ -92,113 +88,97 @@ public class ImportarHistorico implements Serializable{
 		return grade;
 	}
 
-	//@Transactional
-	private void atulizaDataImportação()
-	{
+	private void atulizaDataImportação() {
 		d = new Date();
 		String data = format.format(d).toString();
 		curso = cursos.porid(curso.getId());
 		curso.setDataAtualizacao(data);
 		cursos.persistir(curso);
 	}
-	
-	//@Transactional
-	private Disciplina criarDisciplina(String codigo, String horasAula)
-	{
+
+	private Disciplina criarDisciplina(String codigo, String horasAula) {
 		Disciplina disciplina = new Disciplina();
 		disciplina.setCodigo(codigo);
 		disciplina.setCargaHoraria(Integer.parseInt(horasAula));
 		disciplina = disciplinas.persistir(disciplina);
-		
+
 		return disciplina;
 	}
-	
+
 	@Transactional
-	public void importar() throws Exception
-	{
-		if (usuarioController.getAutenticacao().getTipoAcesso().equals("externo")){
+	public void importar() throws Exception {
+		if (usuarioController.getAutenticacao().getTipoAcesso().equals("externo")) {
 			FacesMessage msg = new FacesMessage("Voce não tem permissão para importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		try {
 			IWsLogin integra = new WSLogin().getWsLoginServicePort();
-			
+
 			WsLoginResponse user;
-			
 
-			//user = integra.login(usuarioController.getAutenticacao().getLogin(), usuarioController.getAutenticacao().getSenha(), usuarioController.getAutenticacao().getToken());
+			user = integra.login(usuarioController.getAutenticacao().getLogin(),
+					usuarioController.getAutenticacao().getSenha(), usuarioController.getAutenticacao().getToken());
 
-			user = integra.login("***REMOVED***", "***REMOVED***","***REMOVED***");
-			
-			
-			logger.info("Recuperando dados do curso "+ curso.getCodigo() +"...");
+			logger.info("Recuperando dados do curso " + curso.getCodigo() + "...");
 			RSCursoAlunosDiscSituacao rsClient = new RSCursoAlunosDiscSituacao(user.getToken(), ServiceVersion.V2);
 			EstruturaArvore estruturaArvore = EstruturaArvore.getInstance();
 
-			if (curso == null){
+			if (curso == null) {
 				FacesMessage msg = new FacesMessage("Curso Inválido!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 				logger.warn("Curso inválido. Importacao cancelada");
 				return;
-			}
-			else {
+			} else {
 				if (!curso.getGrupoAlunos().isEmpty()) {
 					logger.info("Removendo alunos do curso");
 					int numAlunosRemovidos = cursos.removerTodosAlunos(curso);
-					if (true)
-						// throw new Exception("Aqui ja removeu td");
 
-						logger.info(numAlunosRemovidos + " alunos removidos");
+					logger.info(numAlunosRemovidos + " alunos removidos");
 					for (Grade grade : curso.getGrupoGrades()) {
 						logger.info("Removendo alunos da grade " + grade.getCodigo());
 
 						grade.setGrupoAlunos(new ArrayList<Aluno>());
 					}
 				}
-				
-				else
-				{
+
+				else {
 					logger.info("O curso não há alunos a serem removidos");
 				}
 			}
 
-			
-			
 			CursoAlunosSituacaoResponse rsResponse = (CursoAlunosSituacaoResponse) rsClient.get(curso.getCodigo());
-			if (rsResponse.getResponseStatus() != null) 
-				throw new Exception (rsResponse.getResponseStatus());
+			if (rsResponse.getResponseStatus() != null)
+				throw new Exception(rsResponse.getResponseStatus());
 
-			List<Grade> listaGrade = new ArrayList<Grade>();			
+			List<Grade> listaGrade = new ArrayList<Grade>();
 			int contador = 0;
 			int total = rsResponse.getAluno().size();
-			
-			
-			
+
 			listaGrade.addAll(curso.getGrupoGrades());
-			
+
 			logger.info("Processando alunos de " + curso.getCodigo());
 
-			for(AlunoCurso alunoCurso : rsResponse.getAluno()) {
+			for (AlunoCurso alunoCurso : rsResponse.getAluno()) {
 
-				contador ++;
+				contador++;
 				logger.info("Recuperando " + String.valueOf(contador) + " de " + String.valueOf(total));
 				Grade grade = null;
-				for(Grade gradeQuestao : listaGrade){
-					if (gradeQuestao.getCodigo().equals(alunoCurso.getCurriculo())){
+				for (Grade gradeQuestao : listaGrade) {
+					if (gradeQuestao.getCodigo().equals(alunoCurso.getCurriculo())) {
 						grade = gradeQuestao;
 						break;
 					}
 				}
-				
-				if (grade == null){
+
+				if (grade == null) {
 					grade = criarGrade(alunoCurso.getCurriculo());
 					listaGrade.add(grade);
 				}
 
 				Aluno aluno = alunos.buscarPorMatricula(alunoCurso.getMatricula());
 
-				if ( aluno == null){
+				if (aluno == null) {
 					aluno = new Aluno();
 					aluno.setMatricula(alunoCurso.getMatricula());
 					aluno.setNome(alunoCurso.getNome());
@@ -207,28 +187,29 @@ public class ImportarHistorico implements Serializable{
 					aluno = alunos.persistir(aluno);
 					grade.getGrupoAlunos().add(aluno);
 
-				} 
+				}
 
 				logger.info("Processando aluno " + alunoCurso.getMatricula() + " - " + alunoCurso.getCurriculo());
-				for (br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina disciplinaIntegra : alunoCurso.getDisciplinas().getDisciplina()) {
+				for (br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina disciplinaIntegra : alunoCurso
+						.getDisciplinas().getDisciplina()) {
 					Disciplina disciplina = disciplinas.buscarPorCodigoDisciplina(disciplinaIntegra.getDisciplina());
-					
-					if (disciplina == null){
-						disciplina = criarDisciplina(disciplinaIntegra.getDisciplina(), disciplinaIntegra.getHorasAula());
+
+					if (disciplina == null) {
+						disciplina = criarDisciplina(disciplinaIntegra.getDisciplina(),
+								disciplinaIntegra.getHorasAula());
 					}
 
 					Historico historico = new Historico();
 					historico.setAluno(aluno);
 					historico.setDisciplina(disciplina);
-					if (disciplinaIntegra.getNota() == null || disciplinaIntegra.getNota().trim().equals("")){
+					if (disciplinaIntegra.getNota() == null || disciplinaIntegra.getNota().trim().equals("")) {
 						historico.setNota("0");
-					}
-					else {
+					} else {
 						historico.setNota(disciplinaIntegra.getNota().trim());
 					}
 					historico.setSemestreCursado(disciplinaIntegra.getAnoSemestre());
 					historico.setStatusDisciplina(disciplinaIntegra.getSituacao());
-					if (aluno.getGrupoHistorico() == null){
+					if (aluno.getGrupoHistorico() == null) {
 
 						aluno.setGrupoHistorico(new ArrayList<Historico>());
 
@@ -236,16 +217,14 @@ public class ImportarHistorico implements Serializable{
 					historico = historicos.persistir(historico);
 					aluno.getGrupoHistorico().add(historico);
 				}
-			}		
-			
-			
+			}
 
 			List<Grade> listaGrades = curso.getGrupoGrades();
-			for (Grade grade:listaGrades){
+			for (Grade grade : listaGrades) {
 				estruturaArvore.removerEstrutura(grade);
 				grades.persistir(grade);
 				logger.info("Removendo " + grade.getCodigo() + " da estrutura");
-				
+
 			}
 			logger.info("Atualizando Data de importação");
 			atulizaDataImportação();
@@ -253,41 +232,34 @@ public class ImportarHistorico implements Serializable{
 			logger.info("OK");
 
 		} catch (NotAuthorizedException e) {
-			/*FacesMessage msg = new FacesMessage("Voce não tem permissão para importartar dados!");
-			FacesContext.getCurrentInstance().addMessage(null, msg);
-			logger.warn("Erro de autorização");*/
 			throw e;
-			} 
-		
+		}
+
 		catch (Exception e) {
-			/*FacesMessage msg = new FacesMessage("Ocorreu um problema ao importartar dados!");
-			FacesContext.getCurrentInstance().addMessage(null, msg);*/
 			logger.error("Problema na importação: " + e.getMessage());
 			throw e;
 		}
 		logger.info("Importação terminada");
 	}
-	
-	
+
 	public void chamarTudo() {
 		try {
-			if(!manager.getTransaction().isActive())
+			if (!manager.getTransaction().isActive())
 				manager.getTransaction().begin();
-			
+
 			importar();
-			
+
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_INFO, "Concluído",
 					"Importação concluída com sucesso");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
-			
+
 			manager.getTransaction().commit();
 		} catch (NotAuthorizedException e) {
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Não autorizado",
 					"Você não possui permissão de importar dados");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
-			
-			if(manager.getTransaction().isActive())
-			{
+
+			if (manager.getTransaction().isActive()) {
 				manager.getTransaction().rollback();
 				logger.error("Falha. Realizado rollback da transação", e);
 			}
@@ -296,12 +268,12 @@ public class ImportarHistorico implements Serializable{
 					"Ocorreu algum problema e a importação não foi realizada");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			logger.error("", e);
-			if(manager.getTransaction().isActive()){
+			if (manager.getTransaction().isActive()) {
 				manager.getTransaction().rollback();
 				logger.error("Falha. Realizado rollback da transação");
 			}
 		}
-		
+
 	}
 
 	public static long getSerialversionuid() {
