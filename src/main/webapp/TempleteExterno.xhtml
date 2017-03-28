@@ -176,13 +176,11 @@
 							</div>
 							<div class="ui-grid-row espacoLinha">
 								<div style="padding-top: 24px;">
-									<h:commandButton value="Alterar" class="btn btn-success btn-sm"
-										style="margin-right: 5px; margin-top: -7px;">
-
-										<f:ajax listener="#{usuarioController.mudarSenha()}"
-											execute="senha novaSenha novaSenhaConf"
-											render="senha novaSenha novaSenhaConf" />
-									</h:commandButton>
+									<p:commandButton value="Alterar" class="btn btn-success btn-sm"
+										style="margin-right: 5px; margin-top: -7px;" oncomplete="PF('alterarSenha').hide()"
+										actionListener="#{usuarioController.mudarSenha()}"
+										>
+									</p:commandButton>
 								</div>
 							</div>
 						</div>

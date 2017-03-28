@@ -40,6 +40,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.PessoaCurso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.Autenticacao;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.PessoaRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
 
 @Named
 @SessionScoped
@@ -195,6 +196,7 @@ public class UsuarioController implements Serializable {
 		context.addMessage("destinoErro", msg);
 	}
 
+	@Transactional
 	public void mudarSenha() { // ok
 		if (md5(senha).equals(autenticacao.getSenha())) {
 			if (senhaNova.equals(senhaConf)) {
