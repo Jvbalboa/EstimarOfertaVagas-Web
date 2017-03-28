@@ -16,6 +16,13 @@ public class DisciplinaRepository implements Serializable {
 	@Inject
 	private EntityManager manager;
 
+	public DisciplinaRepository() 	{ }
+	
+	public DisciplinaRepository(EntityManager manager)
+	{
+		this.manager = manager;
+	}
+	
 	public Disciplina porid(long id) {
 		return manager.find(Disciplina.class, id);
 	}

@@ -20,11 +20,13 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.Table;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,6 +51,8 @@ public class UsuarioController implements Serializable {
 	private String senhaConf;
 	private String senha;
 
+	private Logger logger = Logger.getLogger(UsuarioController.class);
+	
 	@Inject
 	private PessoaRepository pessoaDAO;
 
@@ -82,13 +86,43 @@ public class UsuarioController implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public void periodoIniciar() { // ok
+		try {
+			logger.info("Selecionando periodos baseado no histórico.");
+			
+			String query = "SELECT SEMESTRE_CURSADO FROM (SELECT SEMESTRE_CURSADO, COUNT( SEMESTRE_CURSADO ) AS matriculado FROM (SELECT SEMESTRE_CURSADO FROM Historico INNER JOIN Aluno AS a ON Historico.ID_MATRICULA = a.id WHERE ID_CURSO ="
+					+ autenticacao.getCursoSelecionado().getId()
+					+ " AND STATUS_DISCIPLINA = 'Matriculado' ) AS historico_curso GROUP BY SEMESTRE_CURSADO order by matriculado DESC, SEMESTRE_CURSADO DESC LIMIT 0,3) AS t";
 
-		String query = "SELECT SEMESTRE_CURSADO FROM (SELECT SEMESTRE_CURSADO, COUNT( SEMESTRE_CURSADO ) AS matriculado FROM (SELECT SEMESTRE_CURSADO FROM historico INNER JOIN aluno AS a ON historico.ID_MATRICULA = a.id WHERE ID_CURSO ="+
-				autenticacao.getCursoSelecionado().getId()
-				+" AND STATUS_DISCIPLINA = 'Matriculado' ) AS historico_curso GROUP BY SEMESTRE_CURSADO order by matriculado DESC, SEMESTRE_CURSADO DESC LIMIT 0,3) AS t";
+			periodos = manager.createNativeQuery(query).getResultList();
+			autenticacao.setSemestreSelecionado(periodos.get(0));
+		} catch (Exception e) {
+			logger.warn("Não foi possível selecionar os periodos baseado nos dados de histórico. Será usado um método alternativo. Motivo: " + e.getMessage());
+		} finally {
+			if (periodos.size() < 1) {
+				logger.info("Carregando peridos pelo método do calendario.");
+				Calendar now = Calendar.getInstance();
+				int anoAtual = now.get(Calendar.YEAR);
+				int mes = now.get(Calendar.MONTH);
+				int periodoAtual = 0;
+				if(mes >= 1 && mes <= 6){
+					periodoAtual = 1;
+				}
+				else {
+					periodoAtual = 3;
+				}
+				if (periodoAtual == 1){
+					autenticacao.setSemestreSelecionado(Integer.toString(anoAtual) + "1") ;
+					periodos.add(Integer.toString(anoAtual) + "1");
+					periodos.add(Integer.toString(anoAtual-1) + "3");
+				}
+				else {
+					autenticacao.setSemestreSelecionado(Integer.toString(anoAtual-1) + "3") ;			
+					periodos.add(Integer.toString(anoAtual-1) + "3");
+					periodos.add(Integer.toString(anoAtual-1) + "1");
+				}
+			}
+		}
 		
-		periodos = manager.createNativeQuery(query).getResultList();
-		autenticacao.setSemestreSelecionado(periodos.get(0));
 	}
 
 	public void login() throws ServletException, IOException { // ok

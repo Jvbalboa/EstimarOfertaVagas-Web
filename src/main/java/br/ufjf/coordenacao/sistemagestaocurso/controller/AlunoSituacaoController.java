@@ -27,6 +27,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.controller.util.Ordenar;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
+import br.ufjf.coordenacao.sistemagestaocurso.model.Disciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.EventoAce;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
@@ -399,11 +400,12 @@ public class AlunoSituacaoController
 					listaEventosAce.add(evento);
 				}
 				else{
+					Disciplina opcional = disciplinas.buscarPorCodigoDisciplina(c.getId());
 					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 					disciplinaSituacao.setCodigo(c.getId());			
 					disciplinaSituacao.setSituacao("APROVADO");
-					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
-					disciplinaSituacao.setNome(disciplinas.buscarPorCodigoDisciplina(c.getId()).getNome());
+					disciplinaSituacao.setCargaHoraria(opcional.getCargaHoraria().toString());
+					disciplinaSituacao.setNome(opcional.getNome());
 					listaDisciplinaOpcionais.add(disciplinaSituacao);
 					//creditos += c.getWorkload();
 				}
