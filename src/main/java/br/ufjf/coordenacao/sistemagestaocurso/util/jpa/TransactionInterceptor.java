@@ -10,8 +10,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 @Transactional @Interceptor
 public class TransactionInterceptor implements Serializable {

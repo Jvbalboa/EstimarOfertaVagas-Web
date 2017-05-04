@@ -87,8 +87,7 @@ public class GraficosIraQuantidadeController implements Serializable {
 				}		
 				
 				
-				ira = st.getIRA(); 
-				if(ira == -1) continue;
+				ira = aluno.getIra();
 				int index = (int)ira / 5;
 				ElementoGrafico elementoGrafico = buscaElemento(index);
 				aluno.setIra(ira);

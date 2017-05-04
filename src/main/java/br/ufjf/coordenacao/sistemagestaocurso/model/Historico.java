@@ -9,8 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
-
-
 @Entity
 @SequenceGenerator(name="historico_sequencia", sequenceName="historico_seq", allocationSize=1)  
 public class Historico {
@@ -81,4 +79,5 @@ public class Historico {
 	public void setNota(String nota) {
 		this.nota = nota;
 	}
+
 }

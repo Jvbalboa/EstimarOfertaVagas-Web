@@ -3,6 +3,7 @@ package br.ufjf.coordenacao.sistemagestaocurso.util.arvore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.faces.application.FacesMessage;
@@ -22,6 +23,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Disciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.EventoAce;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 
 public class ContadorHorasIntegralizadas {
 
@@ -32,6 +34,7 @@ public class ContadorHorasIntegralizadas {
 	
 	private EntityManager manager;
 	private DisciplinaRepository disciplinas;
+	private EventoAceRepository eventosace;
 	
 	private int horasObrigatoriasCompletadas;
 	private int horasEletivasCompletadas;
@@ -84,11 +87,13 @@ public class ContadorHorasIntegralizadas {
 		
 		int aceCadastradas = 0;
 		
-		for(EventoAce e: this.aluno.getListaEventosAce())
-		{
-			aceCadastradas += e.getHoras();
-		}
+		List<EventoAce> eventos = this.eventosace.buscarPorMatricula(this.aluno.getMatricula());
 		
+		for(EventoAce evento: eventos)
+		{
+			aceCadastradas += evento.getHoras();
+		}
+				
 		return Math.min((horasAceConcluidas + aceCadastradas), this.grade.getHorasAce());
 	}
 	
@@ -104,6 +109,7 @@ public class ContadorHorasIntegralizadas {
 	{
 		this.manager = Persistence.createEntityManagerFactory("sgcPU").createEntityManager();
 		this.disciplinas = new DisciplinaRepository(this.manager);
+		this.eventosace = new EventoAceRepository(this.manager);
 		
 		logger.info("Calculando horas integralizadas pelo aluno " + this.aluno.getMatricula());
 		this.horasObrigatoriasCompletadas = 0;
@@ -181,6 +187,11 @@ public class ContadorHorasIntegralizadas {
 		this.horasCalculadas = true;
 		logger.info("Horas calculadas com sucesso.");
 		
+		
+	}
+	
+	public void dispose()
+	{
 		try {
 			this.manager.close();
 			this.disciplinas = null;

@@ -2,7 +2,6 @@ package br.ufjf.coordenacao.sistemagestaocurso.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -16,7 +15,6 @@ import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.*;
 
-import org.hibernate.Hibernate;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.event.SelectEvent;

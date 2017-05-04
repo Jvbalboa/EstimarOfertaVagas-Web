@@ -1,12 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
-import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -20,7 +14,6 @@ import org.apache.log4j.Logger;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
 
 public class Importador {
 

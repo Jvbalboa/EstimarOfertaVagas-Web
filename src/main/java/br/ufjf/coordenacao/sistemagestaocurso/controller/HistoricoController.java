@@ -12,6 +12,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 import br.ufjf.coordenacao.OfertaVagas.model.Curriculum;
@@ -22,7 +23,6 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 
@@ -48,8 +48,8 @@ public class HistoricoController implements Serializable {
 	private EstruturaArvore estruturaArvore;
 	private Curso curso = new Curso();
 
-	// @Inject
-	// private CursoRepository cursos;
+	private Logger logger = Logger.getLogger(HistoricoController.class);
+	
 	@Inject
 	private AlunoRepository alunos;
 
@@ -67,15 +67,6 @@ public class HistoricoController implements Serializable {
 			usuarioController.atualizarPessoaLogada();
 
 			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")) {
-				/*
-				 * List<Curso> listaCurso = (List<Curso>) cursos.listarTodos();
-				 * for (Curso cursoQuestao : listaCurso) { for (Aluno
-				 * alunoQuestao : cursoQuestao.getGrupoAlunos()) { if
-				 * (alunoQuestao.getMatricula()
-				 * .contains(usuarioController.getAutenticacao().
-				 * getSelecaoIdentificador())) { aluno = alunoQuestao; break; }
-				 * } }
-				 */
 				
 				lgMatriculaAluno = true;
 				lgNomeAluno = true;
@@ -94,14 +85,16 @@ public class HistoricoController implements Serializable {
 			} else {
 				curso = usuarioController.getAutenticacao().getCursoSelecionado();
 				if (curso.getGrupoAlunos().size() == 0) {
-
+					logger.warn("O curso " + curso.getCodigo() + " ainda não possui alunos cadastrados");
 					FacesMessage msg = new FacesMessage("Nenhum aluno cadastrado no curso!");
 					FacesContext.getCurrentInstance().addMessage(null, msg);
 				}
 
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error("Exceção ao carregar o histórico", e);
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ocorreu um problema", e.getLocalizedMessage());
+			FacesContext.getCurrentInstance().addMessage(null, msg);
 		}
 	}
 
@@ -128,20 +121,33 @@ public class HistoricoController implements Serializable {
 	}
 
 	public void onItemSelectMatriculaAluno() {
-		for (Aluno alunoQuestao : curso.getGrupoAlunos()) {
-			if (alunoQuestao.getMatricula().contains(aluno.getMatricula())) {
-				aluno = alunoQuestao;
-				break;
-			}
+		lgMatriculaAluno = true;
+		lgNomeAluno = true;
+		
+		try {
+			logger.info("Buscando dados para o aluno " + aluno.getMatricula());
+			aluno = alunos.buscarPorMatricula(aluno.getMatricula());
+		} catch (Exception e) {
+			logger.error("Erro ao buscar o aluno", e);
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Não foi possível carregar os dados", e.getLocalizedMessage());
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			return;
 		}
-
+		
+		if(aluno == null)
+		{
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Não foi possível carregar os dados", "O matrícula inexistente na base de dados");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			return;
+		}
+		
 		listaHistorico = aluno.getGrupoHistorico();
 		importador = estruturaArvore.recuperarArvore(aluno.getGrade(), true);
 		StudentsHistory sh = importador.getSh();
 		Student st = sh.getStudents().get(aluno.getMatricula());
 
 		if (st == null) {
-
+			logger.info("O aluno " + aluno.getMatricula() + " não possui histórico de matricula");
 			FacesMessage msg = new FacesMessage(
 					"O aluno:" + aluno.getMatricula() + " não possui nenhum histórico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -152,7 +158,7 @@ public class HistoricoController implements Serializable {
 			return;
 		}
 
-		ira = st.getIRA();
+		ira = aluno.getIra();
 		if (ira == -1) {
 			ira = (float) 0;
 		}

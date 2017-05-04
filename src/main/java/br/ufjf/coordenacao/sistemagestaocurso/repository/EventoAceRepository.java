@@ -14,6 +14,13 @@ public class EventoAceRepository implements Serializable {
 	@Inject
 	private EntityManager manager;
 
+	public EventoAceRepository(){ };
+	
+	public EventoAceRepository(EntityManager manager)
+	{
+		this.manager = manager;
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	public EventoAce porid(long id) {

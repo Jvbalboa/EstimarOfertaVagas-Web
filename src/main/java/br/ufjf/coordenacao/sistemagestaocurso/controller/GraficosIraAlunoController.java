@@ -3,11 +3,8 @@ package br.ufjf.coordenacao.sistemagestaocurso.controller;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
-
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -28,6 +25,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.EventoAce;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
+import br.ufjf.coordenacao.sistemagestaocurso.model.IRA;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
@@ -151,10 +149,10 @@ public class GraficosIraAlunoController implements Serializable {
 		StudentsHistory sh = importador.getSh();
 		Student st = sh.getStudents().get(aluno.getMatricula());
 
-		TreeSet<Integer> semestres = st.getCoursedSemesters();
+		//TreeSet<Integer> semestres = st.getCoursedSemesters();
 		fPeriodo.setLabel("IRA Período");
 		fAcumulado.setLabel("IRA Acumulado");
-		ira = st.getIRA();
+		ira = aluno.getIra();
 		logger.info("Gerando IRA. Aluno " + st.getNome() + ": IRA=" +ira);
 		
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
@@ -168,12 +166,12 @@ public class GraficosIraAlunoController implements Serializable {
 
 		}
 
-		for (int i : semestres) {
-			if (st.getSemesterIRA(i) != -1) {
-				logger.info("("+ i +") IRA Semestre: " + st.getSemesterIRA(i) + "| IRA Acumulado: " + st.getIRA(i));
-				fPeriodo.set(i, st.getSemesterIRA(i));
-				fAcumulado.set(i, st.getIRA(i));
-			}
+		for (IRA ira : aluno.getIras()) {
+			logger.info("(" + ira.getSemestre() + ") IRA Semestre: " + ira.getIraSemestre() + "| IRA Acumulado: "
+					+ ira.getIraAcumulado());
+			fPeriodo.set(ira.getSemestre(), ira.getIraSemestre());
+			fAcumulado.set(ira.getSemestre(), ira.getIraAcumulado());
+
 		}
 
 		model.addSeries(fPeriodo);

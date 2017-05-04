@@ -25,6 +25,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.ElementoGrafico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.GrupoElementoGrafico;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 //import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
@@ -72,7 +73,10 @@ public class GraficosPanoramicoController implements Serializable {
 	private int periodoAtual;
 	private boolean liberaSelecao = false;
 	
+	@Inject
 	private AlunoRepository alunos;
+	@Inject
+	private EventoAceRepository eventosace;
 
 	//========================================================= METODOS ==================================================================================//
 
@@ -174,7 +178,7 @@ public class GraficosPanoramicoController implements Serializable {
 				horasOpcionaisConcluidas = 0;
 				horasEletivasConcluidas = 0;
 
-				listaEventosAce = aluno.getListaEventosAce();
+				listaEventosAce = this.eventosace.buscarPorMatricula(aluno.getMatricula());
 
 				if (listaEventosAce != null){
 					for (EventoAce evento :listaEventosAce){
@@ -201,7 +205,7 @@ public class GraficosPanoramicoController implements Serializable {
 				horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
 				horasObrigatorias = aluno.getGrade().getHorasObrigatorias();
 
-				ira = st.getIRA();
+				ira = aluno.getIra();
 				
 				if (alunoSelecionado.getMatricula()== null || alunoSelecionado.getMatricula().equals("")){					
 					liberaSelecao = true;					

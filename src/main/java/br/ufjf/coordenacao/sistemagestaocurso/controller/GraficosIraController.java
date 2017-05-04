@@ -28,10 +28,6 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.*;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 
-
-
-
-
 @Named
 @ViewScoped
 public class GraficosIraController implements Serializable {
@@ -100,8 +96,7 @@ public class GraficosIraController implements Serializable {
 
 				}				
 				
-				ira = st.getIRA(); 
-				if (ira == -1) continue;				
+				ira = aluno.getIra();			
 				
 				retornaListaElemento(Integer.valueOf(aluno.getMatricula().substring(0,4)),ira).getListaAluno().add(aluno);				
 				

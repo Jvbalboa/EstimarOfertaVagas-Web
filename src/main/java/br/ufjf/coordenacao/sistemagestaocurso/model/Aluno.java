@@ -1,13 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,8 +16,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.*;
-import br.ufjf.coordenacao.OfertaVagas.model.*;
-import br.ufjf.coordenacao.OfertaVagas.model.Class;
 
 @Entity
 @SequenceGenerator(name="aluno_sequencia", sequenceName="aluno_seq", allocationSize=1)  
@@ -38,7 +30,7 @@ public class Aluno {
 	private Float ira;
 	private Integer periodoReal;
 	private List<Historico> grupoHistorico;
-	private List<EventoAce> listaEventosAce;
+	private List<IRA> iras;
 	private int horasObrigatoriasCompletadas;
 	private int horasEletivasCompletadas;
 	private int sobraHorasEletivas;
@@ -109,6 +101,11 @@ public class Aluno {
 	public void setGrade(Grade grade) {
 		this.grade = grade;
 	}
+	
+	@OneToMany(mappedBy = "aluno", targetEntity = IRA.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<IRA> getIras(){
+		return iras;
+	}
 
 	@OneToMany(mappedBy = "aluno", targetEntity = Historico.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<Historico> getGrupoHistorico() {
@@ -117,15 +114,6 @@ public class Aluno {
 
 	public void setGrupoHistorico(List<Historico> grupoHistorico) {
 		this.grupoHistorico = grupoHistorico;
-	}
-
-	@OneToMany(mappedBy = "aluno", targetEntity = EventoAce.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	public List<EventoAce> getListaEventosAce() {
-		return listaEventosAce;
-	}
-
-	public void setListaEventosAce(List<EventoAce> listaEventosAce) {
-		this.listaEventosAce = listaEventosAce;
 	}
 
 	@Transient
@@ -150,7 +138,7 @@ public class Aluno {
 		this.periodoReal = periodoReal;
 	}
 
-	@Transient
+	@Column(name="IRA")
 	public Float getIra() {
 		return ira;
 	}
@@ -161,18 +149,6 @@ public class Aluno {
 	}
 
 	public int periodoCorrente(String ingresso,String semestreAtual){
-
-		/*Calendar now = Calendar.getInstance();
-		int anoAtual = now.get(Calendar.YEAR);
-		int mes = now.get(Calendar.MONTH) + 1;
-		
-		int periodoAtual = 0;
-		if(mes >= 1 && mes <= 6){
-			periodoAtual = 1;
-		}
-		else {
-			periodoAtual = 3;
-		}*/
 		
 		int i = 1;
 		
@@ -211,6 +187,7 @@ public class Aluno {
 		this.sobraHorasEletivas = contador.getSobraHorasEletivas();
 		this.sobraHorasOpcionais = contador.getSobraHorasOpcionais();
 		this.horasCalculadas = true;
+		contador.dispose();
 	}
 	
 	@Transient
@@ -248,14 +225,10 @@ public class Aluno {
 	
 	@Transient
 	public int getHorasAceConcluidas() {
-		int aceCadastradas = 0;
+		if(!this.horasCalculadas)
+			this.calculaHorasCompletadas();
 		
-		for(EventoAce e: this.listaEventosAce)
-		{
-			aceCadastradas += e.getHoras();
-		}
-		
-		return Math.min((horasAceConcluidas + aceCadastradas), this.grade.getHorasAce());
+		return this.horasAceConcluidas;
 	}
 	
 	@Transient
@@ -271,5 +244,10 @@ public class Aluno {
 	public void dadosAlterados()
 	{
 		this.horasCalculadas = false;
+	}
+
+
+	public void setIras(List<IRA> iras) {
+		this.iras = iras;
 	}
 }

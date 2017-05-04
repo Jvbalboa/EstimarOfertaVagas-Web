@@ -20,12 +20,10 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Equivalencia;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.GradeDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.PreRequisito;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EquivalenciaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.GradeDisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.GradeRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.PreRequisitoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
 
 @Named

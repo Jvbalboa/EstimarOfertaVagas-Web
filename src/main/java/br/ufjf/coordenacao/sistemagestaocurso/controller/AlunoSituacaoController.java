@@ -1,6 +1,5 @@
 package br.ufjf.coordenacao.sistemagestaocurso.controller;
 
-import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -233,10 +231,8 @@ public class AlunoSituacaoController
 		gerarDadosAluno(st,curriculum);
 		this.preencheSobraHoras();
 		
-		ira = st.getIRA();
-		if(ira == -1) {
-			ira = 0;
-		}
+		ira = aluno.getIra();
+		
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
 		int SomaInt = 0;
 		if (horasObrigatorias != 0){
@@ -316,7 +312,7 @@ public class AlunoSituacaoController
 		listaDisciplinaEletivas = new ArrayList<SituacaoDisciplina>();
 		listaDisciplinaOpcionais = new ArrayList<SituacaoDisciplina>();
 		horasObrigatorias = 0;
-		//horasObrigatoriasConcluidas = 0;
+		horasObrigatoriasConcluidas = 0;
 		//horasOpcionaisConcluidas = 0;
 		//horasEletivasConcluidas = 0;
 		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
@@ -436,7 +432,7 @@ public class AlunoSituacaoController
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
-		eventosAce.setAluno(aluno);
+		//eventosAce.setAluno(aluno);
 		eventosAce.setDescricao(eventosAce.getDescricao().toUpperCase());
 		eventosAce.setMatricula(aluno.getMatricula());
 

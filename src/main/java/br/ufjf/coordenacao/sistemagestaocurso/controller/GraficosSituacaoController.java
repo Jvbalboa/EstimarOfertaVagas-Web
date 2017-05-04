@@ -9,8 +9,8 @@ import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 
@@ -90,6 +90,8 @@ public class GraficosSituacaoController implements Serializable {
 	private AlunoRepository alunoDAO;
 	@Inject
 	private DisciplinaRepository disciplinaDAO;
+	@Inject
+	private EventoAceRepository eventosace;
 	// ========================================================= METODOS
 	// ==================================================================================//
 
@@ -264,7 +266,7 @@ public class GraficosSituacaoController implements Serializable {
 
 		}
 
-		listaEventosAce = aluno.getListaEventosAce();
+		listaEventosAce = this.eventosace.buscarPorMatricula(this.aluno.getMatricula());
 		if (listaEventosAce != null) {
 			for (EventoAce evento : listaEventosAce) {
 				horasAceConcluidas = (int) (horasAceConcluidas + evento.getHoras());
@@ -277,7 +279,7 @@ public class GraficosSituacaoController implements Serializable {
 			horasAceConcluidas = aluno.getGrade().getHorasAce();
 		}
 		gerarDadosAluno(st, curriculum);
-		ira = st.getIRA();
+		ira = aluno.getIra();
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
 		horasIncompletasEletivas = 0;
 		if (horasEletivasConcluidas > aluno.getGrade().getHorasEletivas()) {

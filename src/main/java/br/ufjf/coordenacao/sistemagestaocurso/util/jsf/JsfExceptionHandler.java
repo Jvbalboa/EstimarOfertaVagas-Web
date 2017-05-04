@@ -11,7 +11,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
-import javax.faces.view.facelets.FaceletContext;
 
 public class JsfExceptionHandler extends ExceptionHandlerWrapper {
 

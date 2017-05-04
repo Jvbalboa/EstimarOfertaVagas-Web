@@ -458,7 +458,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 		}
 
 
-		ira = st.getIRA();
+		ira = aluno.getIra();
 		if(ira == -1) {
 			ira = 0;
 		}

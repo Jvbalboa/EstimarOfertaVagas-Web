@@ -3,7 +3,6 @@ package br.ufjf.coordenacao.sistemagestaocurso.controller;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 @Named
 public class LoginController {

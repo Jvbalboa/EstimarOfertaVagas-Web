@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -24,9 +27,10 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.GradeDisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.GradeRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.HistoricoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.Importador;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.IraRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
 import br.ufjf.ice.integra3.rs.restclient.RSCursoAlunosDiscSituacao;
@@ -41,6 +45,45 @@ import br.ufjf.ice.integra3.ws.login.service.WSLogin;
 @ViewScoped
 public class ImportarHistorico implements Serializable {
 
+	// Comparador utilizado para ordenar o histórico no cálculo do IRA
+	public class HistoricoComparador implements Comparator<Historico> {
+
+		@Override
+		public int compare(Historico o1, Historico o2) {
+			// retorna >0 se o1 for maior que o2, <0 se o1 for menor que o2 e 0
+			// se o1 == o2
+			// Os historicos que são "trancado", "dispensado" e "matriculado"
+			// sempre ficarão no final da lista
+			// Os outros serao ordenados pela ordem dos periodos
+
+			if (o1.getStatusDisciplina().equals("Trancado") || o1.getStatusDisciplina().equals("Dispensado")
+					|| o1.getStatusDisciplina().equals("Matriculado")) {
+				if (o2.getStatusDisciplina().equals("Trancado") || o2.getStatusDisciplina().equals("Dispensado")
+						|| o2.getStatusDisciplina().equals("Matriculado")) {
+					return 0; // Os dois são iguais
+				} else {
+					return 1;
+				}
+			} else {
+				if (o2.getStatusDisciplina().equals("Trancado") || o2.getStatusDisciplina().equals("Dispensado")
+						|| o2.getStatusDisciplina().equals("Matriculado")) {
+					return -1; // O primeiro deve vir antes do ultimo
+				} else {
+					try {
+						Integer s1 = Integer.parseInt(o1.getSemestreCursado());
+						Integer s2 = Integer.parseInt(o2.getSemestreCursado());
+
+						return s1.compareTo(s2);
+					} catch (NumberFormatException ex) {
+						return 0;
+					}
+				}
+			}
+
+		}
+
+	}
+
 	private Curso curso = new Curso();
 
 	private Logger logger = Logger.getLogger(ImportarHistorico.class);
@@ -51,14 +94,21 @@ public class ImportarHistorico implements Serializable {
 	private Date d;
 	private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
+	private long tempoExecucaoIra = 0;
+	private HashMap<Long, List<Disciplina>> discplinasExcluirIra = new HashMap<>();
+
 	@Inject
 	private CursoRepository cursos;
+	@Inject
+	private GradeDisciplinaRepository gradeDisciplinas;
 	@Inject
 	private AlunoRepository alunos;
 	@Inject
 	private DisciplinaRepository disciplinas;
 	@Inject
 	private HistoricoRepository historicos;
+	@Inject
+	private IraRepository iras;
 	@Inject
 	private EntityManager manager;
 	/*
@@ -117,8 +167,13 @@ public class ImportarHistorico implements Serializable {
 
 			WsLoginResponse user;
 
-			user = integra.login(usuarioController.getAutenticacao().getLogin(),
-					usuarioController.getAutenticacao().getSenha(), usuarioController.getAutenticacao().getToken());
+			
+			 user = integra.login(usuarioController.getAutenticacao().getLogin(),
+			 usuarioController.getAutenticacao().getSenha(),
+			 usuarioController.getAutenticacao().getToken());
+			 
+			// if(usuarioController.getAutenticacao().getLogin().equals("admin"))
+			
 
 			logger.info("Recuperando dados do curso " + curso.getCodigo() + "...");
 			RSCursoAlunosDiscSituacao rsClient = new RSCursoAlunosDiscSituacao(user.getToken(), ServiceVersion.V2);
@@ -131,6 +186,9 @@ public class ImportarHistorico implements Serializable {
 				return;
 			} else {
 				if (!curso.getGrupoAlunos().isEmpty()) {
+
+					iras.deletarTodosCurso(curso);
+
 					logger.info("Removendo alunos do curso");
 					int numAlunosRemovidos = cursos.removerTodosAlunos(curso);
 
@@ -176,18 +234,15 @@ public class ImportarHistorico implements Serializable {
 					listaGrade.add(grade);
 				}
 
-				Aluno aluno = alunos.buscarPorMatricula(alunoCurso.getMatricula());
+				Aluno aluno;
 
-				if (aluno == null) {
-					aluno = new Aluno();
-					aluno.setMatricula(alunoCurso.getMatricula());
-					aluno.setNome(alunoCurso.getNome());
-					aluno.setGrade(grade);
-					aluno.setCurso(curso);
-					aluno = alunos.persistir(aluno);
-					grade.getGrupoAlunos().add(aluno);
-
-				}
+				aluno = new Aluno();
+				aluno.setMatricula(alunoCurso.getMatricula());
+				aluno.setNome(alunoCurso.getNome());
+				aluno.setGrade(grade);
+				aluno.setCurso(curso);
+				aluno = alunos.persistir(aluno);
+				grade.getGrupoAlunos().add(aluno);
 
 				logger.info("Processando aluno " + alunoCurso.getMatricula() + " - " + alunoCurso.getCurriculo());
 				for (br.ufjf.ice.integra3.rs.restclient.model.v2.Disciplina disciplinaIntegra : alunoCurso
@@ -217,6 +272,10 @@ public class ImportarHistorico implements Serializable {
 					historico = historicos.persistir(historico);
 					aluno.getGrupoHistorico().add(historico);
 				}
+
+				calcularIra(aluno);
+				logger.info(tempoExecucaoIra + "ms");
+
 			}
 
 			List<Grade> listaGrades = curso.getGrupoGrades();
@@ -240,6 +299,112 @@ public class ImportarHistorico implements Serializable {
 			throw e;
 		}
 		logger.info("Importação terminada");
+		logger.info("Cálculo do IRA: " + tempoExecucaoIra + "ms");
+	}
+
+	// TODO talvez isso aqui possa ser organizado em outro lugar
+	// Método que gera os dados do IRA do aluno e os salva no BD
+	@Transactional
+	public void calcularIra(Aluno a) {
+		long inicio = System.currentTimeMillis();
+
+		if (!discplinasExcluirIra.containsKey(a.getGrade().getId())) {
+			List<GradeDisciplina> gDisciplinas = gradeDisciplinas.buscarPorIra(a.getGrade().getId(), true);
+			List<Disciplina> disc = new ArrayList<>();
+			if (gDisciplinas == null)
+				gDisciplinas = new ArrayList<>();
+
+			for (GradeDisciplina gd : gDisciplinas)
+				disc.add(gd.getDisciplina());
+
+			discplinasExcluirIra.put(a.getGrade().getId(), disc);
+		}
+
+		List<Disciplina> excluir = discplinasExcluirIra.get(a.getGrade().getId());
+
+		// Ordena a lista
+		Collections.sort(a.getGrupoHistorico(), new HistoricoComparador());
+
+		int notaPonderadaAcumulada = 0, notaPonderada = 0;
+		float cargaHorariaAcumulada = 0, cargaHoraria = 0;
+		String periodoCorrente = a.getGrupoHistorico().get(0).getSemestreCursado();
+
+		for (Historico h : a.getGrupoHistorico()) {
+			// Pela ordenação, as disciplinas que nao entram no calculo sempre
+			// ficam no final,
+			// entao ao encontrar uma delas, sabemos que nao tem mais nada para
+			// entrar no calculo
+			if (h.getStatusDisciplina().equals("Trancado") || h.getStatusDisciplina().equals("Dispensado")
+					|| h.getStatusDisciplina().equals("Matriculado")) {
+				break;
+			}
+
+			// TODO verificar se essa verificação é eficaz
+			if (excluir.contains(h.getDisciplina())) {
+				logger.debug(h.getDisciplina().getCodigo() + " foi excluida do IRA pelo coordenador");
+				continue;
+			}
+
+			// Se mudou o periodo, entao salva os dados do anterior e limpa
+			if (!periodoCorrente.equals(h.getSemestreCursado())) {
+				IRA ira = new IRA();
+				ira.setAluno(a);
+				ira.setCurso(a.getCurso());
+				ira.setGrade(a.getGrade());
+				ira.setSemestre(periodoCorrente);
+				ira.setIraAcumulado((cargaHorariaAcumulada > 0 ? notaPonderadaAcumulada / cargaHorariaAcumulada : 0));
+				ira.setIraSemestre((cargaHoraria > 0 ? notaPonderada / cargaHoraria : 0));
+
+				cargaHoraria = 0;
+				notaPonderada = 0;
+
+				// System.out.println(ira.getSemestre() + " -> " +
+				// ira.getIraAcumulado() + " - "+ ira.getIraSemestre());
+				iras.persistir(ira);
+
+				periodoCorrente = h.getSemestreCursado();
+			}
+
+			float nota = 0;
+			try {
+				nota = Integer.parseInt(h.getNota());
+			} catch (NumberFormatException e) {
+				// Se a nota nao for valida, desconsidera, a menos que a
+				// situacao seja RI
+				if (!h.getStatusDisciplina().equals("Rep Freq"))
+					continue;
+			}
+
+			if (!h.getStatusDisciplina().equals("Rep Freq")) {
+				nota = nota * h.getDisciplina().getCargaHoraria();
+				notaPonderada += nota;
+				notaPonderadaAcumulada += nota;
+			}
+
+			cargaHoraria += h.getDisciplina().getCargaHoraria();
+			cargaHorariaAcumulada += h.getDisciplina().getCargaHoraria();
+		}
+
+		// O último semestre que foi calculado nao foi persistido, entao ele
+		// sera persistido agora
+
+		if (cargaHoraria > 0 || cargaHorariaAcumulada > 0) {
+			IRA ira = new IRA();
+			ira.setAluno(a);
+			ira.setCurso(a.getCurso());
+			ira.setGrade(a.getGrade());
+			ira.setSemestre(periodoCorrente);
+			ira.setIraAcumulado((cargaHorariaAcumulada > 0 ? notaPonderadaAcumulada / cargaHorariaAcumulada : 0));
+			ira.setIraSemestre((cargaHoraria > 0 ? notaPonderada / cargaHoraria : 0));
+
+			// System.out.println(ira.getSemestre() + " -> " +
+			// ira.getIraAcumulado() + " - "+ ira.getIraSemestre());
+			iras.persistir(ira);
+		}
+
+		a.setIra((cargaHorariaAcumulada > 0 ? notaPonderadaAcumulada / cargaHorariaAcumulada : 0));
+		long tempo = (System.currentTimeMillis() - inicio);
+		tempoExecucaoIra += tempo;
 	}
 
 	public void chamarTudo() {
@@ -265,7 +430,7 @@ public class ImportarHistorico implements Serializable {
 			}
 		} catch (Exception e) {
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao importar",
-					"Ocorreu algum problema e a importação não foi realizada");
+					"Ocorreu algum problema e a importação não foi realizada.\n\n" + e.getMessage());
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			logger.error("", e);
 			if (manager.getTransaction().isActive()) {

@@ -58,8 +58,8 @@ public class Grade {
 
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
-	}	
-
+	}
+	
 	@OneToMany(mappedBy = "grade", targetEntity = Aluno.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<Aluno> getGrupoAlunos() {
 		return grupoAlunos;

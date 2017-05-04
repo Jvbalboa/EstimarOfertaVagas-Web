@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
 
@@ -18,9 +16,12 @@ public class EventoAce implements Serializable {
 	
 	// ==========================VARIÃ�VEIS=================================================================================================================//
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Long horas;
-	private Aluno aluno;
 	private String matricula;
 	private String descricao;
 	private Integer periodo;
@@ -65,8 +66,8 @@ public class EventoAce implements Serializable {
 		this.horas = horas;
 	}
 
-	@ManyToOne
-	@JoinColumn(name="ID_ALUNO" , referencedColumnName="ID")
+	/*@ManyToOne
+	@JoinColumn(name="ID_ALUNO" , referencedColumnName="ID", nullable=true)
 	public Aluno getAluno() {
 		return aluno;
 	}
@@ -74,7 +75,7 @@ public class EventoAce implements Serializable {
 	public void setAluno(Aluno aluno) {
 		this.aluno = aluno;
 	}
-
+*/
 	public Boolean getExcluir() {
 		return excluir;
 	}
