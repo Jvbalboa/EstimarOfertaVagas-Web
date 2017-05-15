@@ -16,6 +16,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.ListaPeriodoAluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.PeriodoAluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.TotalizadorCurso;
 
+import org.apache.log4j.Logger;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.extensions.component.gchart.model.GChartModel;
@@ -66,6 +67,8 @@ public class GraficosController implements Serializable {
 	private List<AlunoSelecionado> listaAlunoSelecionadoFiltrados ;
 	private List<ColumnModel> columns;
 	private boolean semColuna = true;
+	
+	private static final Logger logger = Logger.getLogger(GraficosController.class);
 
 	/*@Inject
 	private AlunoRepository alunoDAO ;*/
@@ -233,7 +236,7 @@ public class GraficosController implements Serializable {
 				
 				if (st == null){
 
-					System.out.println("Historico não encontrado para o aluno: " + alunoSelecionado.getMatricula());				
+					logger.warn("Historico não encontrado para o aluno: " + alunoSelecionado.getMatricula());				
 					continue;
 
 				}	

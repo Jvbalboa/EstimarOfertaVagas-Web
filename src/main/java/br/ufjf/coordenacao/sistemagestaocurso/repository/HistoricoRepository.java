@@ -1,7 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
-
 import java.util.List;
 import java.io.Serializable;
 
@@ -35,7 +34,6 @@ public class HistoricoRepository implements Serializable {
 		return manager.createQuery("FROM Historico WHERE id_matricula = :codigo", Historico.class)
 					.setParameter("codigo",  codigo )
 					.getResultList();
-
 	}
 
 	public List<Historico> buscarTodosHistoricosPorSemestre(String codigo){

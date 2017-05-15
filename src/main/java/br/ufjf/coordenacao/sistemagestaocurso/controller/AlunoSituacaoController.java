@@ -14,6 +14,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 import br.ufjf.coordenacao.OfertaVagas.model.Curriculum;
@@ -95,6 +96,8 @@ public class AlunoSituacaoController
   @Inject
   private UsuarioController usuarioController;
   
+  private static final Logger logger = Logger.getLogger(AlunoSituacaoController.class);
+  
   public void preencheSobraHoras()
 	{
 		if(this.aluno.getSobraHorasEletivas() > 0)
@@ -174,8 +177,6 @@ public class AlunoSituacaoController
 
 	public void onItemSelectMatriculaAluno()  {
 
-
-
 		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
 			if(alunoQuestao.getMatricula().contains(aluno.getMatricula())){
 				aluno = alunoQuestao;
@@ -187,21 +188,18 @@ public class AlunoSituacaoController
 		lgMatriculaAluno = true;
 		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),true);
 
-		/*if (importador.getResetarStance() == true){
-
-
-			//importador.setResetarStance(false);
-		   // usuarioController.atualizarPessoaLogada();
-
-
-		}*/
-
-		System.out.println(aluno.getMatricula());
+		logger.info("Aluno: " + aluno.getMatricula());
 
 		Grade gradeAluno = aluno.getGrade();
+		
 		horasEletivas = gradeAluno.getHorasEletivas();
 		horasOpcionais = gradeAluno.getHorasOpcionais();
 		horasACE = gradeAluno.getHorasAce();
+		
+		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
+		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
+		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
+		
 		curriculum = importador.get_cur();
 		StudentsHistory sh = importador.getSh();		
 		Student st = sh.getStudents().get(aluno.getMatricula());
@@ -213,8 +211,6 @@ public class AlunoSituacaoController
 			return;
 
 		}
-		
-		//listaEventosAce = new ArrayList<EventoAce>();
 
 		listaEventosAce = new ArrayList<EventoAce>(eventosAceRepository.buscarPorMatricula(aluno.getMatricula()));		
 		if (listaEventosAce != null){
@@ -223,10 +219,6 @@ public class AlunoSituacaoController
 		else {
 			listaEventosAce = new ArrayList<EventoAce>();
 		}
-		
-		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
-		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
-		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
 		
 		gerarDadosAluno(st,curriculum);
 		this.preencheSobraHoras();
@@ -246,7 +238,6 @@ public class AlunoSituacaoController
 		if (aluno.getGrade().getHorasOpcionais() != 0  ){
 			percentualOpcionais = ((horasOpcionaisConcluidas* 100 / SomaInt) );
 		}
-		
 		
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
@@ -312,7 +303,7 @@ public class AlunoSituacaoController
 		listaDisciplinaEletivas = new ArrayList<SituacaoDisciplina>();
 		listaDisciplinaOpcionais = new ArrayList<SituacaoDisciplina>();
 		horasObrigatorias = 0;
-		horasObrigatoriasConcluidas = 0;
+		//horasObrigatoriasConcluidas = 0;
 		//horasOpcionaisConcluidas = 0;
 		//horasEletivasConcluidas = 0;
 		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
@@ -369,6 +360,7 @@ public class AlunoSituacaoController
 				SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 				disciplinaSituacao.setCodigo(c.getId());
 				disciplinaSituacao.setSituacao("APROVADO");
+				logger.info(c.getId() + " eletiva");
 				disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
 				disciplinaSituacao.setNome(disciplinas.buscarPorCodigoDisciplina(c.getId()).getNome());
 				listaDisciplinaEletivas.add(disciplinaSituacao);
@@ -389,6 +381,12 @@ public class AlunoSituacaoController
 					EventoAce evento =  new EventoAce();
 					horasAceConcluidas = horasAceConcluidas + c.getWorkload();
 					evento.setDescricao(disciplinas.buscarPorCodigoDisciplina(c.getId()).getNome());
+					
+					Disciplina d = disciplinas.buscarPorCodigoDisciplina(c.getId());
+					
+					if(d != null)
+						c.setWorkload(d.getCargaHoraria());
+					
 					evento.setHoras((long) c.getWorkload());
 					String periodo = s2[0];
 					evento.setPeriodo(Integer.parseInt(periodo));
@@ -417,18 +415,18 @@ public class AlunoSituacaoController
 	public void adicionarAce(){
 
 		if (eventosAce.getPeriodo() == 0) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Perodo!");
+			FacesMessage msg = new FacesMessage("Preencha o campo \"Período\"");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		eventosAce.setDescricao(eventosAce.getDescricao().trim());
 		if (eventosAce.getDescricao().isEmpty()) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Descrio!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Descrição!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		if (eventosAce.getHoras() == 0) {
-			FacesMessage msg = new FacesMessage("Preencha o campo Carga Horria!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Carga Horária!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -436,7 +434,7 @@ public class AlunoSituacaoController
 		eventosAce.setDescricao(eventosAce.getDescricao().toUpperCase());
 		eventosAce.setMatricula(aluno.getMatricula());
 
-		System.out.println(eventosAce.getDescricao().toUpperCase() + ";" +  eventosAce.getHoras() + ";" + eventosAce.getPeriodo());
+		logger.info(eventosAce.getDescricao().toUpperCase() + ";" +  eventosAce.getHoras() + ";" + eventosAce.getPeriodo());
 
 		eventosAce.setExcluir(true);
 

@@ -11,6 +11,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
@@ -42,6 +43,8 @@ public class GraficosIraController implements Serializable {
 	private LineChartModel  bubbleModel1;
 	private List<GrupoElementoGrafico> listaGrupoElementoGrafico = new ArrayList<GrupoElementoGrafico>();
 	private Ordenar ordenar = new Ordenar();
+	
+	private static final Logger logger = Logger.getLogger(GraficosIraController.class);
 
 	//========================================================= METODOS ==================================================================================//
 
@@ -91,7 +94,7 @@ public class GraficosIraController implements Serializable {
 				
 				if (st == null){
 
-					System.out.println("Historico no encontrado para o aluno :" + aluno.getMatricula());				
+					logger.warn("Historico não encontrado para o aluno : " + aluno.getMatricula());				
 					continue;
 
 				}				

@@ -43,8 +43,11 @@ public class ImportarArvore implements Serializable{
 					status,                                                   //status disciplina
 					historico.getNota(),                                      //nota disciplina
 					historico.getDisciplina().getCargaHoraria().toString()   //carga hor�ria disciplina					
-					);                                                  
-		}		
+					);
+			
+			Class c = ClassFactory.getClass(grade.getCurso().getCodigo(),grade.getCodigo(),historico.getDisciplina().getCodigo());
+			c.setWorkload(historico.getDisciplina().getCargaHoraria());//Necessário para acertar a carga horária de disciplinas opcionais
+		}
 	}
 	
 	
@@ -225,12 +228,9 @@ public class ImportarArvore implements Serializable{
 	}
 
 
-
 	public Boolean getResetarStance() {
 		return resetarStance;
 	}
-
-
 
 	public void setResetarStance(Boolean resetarStance) {
 		this.resetarStance = resetarStance;

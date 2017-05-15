@@ -204,7 +204,7 @@ public class UsuarioController implements Serializable {
 					return;
 				}
 			} else {
-				FacesMessage msg = new FacesMessage("A confirma��o de senha deve ser a mesma que a nova senha!");
+				FacesMessage msg = new FacesMessage("A confirmação de senha deve ser a mesma que a nova senha!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 				return;
 			}
@@ -248,7 +248,6 @@ public class UsuarioController implements Serializable {
 	}
 
 	public void mudarCurso() throws Exception, IOException {
-		System.out.println("MUDA CURSO");
 		if (autenticacao.getPessoa() != null) {
 			for (PessoaCurso pessoaCurso : autenticacao.getPessoa().getPessoaCurso()) {
 				if (pessoaCurso.getPessoa().getSiape().equals(autenticacao.getSelecaoIdentificador())) {

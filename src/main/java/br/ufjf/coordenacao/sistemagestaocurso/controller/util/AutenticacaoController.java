@@ -1,14 +1,18 @@
 package br.ufjf.coordenacao.sistemagestaocurso.controller.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.NotAuthorizedException;
+
+import org.apache.log4j.Logger;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Pessoa;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.Autenticacao;
@@ -23,6 +27,7 @@ import br.ufjf.ice.integra3.ws.login.service.WSLogin;
 public class AutenticacaoController implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = Logger.getLogger(AutenticacaoController.class);
 	
 	@Inject
 	private PessoaRepository pessoaDAO;
@@ -42,7 +47,7 @@ public class AutenticacaoController implements Serializable {
 		file.close();
 
 		try {
-			System.out.println("Logando...");
+			logger.info("Logando " + autenticacao.getLogin());
 			IWsLogin integra = new WSLogin().getWsLoginServicePort();
 			WsLoginResponse user = integra.login(autenticacao.getLogin(), autenticacao.getSenha(), token);
 			WsUserInfoResponse infos = integra.getUserInformation(user.getToken()); // Pegando informa��es			
@@ -76,8 +81,14 @@ public class AutenticacaoController implements Serializable {
 			estruturaArvore.setLoginUtilizado("aluno");
 			return autenticacao;
 
-		} catch (NotAuthorizedException e) {
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
+			//Caso as credenciais sejam inválidas, o webservice lançará um exceção
+			if(!e.getMessage().contains("Usuário ou senha não cadastrados"))
+			{
+				logger.error("Erro ao realizar o login pelo SIGA " + autenticacao.getLogin(), e);
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ocorreu um problema", e.getMessage()));
+			}
 		}
 
 
@@ -123,25 +134,29 @@ public class AutenticacaoController implements Serializable {
 
 		/*******************************************************************************************************/
 
+		try {
+			List<Pessoa> TodasPessoas = (List<Pessoa>) pessoaDAO.listarTodos();
+			for (Pessoa pessoaComparada : TodasPessoas) {
+				if (pessoaComparada.getSenha().equals(autenticacao.getSenha())
+						&& pessoaComparada.getSiape().equals(autenticacao.getLogin())) {
+					autenticacao.setPessoa(pessoaComparada);
+					autenticacao.setTipoAcesso("externo");
+					estruturaArvore.setLoginUtilizado("externo");
+					autenticacao.setMaiorPermissao("externo");
 
-		List<Pessoa> TodasPessoas =  (List<Pessoa>) pessoaDAO.listarTodos();
-		for (Pessoa pessoaComparada:TodasPessoas){
-			if(pessoaComparada.getSenha().equals(autenticacao.getSenha()) && pessoaComparada.getSiape().equals(autenticacao.getLogin())){
-				autenticacao.setPessoa(pessoaComparada);
-				autenticacao.setTipoAcesso("externo");
-				estruturaArvore.setLoginUtilizado("externo");
-				autenticacao.setMaiorPermissao("externo");
+					if (pessoaComparada.getSiape().equals("admin")) {
+						autenticacao.setTipoAcesso("admin");
+						estruturaArvore.setLoginUtilizado("admin");
+						autenticacao.setMaiorPermissao("admin");
 
-				if (pessoaComparada.getSiape().equals("admin")){
-					autenticacao.setTipoAcesso("admin");
-					estruturaArvore.setLoginUtilizado("admin");
-					autenticacao.setMaiorPermissao("admin");
+					}
 
+					return autenticacao;
 				}
-
-
-				return autenticacao;
 			}
+		} catch (Exception e) {
+			logger.error("Erro ao realizar o login local", e);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ocorreu um problema", e.getMessage()));
 		}
 		autenticacao.setTipoAcesso("acessoNegado");
 		return autenticacao;

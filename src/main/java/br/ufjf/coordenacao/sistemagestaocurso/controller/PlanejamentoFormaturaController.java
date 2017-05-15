@@ -3,11 +3,7 @@ package br.ufjf.coordenacao.sistemagestaocurso.controller;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -16,12 +12,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
+
 import br.ufjf.coordenacao.OfertaVagas.model.Curriculum;
 import br.ufjf.coordenacao.OfertaVagas.model.Student;
 import br.ufjf.coordenacao.OfertaVagas.model.StudentsHistory;
 import br.ufjf.coordenacao.OfertaVagas.report.StudentCoursePlan;
 import br.ufjf.coordenacao.OfertaVagas.model.Class;
-import br.ufjf.coordenacao.OfertaVagas.model.ClassStatus;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
@@ -30,20 +27,20 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.GradeDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.DisciplinaPlanejamento;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.GradeDisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
-
 
 @Named
 @ViewScoped
 public class PlanejamentoFormaturaController implements Serializable {
-
+	//TODO Refatorar essa classe!!!!!! *_*
 	//========================================================= VARIABLES ==================================================================================//
 
 	private static final long serialVersionUID = 1L;
-
+	private static final Logger logger = Logger.getLogger(PlanejamentoFormaturaController.class);
+	
 	private boolean lgMatriculaAluno = false;
 	private boolean lgNomeAluno  = false;
 	private boolean lgSelecionado  = false;	
@@ -74,7 +71,8 @@ public class PlanejamentoFormaturaController implements Serializable {
 	private boolean lgTabelaNove = false;
 	private boolean lgTabelaDez = false;
 	private boolean lgTabelaOnze = false;
-	private boolean lgTabelaDoze = false;
+	private boolean lgTabelaDoze = false;//*/
+	
 	private boolean lgAluno = true;
 	private boolean periodoDesejado;
 	private List< String > listaCargaHorariaPeriodo = new ArrayList<String>();
@@ -98,16 +96,16 @@ public class PlanejamentoFormaturaController implements Serializable {
 	@Inject
 	private AlunoRepository alunos;
 	@Inject
-	private CursoRepository cursoDAO ;
-	@Inject
 	private DisciplinaRepository disciplinaDAO ;
 	@Inject
 	private ImportarArvore importador;
+	@Inject
+	private GradeDisciplinaRepository gradeDisciplinas;
+	private int[] horasPeriodo = new int[12];
 
 
 
 	//========================================================= METODOS ==================================================================================//
-
 
 	@Inject
 	private UsuarioController usuarioController;
@@ -131,7 +129,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 		grade.setHorasEletivas(0);
 		grade.setHorasOpcionais(0);
 		aluno.setGrade(grade);
-		qtdHorasPeriodo= 300;
+		qtdHorasPeriodo= 360;
 	
 		if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
 			aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
@@ -141,7 +139,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 			lgAluno = false;
 			
 			if (aluno == null || aluno.getMatricula() == null){
-				FacesMessage msg = new FacesMessage("Matrcula no cadastrada na base!");
+				FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 				return;
 			}			
@@ -157,7 +155,8 @@ public class PlanejamentoFormaturaController implements Serializable {
 			}
 		}
 		} catch (Exception e) {
-			// TODO: handle exception
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Ocorreu um problema", e.getLocalizedMessage()));
+			logger.error("Erro ao gerar o planejamento para " + aluno.getMatricula(), e);
 		}
 
 
@@ -333,7 +332,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 			}
 		}
 		if (recuperarLista(posicao + 1) == null){
-			FacesMessage msg = new FacesMessage("No  possvel realizar esta ao,verifique os requisitos desta disciplina!");	
+			FacesMessage msg = new FacesMessage("Não é possível realizar esta ação, verifique os requisitos desta disciplina!");	
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return false;
 		}
@@ -391,7 +390,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 			}
 		}
 		if (recuperarLista(posicao - 1) == null || recuperarLista(posicao) == null){
-			FacesMessage msg = new FacesMessage("No  possvel realizar esta ao,verifique os requisitos desta disciplina!");
+			FacesMessage msg = new FacesMessage("Não é possível realizar esta ação, verifique os requisitos desta disciplina!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return false;
 		}
@@ -450,13 +449,18 @@ public class PlanejamentoFormaturaController implements Serializable {
 
 		if (st == null){
 
-			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
+			FacesMessage msg = new FacesMessage("O aluno " + aluno.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			lgCampoHrsPeriodo = true;
 			return;
 
 		}
+		
+		horasObrigatorias = aluno.getGrade().getHorasObrigatorias();
+		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
 
+		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
+		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();		
 
 		ira = aluno.getIra();
 		if(ira == -1) {
@@ -474,12 +478,29 @@ public class PlanejamentoFormaturaController implements Serializable {
 		
 		gerarExpectativa();
 		
+		for(int i = 0; i < 12; i++)
+		{
+			logger.info(horasPeriodo[i]);
+		}
+	}
+	
+	public void LogCurriculum(Curriculum c)
+	{
+		for(int i : c.getMandatories().keySet())
+		{
+			logger.info(i + "o periodo\n");
+			for(Class cl : c.getMandatories().get(i))
+			{
+				logger.info(cl);
+			}
+		}
+			
 	}
 
 	public void gerarExpectativa(){
 
 		if (!aluno.getGrade().estaCompleta()) {
-			FacesMessage msg = new FacesMessage("Não foi possível gerar o planejamento. Motivo: a grade está incompleta");
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Não foi possível gerar o planejamento.", "A grade está incompleta");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -490,6 +511,9 @@ public class PlanejamentoFormaturaController implements Serializable {
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
+		
+
+		//*
 		listaDisciplinaSelecionadas = new ArrayList<DisciplinaPlanejamento>();
 		listaDisciplinaSelecionadasDois = new ArrayList<DisciplinaPlanejamento>();
 		listaDisciplinaSelecionadasTres = new ArrayList<DisciplinaPlanejamento>();
@@ -514,16 +538,25 @@ public class PlanejamentoFormaturaController implements Serializable {
 		lgTabelaDez = false;
 		lgTabelaOnze = false;
 		lgTabelaDoze = false;
-		try {
-		gerarDadosAluno(st,curriculum);
-
-		periodoDesejado = calculaPeriodo(periodoInicio);
-		StudentCoursePlan g = new StudentCoursePlan(st, curriculum, qtdHorasPeriodo,periodoDesejado,!matriculados);
 		
+		for(int i = 0; i < 12;i++)
+			horasPeriodo[i] = 0;
+		//*/
+		
+		try {
+		//gerarDadosAluno(st,curriculum);
+
+			periodoDesejado = calculaPeriodo(periodoInicio);
+			StudentCoursePlan g = new StudentCoursePlan(st, curriculum, qtdHorasPeriodo, periodoDesejado,
+					!matriculados);
+
 			curriculumAluno = g.generate();
 
+			LogCurriculum(curriculumAluno);
+
 		} catch (Exception e) {
-			FacesMessage msg = new FacesMessage("Verificar gerador de planejamento");
+			logger.error("Erro ao gerar o planejamento para " + aluno.getMatricula(), e);
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ocorreu um problema ao gerar o planejamento", e.getLocalizedMessage());
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -535,29 +568,42 @@ public class PlanejamentoFormaturaController implements Serializable {
 			return;
 		}
 		horasFaltamEletivas =     aluno.getGrade().getHorasEletivas() - aluno.getHorasEletivasCompletadas();
-		horasFaltamOpcionais =   aluno.getGrade().getHorasOpcionais() - horasOpcionaisConcluidas;
-		int contadorPeriodosGerados = 0;
+		horasFaltamOpcionais =   aluno.getGrade().getHorasOpcionais() - aluno.getHorasOpcionaisCompletadas();
+
 		for(int i : curriculumAluno.getMandatories().keySet()){			
-			contadorPorPeriodo = 0;
-			while(contadorPeriodosGerados != i){
+			horasPeriodo[i] = 0;
+			/*while(contadorPeriodosGerados != i){
 				gerarEletivasObrigatorias (recuperarLista(contadorPeriodosGerados + 1),(contadorPeriodosGerados + 1));
 				contadorPeriodosGerados++;
 				contadorPorPeriodo = 0;
-			}
+			}*/
 			for(Class cl: curriculumAluno.getMandatories().get(i)){				
-				contadorPorPeriodo =  contadorPorPeriodo + cl.getWorkload();				
-				DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
-				disciplinaPlanejamento.setCargaHoraria(cl.getWorkload());
-				disciplinaPlanejamento.setCodigo(cl.getId());
+				//contadorPorPeriodo =  contadorPorPeriodo + cl.getWorkload();
 				Disciplina disciplina = disciplinaDAO.buscarPorCodigoDisciplina(cl.getId());
-				GradeDisciplina gradeDisciplina  = null;
-				for(GradeDisciplina gradeDisciplinaSelecionada : aluno.getGrade().getGrupoGradeDisciplina()){
+				
+				if(disciplina == null)
+				{
+					logger.error("A disciplina " + cl.getId() + " não foi encontrada. Aluno: " + aluno.getMatricula());
+					continue;
+				}
+				
+				horasPeriodo[i] += disciplina.getCargaHoraria();
+				
+				DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
+				disciplinaPlanejamento.setCargaHoraria(disciplina.getCargaHoraria());
+				disciplinaPlanejamento.setCodigo(disciplina.getCodigo());//*/
+
+				//itensPlanejamento.get(i).adicionaHoras(disciplina.getCargaHoraria());
+				
+				GradeDisciplina gradeDisciplina  = gradeDisciplinas.buscarPorDisciplinaGrade(aluno.getGrade().getId(), disciplina.getId());
+				
+				/*for(GradeDisciplina gradeDisciplinaSelecionada : aluno.getGrade().getGrupoGradeDisciplina()){
 					if (gradeDisciplinaSelecionada.getDisciplina().getCodigo().equals(disciplina.getCodigo())){
 
 						gradeDisciplina = gradeDisciplinaSelecionada;	
 						break;
 					}
-				}
+				}*/
 				int  periodo = 0;
 				if (gradeDisciplina != null){
 					periodo = (int) (long) gradeDisciplina.getPeriodo();
@@ -566,13 +612,20 @@ public class PlanejamentoFormaturaController implements Serializable {
 				}
 				else {	disciplinaPlanejamento.setCor("black");
 				}
+				
 				recuperarLista(i+1).add(disciplinaPlanejamento);
 				recuperarLg(i+1, true);
+				/*itensPlanejamento.get(i).getListaDisciplinaSelecionadas().add(disciplinaPlanejamento);
+				itensPlanejamento.get(i).setLgTabela(true);*/
 			}
-			gerarEletivasObrigatorias (recuperarLista(i+1),(i+1));
+			
+			//gerarEletivasObrigatorias (recuperarLista(i+1),(i+1));
 			ultimoPeriodoPreenchido = i;
-			listaCargaHorariaPeriodo.add(Integer.toString(contadorPorPeriodo));
-			contadorPeriodosGerados ++;
+			//listaCargaHorariaPeriodo.add(Integer.toString(horasPeriodo[i]));
+			//contadorPeriodosGerados ++;//*/
+			
+			//for(int j = 1; j <= 12; j++)
+			gerarEletivasObrigatorias(recuperarLista(i+1), i+1);
 		}
 		
 		if (ultimoPeriodoPreenchido == 0){
@@ -580,10 +633,10 @@ public class PlanejamentoFormaturaController implements Serializable {
 			
 		}
 		
-		while(horasFaltamEletivas > 0 || horasFaltamOpcionais > 0){
+		/*while(horasFaltamEletivas > 0 || horasFaltamOpcionais > 0){
 			contadorPorPeriodo = 0;
 			
-				ultimoPeriodoPreenchido = ultimoPeriodoPreenchido + 1;
+			ultimoPeriodoPreenchido = ultimoPeriodoPreenchido + 1;
 			
 			if (ultimoPeriodoPreenchido >= 12){
 				FacesMessage msgs = new FacesMessage("A Quantidade de Horas Período deve ser maior pois o número de períodos excedeu 12 períodos!");
@@ -611,14 +664,15 @@ public class PlanejamentoFormaturaController implements Serializable {
 				lgTabelaNove = false;
 				lgTabelaDez = false;
 				lgTabelaOnze = false;
-				lgTabelaDoze = false;
+				lgTabelaDoze = false;//*//*
+				limpaItensPlanejamento();
 				return;
 			}
 			recuperarLg(ultimoPeriodoPreenchido+ 1, true);
 			gerarEletivasObrigatorias (recuperarLista(ultimoPeriodoPreenchido+1),(ultimoPeriodoPreenchido+1));
 			listaCargaHorariaPeriodo.add(Integer.toString(contadorPorPeriodo));
 		}
-		
+		//*/
 		if(this.listaDisciplinaSelecionadas.isEmpty() && this.listaDisciplinaSelecionadasDois.isEmpty()
 				&& this.listaDisciplinaSelecionadasTres.isEmpty()
 				&& this.listaDisciplinaSelecionadasQuatro.isEmpty()
@@ -629,7 +683,19 @@ public class PlanejamentoFormaturaController implements Serializable {
 				&& this.listaDisciplinaSelecionadasNove.isEmpty()
 				&& this.listaDisciplinaSelecionadasDez.isEmpty()
 				&& this.listaDisciplinaSelecionadasOnze.isEmpty()
-				&& this.listaDisciplinaSelecionadasDoze.isEmpty())
+				&& this.listaDisciplinaSelecionadasDoze.isEmpty())//*/
+		
+		/*boolean vazio = true;
+		for(PlanejamentoItem p: itensPlanejamento)
+		{
+			if(!p.getListaDisciplinaSelecionadas().isEmpty())
+			{
+				vazio = false;
+				break;
+			}
+		}
+		
+		if(vazio)*/
 		{
 			FacesMessage msg = new FacesMessage("Não há disciplinas para serem exibidas!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -646,81 +712,81 @@ public class PlanejamentoFormaturaController implements Serializable {
 	public void gerarEletivasObrigatorias (List<DisciplinaPlanejamento> listaDisciplinas,int numeroLista){
 		boolean continuar = true; 
 		while(continuar){
-			if ( (qtdHorasPeriodo - contadorPorPeriodo) > 0){
-				if (horasFaltamEletivas >= 60 && (qtdHorasPeriodo - contadorPorPeriodo)>= 60){
+			if ( (qtdHorasPeriodo - horasPeriodo[numeroLista-1]) > 0){
+				if (horasFaltamEletivas >= 60 && (qtdHorasPeriodo - horasPeriodo[numeroLista-1])>= 60){
 					DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
 					disciplinaPlanejamento.setCargaHoraria(60);
 					disciplinaPlanejamento.setCodigo("ELETIVA" );
 					listaDisciplinas.add(disciplinaPlanejamento);
 					recuperarLg(numeroLista, true);
 					horasFaltamEletivas = horasFaltamEletivas - 60;
-					contadorPorPeriodo = contadorPorPeriodo + 60;
+					horasPeriodo[numeroLista-1] = horasPeriodo[numeroLista-1] + 60;
 				}
-				else if (horasFaltamOpcionais >= 60 && (qtdHorasPeriodo - contadorPorPeriodo) >= 60){
+				else if (horasFaltamOpcionais >= 60 && (qtdHorasPeriodo - horasPeriodo[numeroLista-1]) >= 60){
 					DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
 					disciplinaPlanejamento.setCargaHoraria(60);
 					disciplinaPlanejamento.setCodigo("OPCIONAL" );
 					listaDisciplinas.add(disciplinaPlanejamento);
 					recuperarLg(numeroLista, true);
 					horasFaltamOpcionais = horasFaltamOpcionais - 60;
-					contadorPorPeriodo = contadorPorPeriodo + 60;
+					horasPeriodo[numeroLista-1] = horasPeriodo[numeroLista-1] + 60;
 				}
-				else if (horasFaltamEletivas >= 30 && (qtdHorasPeriodo - contadorPorPeriodo) >= 30){
+				else if (horasFaltamEletivas >= 30 && (qtdHorasPeriodo - horasPeriodo[numeroLista-1]) >= 30){
 					DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
 					disciplinaPlanejamento.setCargaHoraria(30);
 					disciplinaPlanejamento.setCodigo("ELETIVA");
 					listaDisciplinas.add(disciplinaPlanejamento);
 					recuperarLg(numeroLista, true);
 					horasFaltamEletivas = horasFaltamEletivas - 30;
-					contadorPorPeriodo = contadorPorPeriodo + 30;
+					horasPeriodo[numeroLista-1] = horasPeriodo[numeroLista-1] + 30;
 				}
-				else if (horasFaltamOpcionais >= 30 && (qtdHorasPeriodo - contadorPorPeriodo) >= 30){
+				else if (horasFaltamOpcionais >= 30 && (qtdHorasPeriodo - horasPeriodo[numeroLista-1]) >= 30){
 					DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
 					disciplinaPlanejamento.setCargaHoraria(30);
 					disciplinaPlanejamento.setCodigo("OPCIONAL");
 					listaDisciplinas.add(disciplinaPlanejamento);
 					recuperarLg(numeroLista, true);
 					horasFaltamOpcionais = horasFaltamOpcionais - 30;
-					contadorPorPeriodo = contadorPorPeriodo + 30;
+					horasPeriodo[numeroLista-1] = horasPeriodo[numeroLista-1] + 30;
 				}
-				else  if (horasFaltamEletivas > 0 && (qtdHorasPeriodo - contadorPorPeriodo) >= horasFaltamEletivas){
+				else  if (horasFaltamEletivas > 0 && (qtdHorasPeriodo - horasPeriodo[numeroLista-1]) >= horasFaltamEletivas){
 					DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
 					disciplinaPlanejamento.setCargaHoraria(horasFaltamEletivas);
 					disciplinaPlanejamento.setCodigo("ELETIVA");
 					listaDisciplinas.add(disciplinaPlanejamento);
 					recuperarLg(numeroLista, true);
 					horasFaltamEletivas = 0;
-					contadorPorPeriodo = contadorPorPeriodo + horasFaltamEletivas;
+					horasPeriodo[numeroLista-1] = horasPeriodo[numeroLista-1] + horasFaltamEletivas;
 				}
-				else if (horasFaltamOpcionais > 0 && (qtdHorasPeriodo - contadorPorPeriodo) >= horasFaltamOpcionais){
+				else if (horasFaltamOpcionais > 0 && (qtdHorasPeriodo - horasPeriodo[numeroLista-1]) >= horasFaltamOpcionais){
 					DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
 					disciplinaPlanejamento.setCargaHoraria(horasFaltamOpcionais);
 					disciplinaPlanejamento.setCodigo("OPCIONAL");
 					listaDisciplinas.add(disciplinaPlanejamento);
 					recuperarLg(numeroLista, true);
 					horasFaltamOpcionais = 0;
-					contadorPorPeriodo = contadorPorPeriodo + horasFaltamOpcionais;
+					horasPeriodo[numeroLista-1] = horasPeriodo[numeroLista-1] + horasFaltamOpcionais;
 				}
-				else if((qtdHorasPeriodo - contadorPorPeriodo) < horasFaltamOpcionais){
+				else if((qtdHorasPeriodo - horasPeriodo[numeroLista-1]) < horasFaltamOpcionais){
 					DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
-					disciplinaPlanejamento.setCargaHoraria((qtdHorasPeriodo - contadorPorPeriodo));
+					disciplinaPlanejamento.setCargaHoraria((qtdHorasPeriodo - horasPeriodo[numeroLista-1]));
 					disciplinaPlanejamento.setCodigo("OPCIONAL");
 					listaDisciplinas.add(disciplinaPlanejamento);
 					recuperarLg(numeroLista, true);
-					horasFaltamOpcionais = horasFaltamOpcionais - (qtdHorasPeriodo - contadorPorPeriodo);
-					contadorPorPeriodo = contadorPorPeriodo + (qtdHorasPeriodo - contadorPorPeriodo);
+					horasFaltamOpcionais = horasFaltamOpcionais - (qtdHorasPeriodo - horasPeriodo[numeroLista-1]);
+					horasPeriodo[numeroLista-1] = horasPeriodo[numeroLista-1] + (qtdHorasPeriodo - horasPeriodo[numeroLista-1]);
 				}
-				else if((qtdHorasPeriodo - contadorPorPeriodo) < horasFaltamEletivas){
+				else if((qtdHorasPeriodo - horasPeriodo[numeroLista-1]) < horasFaltamEletivas){
 					DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
-					disciplinaPlanejamento.setCargaHoraria((qtdHorasPeriodo - contadorPorPeriodo));
+					disciplinaPlanejamento.setCargaHoraria((qtdHorasPeriodo - horasPeriodo[numeroLista-1]));
 					disciplinaPlanejamento.setCodigo("ELETIVA");
 					listaDisciplinas.add(disciplinaPlanejamento);
 					recuperarLg(numeroLista, true);
-					horasFaltamEletivas = horasFaltamEletivas - (qtdHorasPeriodo - contadorPorPeriodo);
-					contadorPorPeriodo = contadorPorPeriodo + (qtdHorasPeriodo - contadorPorPeriodo);
+					horasFaltamEletivas = horasFaltamEletivas - (qtdHorasPeriodo - horasPeriodo[numeroLista-1]);
+					horasPeriodo[numeroLista-1] = horasPeriodo[numeroLista-1] + (qtdHorasPeriodo - horasPeriodo[numeroLista-1]);
 				}
 
-				else if ((qtdHorasPeriodo - contadorPorPeriodo) < horasFaltamOpcionais && (qtdHorasPeriodo - contadorPorPeriodo) < horasFaltamEletivas){
+				else if ((qtdHorasPeriodo - horasPeriodo[numeroLista-1]) < horasFaltamOpcionais && (qtdHorasPeriodo - horasPeriodo[numeroLista-1]) < horasFaltamEletivas){
 					continuar = false;
 				}
 
@@ -747,7 +813,9 @@ public class PlanejamentoFormaturaController implements Serializable {
 		if(i== 10) return listaDisciplinaSelecionadasDez;
 		if(i== 11) return listaDisciplinaSelecionadasOnze;
 		if(i== 12) return listaDisciplinaSelecionadasDoze;
-		return null;
+		return null;//*/
+		//--i;
+		//return ((i>0) && itensPlanejamento.get(i) != null ? itensPlanejamento.get(i).getListaDisciplinaSelecionadas() : null);
 	}
 
 	public void recuperarLg(int i,boolean valor){
@@ -762,7 +830,10 @@ public class PlanejamentoFormaturaController implements Serializable {
 		if(i== 9)  lgTabelaNove = valor;
 		if(i== 10)  lgTabelaDez = valor;
 		if(i== 11)  lgTabelaOnze = valor;
-		if(i== 12)  lgTabelaDoze = valor;
+		if(i== 12)  lgTabelaDoze = valor;//*/
+		/*--i;
+		if((i>0) && itensPlanejamento.get(i) != null)
+			itensPlanejamento.get(i).setLgTabela(valor);*/
 	}
 
 	public void limpaAluno(){
@@ -775,7 +846,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 		horasObrigatoriasConcluidas = 0;
 		horasOpcionaisConcluidas = 0;
 		horasEletivasConcluidas = 0;
-		qtdHorasPeriodo = 300;
+		qtdHorasPeriodo = 360;
 		listaDisciplinaSelecionadas = new ArrayList<DisciplinaPlanejamento>();
 		listaDisciplinaSelecionadasDois = new ArrayList<DisciplinaPlanejamento>();
 		listaDisciplinaSelecionadasTres = new ArrayList<DisciplinaPlanejamento>();
@@ -799,7 +870,8 @@ public class PlanejamentoFormaturaController implements Serializable {
 		lgTabelaNove = false;
 		lgTabelaDez = false;
 		lgTabelaOnze = false;
-		lgTabelaDoze = false;
+		lgTabelaDoze = false;//*/
+		
 		Grade grade = new Grade();
 		grade.setHorasEletivas(0);
 		grade.setHorasOpcionais(0);
@@ -807,7 +879,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 		aluno.setGrade(grade);
 	}
 
-	public void gerarDadosAluno(Student st, Curriculum cur)
+	/*public void gerarDadosAluno(Student st, Curriculum cur)
 	{
 		HashMap<Class, ArrayList<String[]>> aprovado;
 		HashMap<Class, ArrayList<String[]>> matriculadosGrade;
@@ -862,7 +934,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 			}
 		}
 		//horasOpcionaisConcluidas = creditos;
-	}
+	}//*/
 
 	//========================================================= GET - SET ==================================================================================//
 
@@ -968,7 +1040,6 @@ public class PlanejamentoFormaturaController implements Serializable {
 			DisciplinaPlanejamento disciplinaSelecionada) {
 		this.disciplinaSelecionada = disciplinaSelecionada;
 	}
-
 	public List<DisciplinaPlanejamento> getListaDisciplinaSelecionadas() {
 		return listaDisciplinaSelecionadas;
 	}

@@ -925,7 +925,6 @@ public class CadastroGradeController implements Serializable {
 	}
 
 	public void setGrade(Grade grade) {
-		System.out.println("SETOU!!!");
 		this.grade = grade;
 	}
 

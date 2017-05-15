@@ -16,6 +16,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.ElementoGrafico;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 
+import org.apache.log4j.Logger;
 import org.primefaces.event.ItemSelectEvent;
 import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
@@ -42,6 +43,8 @@ public class GraficosIraQuantidadeController implements Serializable {
 	private int quantidadeSelecionados;
 	private String periodoSelecionados;
 	private int quantidadeTotal;
+	
+	private static final Logger logger = Logger.getLogger(GraficosIraQuantidadeController.class);
 
 	//========================================================= METODOS ==================================================================================//
 
@@ -81,7 +84,7 @@ public class GraficosIraQuantidadeController implements Serializable {
 				
 				if (st == null){
 
-					System.out.println("Historico no encontrado para o aluno :" + aluno.getMatricula());				
+					logger.warn("Historico não encontrado para o aluno: " + aluno.getMatricula());				
 					continue;
 
 				}		

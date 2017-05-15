@@ -127,7 +127,7 @@ public class ContadorHorasIntegralizadas {
 		Student st = sh.getStudents().get(this.aluno.getMatricula());
 		
 		if (st == null){
-			logger.error("O aluno não foi encontrado na base de dados. Tarefa cancelada");
+			logger.error("O aluno "+ this.aluno.getMatricula()+ " não foi encontrado na base de dados. Tarefa cancelada");
 			FacesMessage msg = new FacesMessage("O aluno:" + this.aluno.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
@@ -137,19 +137,26 @@ public class ContadorHorasIntegralizadas {
 		HashMap<Class, ArrayList<String[]>> aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
 		
 		for(int i: cur.getMandatories().keySet())
+		{
 			for(Class c: cur.getMandatories().get(i))
 			{
 				if(aprovado.containsKey(c)){
+					Disciplina d = disciplinas.buscarPorCodigoDisciplina(c.getId());
+					if(d != null)
+					{
+						c.setWorkload(d.getCargaHoraria());
+					}
+					
 					this.horasObrigatoriasCompletadas += c.getWorkload();
 					aprovado.remove(c);
 				}
 				
 				
 			}
+		}
 		
 		for(Class c: cur.getElectives())
 			if(aprovado.containsKey(c))	{
-				//System.out.println(c.getId() + " - ELTV");
 				this.horasEletivasCompletadas += c.getWorkload();
 				aprovado.remove(c);
 			}
@@ -160,7 +167,11 @@ public class ContadorHorasIntegralizadas {
 			Class c = i.next();
 			for(String[] s2: aprovado.get(c))	{
 				if (s2[1].equals("APR") || s2[1].equals("A")){
-					//System.out.println(c.getId() + " - EVTACE");
+					Disciplina d = disciplinas.buscarPorCodigoDisciplina(c.getId());
+					
+					if(d != null)
+						c.setWorkload(d.getCargaHoraria());
+					
 					horasAceConcluidas += c.getWorkload();
 				}
 				else

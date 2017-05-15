@@ -10,6 +10,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.*;
 
 public class Ordenar {
 
+	
 	public class EventoAcePeriodo implements Comparator<EventoAce> {
 		@Override
 		public int compare(EventoAce o1, EventoAce o2) {
@@ -23,7 +24,7 @@ public class Ordenar {
 			return o1.getPeriodo().compareTo(o2.getPeriodo());
 		}
 	}
-
+	
 	public class CursoCodigo implements Comparator<Curso> {
 		@Override
 		public int compare(Curso o1, Curso o2) {
