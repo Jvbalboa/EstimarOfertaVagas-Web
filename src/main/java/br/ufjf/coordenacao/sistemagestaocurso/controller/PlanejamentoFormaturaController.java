@@ -25,6 +25,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Disciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.GradeDisciplina;
+import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.DisciplinaPlanejamento;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
@@ -477,26 +478,32 @@ public class PlanejamentoFormaturaController implements Serializable {
 		}*/
 		
 		gerarExpectativa();
-		
-		for(int i = 0; i < 12; i++)
-		{
-			logger.info(horasPeriodo[i]);
-		}
-	}
-	
-	public void LogCurriculum(Curriculum c)
-	{
-		for(int i : c.getMandatories().keySet())
-		{
-			logger.info(i + "o periodo\n");
-			for(Class cl : c.getMandatories().get(i))
-			{
-				logger.info(cl);
-			}
-		}
-			
 	}
 
+	public void descontarEletivasOpcionaisMatriculadas()
+	{
+		for(Historico h: this.aluno.getGrupoHistorico())
+		{
+			if(h.getStatusDisciplina().equals("Matriculado"))
+			{
+				GradeDisciplina gradeDisciplina  = gradeDisciplinas.buscarPorDisciplinaGrade(aluno.getGrade().getId(), h.getDisciplina().getId());
+				if(gradeDisciplina != null)
+				{
+					if(gradeDisciplina.getTipoDisciplina().equals("Eletiva"))
+						horasFaltamEletivas -= h.getDisciplina().getCargaHoraria();
+				}
+				else
+				{
+					horasFaltamOpcionais -= h.getDisciplina().getCargaHoraria();
+				}
+
+			}
+		}
+		
+		horasFaltamEletivas = (horasFaltamEletivas < 0 ? 0 : horasFaltamEletivas);
+		horasFaltamOpcionais = (horasFaltamOpcionais < 0 ? 0 : horasFaltamOpcionais);
+	}
+	
 	public void gerarExpectativa(){
 
 		if (!aluno.getGrade().estaCompleta()) {
@@ -552,8 +559,6 @@ public class PlanejamentoFormaturaController implements Serializable {
 
 			curriculumAluno = g.generate();
 
-			LogCurriculum(curriculumAluno);
-
 		} catch (Exception e) {
 			logger.error("Erro ao gerar o planejamento para " + aluno.getMatricula(), e);
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ocorreu um problema ao gerar o planejamento", e.getLocalizedMessage());
@@ -569,7 +574,9 @@ public class PlanejamentoFormaturaController implements Serializable {
 		}
 		horasFaltamEletivas =     aluno.getGrade().getHorasEletivas() - aluno.getHorasEletivasCompletadas();
 		horasFaltamOpcionais =   aluno.getGrade().getHorasOpcionais() - aluno.getHorasOpcionaisCompletadas();
-
+		
+		descontarEletivasOpcionaisMatriculadas();
+		
 		for(int i : curriculumAluno.getMandatories().keySet()){			
 			horasPeriodo[i] = 0;
 			/*while(contadorPeriodosGerados != i){
@@ -591,19 +598,10 @@ public class PlanejamentoFormaturaController implements Serializable {
 				
 				DisciplinaPlanejamento disciplinaPlanejamento = new DisciplinaPlanejamento();
 				disciplinaPlanejamento.setCargaHoraria(disciplina.getCargaHoraria());
-				disciplinaPlanejamento.setCodigo(disciplina.getCodigo());//*/
-
-				//itensPlanejamento.get(i).adicionaHoras(disciplina.getCargaHoraria());
+				disciplinaPlanejamento.setCodigo(disciplina.getCodigo());
 				
 				GradeDisciplina gradeDisciplina  = gradeDisciplinas.buscarPorDisciplinaGrade(aluno.getGrade().getId(), disciplina.getId());
-				
-				/*for(GradeDisciplina gradeDisciplinaSelecionada : aluno.getGrade().getGrupoGradeDisciplina()){
-					if (gradeDisciplinaSelecionada.getDisciplina().getCodigo().equals(disciplina.getCodigo())){
 
-						gradeDisciplina = gradeDisciplinaSelecionada;	
-						break;
-					}
-				}*/
 				int  periodo = 0;
 				if (gradeDisciplina != null){
 					periodo = (int) (long) gradeDisciplina.getPeriodo();
@@ -619,14 +617,14 @@ public class PlanejamentoFormaturaController implements Serializable {
 				itensPlanejamento.get(i).setLgTabela(true);*/
 			}
 			
-			//gerarEletivasObrigatorias (recuperarLista(i+1),(i+1));
+			gerarEletivasObrigatorias (recuperarLista(i+1),(i+1));
 			ultimoPeriodoPreenchido = i;
-			//listaCargaHorariaPeriodo.add(Integer.toString(horasPeriodo[i]));
-			//contadorPeriodosGerados ++;//*/
 			
-			//for(int j = 1; j <= 12; j++)
-			gerarEletivasObrigatorias(recuperarLista(i+1), i+1);
+			
 		}
+		
+		for(int j = ultimoPeriodoPreenchido+1; j <= 12; j++)
+			gerarEletivasObrigatorias(recuperarLista(j), j);
 		
 		if (ultimoPeriodoPreenchido == 0){
 			ultimoPeriodoPreenchido = -1;
@@ -709,6 +707,11 @@ public class PlanejamentoFormaturaController implements Serializable {
 		return listaCargaHorariaPeriodo.get(periodo);
 	}
 
+	public void completarEletivasObrigatorias(List<DisciplinaPlanejamento> lista, int numeroLista)
+	{
+		
+	}
+	
 	public void gerarEletivasObrigatorias (List<DisciplinaPlanejamento> listaDisciplinas,int numeroLista){
 		boolean continuar = true; 
 		while(continuar){
