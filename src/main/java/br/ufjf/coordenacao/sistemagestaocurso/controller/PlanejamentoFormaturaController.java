@@ -307,13 +307,13 @@ public class PlanejamentoFormaturaController implements Serializable {
 						}
 					}
 					for(Class cl: c.getPrerequisite()){
-						if(cl.getId() == disciplinaSelecionadaIntera.getCodigo()){
+						if(cl.getId().equals(disciplinaSelecionadaIntera.getCodigo())){
 							DisciplinaPlanejamento preRequisitoPlanejamento = new DisciplinaPlanejamento();
 							preRequisitoPlanejamento.setCodigo(c.getId());
 							preRequisitoPlanejamento.setCargaHoraria(c.getWorkload());
 							if (posicao < 12 ){
 								for(DisciplinaPlanejamento disciplinaPrincipal :recuperarLista(posicao + 1) ){
-									if (disciplinaPrincipal.getCodigo() == preRequisitoPlanejamento.getCodigo()){
+									if (disciplinaPrincipal.getCodigo().equals(preRequisitoPlanejamento.getCodigo())){
 										funcionou = moverDireita (posicao + 1,disciplinaPrincipal);
 										break;
 									}
@@ -360,7 +360,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 		if (!disciplinaSelecionadaIntera.getCodigo().equals("ELETIVA") && !disciplinaSelecionadaIntera.getCodigo().equals("OPCIONAL")){
 			for(int i: curriculumAluno.getMandatories().keySet()){
 				for(Class c: curriculumAluno.getMandatories().get(i)) {	
-					if (c.getId() == disciplinaSelecionadaIntera.getCodigo()){
+					if (c.getId().equals(disciplinaSelecionadaIntera.getCodigo())){
 						for(Class cl: c.getCorequisite()){
 							for(DisciplinaPlanejamento disciplinaPrincipal :recuperarLista(posicao) ){
 								if (disciplinaPrincipal.getCodigo().equals( cl.getId())){
@@ -373,7 +373,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 						for(Class cl: c.getPrerequisite()){
 							if (posicao > 1 ){
 								for(DisciplinaPlanejamento disciplinaPrincipal :recuperarLista(posicao - 1)  ){
-									if (disciplinaPrincipal.getCodigo() == cl.getId()){
+									if (disciplinaPrincipal.getCodigo().equals(cl.getId())){
 										funcionou = moverEsquerda (posicao - 1,disciplinaPrincipal);
 										break;
 									}
@@ -567,7 +567,15 @@ public class PlanejamentoFormaturaController implements Serializable {
 		}
 
 		int ultimoPeriodoPreenchido = 0;
-		if (curriculumAluno.getMandatories().keySet().size() > 12){
+		
+		//
+		int maiorPeriodo = 0;
+		{
+			for(int i : curriculumAluno.getMandatories().keySet())
+				maiorPeriodo = (i > maiorPeriodo ? i : maiorPeriodo);
+		}
+		
+		if (curriculumAluno.getMandatories().keySet().size() > 12 || maiorPeriodo >= 12){
 			FacesMessage msg = new FacesMessage("A quantidade de horas por período deve ser maior pois o número de períodos excedeu o limite de 12 períodos!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
