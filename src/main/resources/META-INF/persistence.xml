@@ -1,38 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.1"
-	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-	<persistence-unit name="SistemaGestaoCurso">
-
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	
+	<persistence-unit name="sgcPU">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		
 		<properties>
-
-			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
-			<property name="hibernate.connection.username" value="USERNAME" />
-			<property name="hibernate.connection.password" value="PASSWORD" />
-			<property name="hibernate.connection.url" value="jdbc:mysql://DATABASE_SERVER/DATABASE" />
-			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
-			<property name="hibernate.show_sql" value="false" />
-			<property name="hibernate.format_sql" value="true" />
-			<property name="hibernate.connection.release_mode" value="auto" />
-
-
-			<!-- <property name="hibernate.c3p0.acquire_increment" value="10" />			
-			<property name="hibernate.c3p0.minPoolSize" value="30" />
-			<property name="hibernate.c3p0.maxPoolSize" value="60" />
-			<property name="hibernate.c3p0.maxIdleTime" value="180" /> -->
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/sgc2" />
+			<property name="javax.persistence.jdbc.user" value="sgc2" />
+			<property name="javax.persistence.jdbc.password" value="sgc2" />
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
 			
-			<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
-  
-
-			<property name="hibernate.c3p0.min_size" value="1"></property>
-			<property name="hibernate.c3p0.max_size" value="20"></property>
-			<property name="hibernate.c3p0.timeout" value="30"></property>
-			<property name="hibernate.c3p0.idle_test_period" value="100" />
-			<property name="hibernate.c3p0.max_statements" value="0"></property> 
-
-
+			
 			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<!-- Caso seja necessário exibir o sql, tambem deve-se alterar a config do Log4J em log4j.xml -->
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
+			<property name="hibernate.enable_lazy_load_no_trans" value="true"/>
+			
+			<property name="hibernate.connection.provider_class" 
+				value="org.hibernate.connection.C3P0ConnectionProvider" />
+			
+			<property name="hibernate.c3p0.max_size" value="20" />
+			<property name="hibernate.c3p0.min_size" value="5" />
+			<property name="hibernate.c3p0.acquire_increment" value="1" />
+			<property name="hibernate.c3p0.idle_test_period" value="30" />
+			<property name="hibernate.c3p0.max_statements" value="50" />
+			<property name="hibernate.c3p0.timeout" value="60" />
+		
 		</properties>
-
 	</persistence-unit>
+	
 </persistence>

@@ -73,7 +73,7 @@
 							message="Tem certeza que deseja deletar a Grade?"
 							widgetVar="deletarGrade" showEffect="fade" hideEffect="fade">
 							<p:commandButton class="btn btn-default-sm" value="Sim"
-								update="gridEquivalencias" onclick="reprovar.hide()"
+								update="gridEquivalencias" onclick="reprovar.hide()" oncomplete="location.reload()"
 								actionListener="#{cadastroGradeController.excluirGrade()}"
 								ajax="true" />
 							<p:commandButton class="btn btn-default-sm" value="Não"

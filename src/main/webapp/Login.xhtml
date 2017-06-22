@@ -7,7 +7,8 @@
 	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
 
 <h:head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,19 +22,30 @@
 	<script type="text/javascript" src="resources/js/validaLogin.js"
 		charset="charset=UTF-8" />
 
-
 	<script type="text/javascript">  
 function limpar() {  
             document.getElementById('j_password').value = "123";  
 }  
 </script>
 
-	<f:metadata>
-     		<f:event type="preRenderView" listener="#{loginController.onPageLoad}"/>
-  	</f:metadata>
+	
+
+	<!-- Codigo Spring2q -->
+
+ <f:metadata>
+      <f:event type="preRenderView" listener="#{sessionUtil.invalidateSession}"/>
+  </f:metadata>
+	
+
 </h:head>
 
 <h:body onload='loadValidate()'>
+<!-- <iframe src="http://localhost:8080/SistemaGestaoCurso/j_spring_security_logout" style="width:0;height:0;border:0; border:none;"></iframe> -->
+<!-- <f:metadata>
+	<f:viewParam name="dummy"/>
+	<f:event type="preRenderView" listener="#{usuarioController.logout()}" />
+	</f:metadata> -->
+
 <p:growl autoUpdate="true" />
 	<div id="page-wrapper">
 		<div class="container">
@@ -92,9 +104,12 @@ function limpar() {
 			</div>
 		</div>
 		<div class="rodaPe">
-			<p class="lf">Copyright &copy; 2014</p>
+			<p class="lf">Copyright &copy; 2014 <sec:authorize access="isAuthenticated()">
+  				Logado 
+			</sec:authorize></p>
 			<div style="clear: both;"></div>
 		</div>
 	</div>
+	
 </h:body>
 </html>
