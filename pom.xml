@@ -1,81 +1,151 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>SistemaGestaoCurso</groupId>
+	<groupId>br.ufjf.coordenacao</groupId>
 	<artifactId>SistemaGestaoCurso</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.9-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-
-		<spring.version>3.1.1.RELEASE</spring.version>
-
-
-		<project.build.sourceEncoding>MacRoman</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
+		<spring.version>3.1.4.RELEASE</spring.version>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
 	</properties>
-	
+
 	<dependencies>
-
-
-		<!-- Implementação JSF 2.2 -->
+		<!-- Tema do Bootstrap -->
+    	<dependency>
+    		<groupId>org.primefaces.themes</groupId>
+    		<artifactId>bootstrap</artifactId>
+    		<version>1.0.10</version>
+    		<scope>compile</scope>
+    	</dependency>
+    
+		<!-- Usado para geração de arquivos Excel -->
 		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.faces</artifactId>
-			<version>2.2.8</version>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi</artifactId>
+		    <version>3.11</version>
+		    <scope>compile</scope>
+		</dependency>
+    
+		<!-- Implementacao do Bean Validation -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.0.1.Final</version>
+			<scope>compile</scope>
+		</dependency>
+    
+		<!-- Núcleo do Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.2.3.Final</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<!-- Implementação de EntityManager da JPA -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>4.2.3.Final</version>
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- Implementação do Primefaces 4.0 -->
+		<!-- Pool de conexoes com C3P0 -->
 		<dependency>
-			<groupId>org.primefaces</groupId>
-			<artifactId>primefaces</artifactId>
-			<version>5.1</version>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-c3p0</artifactId>
+		    <version>4.2.3.Final</version>
+		    <scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.apache.poi</groupId>
+    		<artifactId>poi-ooxml</artifactId>
+    		<version>3.11</version>
+		</dependency>
+
+		<!-- Driver JDBC do MySQL -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.25</version>
 			<scope>compile</scope>
 		</dependency>
-
-		<!-- Implementação do RichTextString -->
+    
+        <!-- Weld (implementação do CDI) -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet</artifactId>
+            <version>1.1.10.Final</version>
+            <scope>compile</scope>
+        </dependency>
+        
+        <!-- Weld depende do Jandex -->
 		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>3.5-beta3</version>
+			<groupId>org.jboss</groupId>
+		    <artifactId>jandex</artifactId>
+		    <version>1.2.2.Final</version>
+		    <scope>compile</scope>
+		</dependency> 
+    
+        <!-- PrimeFaces (biblioteca de componentes) -->
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>5.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+			<groupId>org.primefaces.extensions</groupId>
+			<artifactId>primefaces-extensions</artifactId>
+			<version>3.2.0</version>
 		</dependency>
-
+        
+        <!-- Bootstrap componentes Primefaces -->
+		<dependency>
+			<groupId>org.primefaces.themes</groupId>
+			<artifactId>bootstrap</artifactId>
+			<version>1.0.10</version>
+		</dependency>
+        
+        <!-- Mojarra (implementacao do JSF) -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.faces</artifactId>
+            <version>2.2.8</version>
+            <scope>compile</scope>
+        </dependency>
+        
+<!-- 		OmniFaces (utilitarios para JSF) -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>org.omnifaces</groupId> -->
+<!-- 		    <artifactId>omnifaces</artifactId> -->
+<!-- 		    <version>2.0</version> -->
+<!-- 		    <scope>compile</scope> -->
+<!-- 		</dependency> -->
+		
+		
+		
 		<!-- Implementação do Phrase -->
 		<dependency>
 			<groupId>com.lowagie</groupId>
 			<artifactId>itext</artifactId>
 			<version>2.0.7</version>
 		</dependency>
-		<!-- Weld (implementação do CDI) -->
-		<dependency>
-			<groupId>org.jboss.weld.servlet</groupId>
-			<artifactId>weld-servlet</artifactId>
-			<version>1.1.10.Final</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<!-- OmniFaces (utilitarios para JSF) -->
-		<dependency>
-			<groupId>org.omnifaces</groupId>
-			<artifactId>omnifaces</artifactId>
-			<version>1.5</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<!-- Log4J -->
+        
+		<!-- Log4J -->    	
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 			<scope>compile</scope>
 		</dependency>
-
+		
 		<!-- Commons Logging (abstrai a implementação de logging) -->
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -83,7 +153,7 @@
 			<version>1.1.3</version>
 			<scope>compile</scope>
 		</dependency>
-
+		
 		<!-- Commons Lang (utilidades) -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -91,165 +161,98 @@
 			<version>3.1</version>
 			<scope>compile</scope>
 		</dependency>
-
-
-		<!-- API de Servlet -->
+		
+		<!-- Abstração para envio de e-mails -->		
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-
-
-
-
-		<!-- Implementacao do Bean Validation -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>5.0.3.Final</version>
+			<groupId>com.outjected</groupId>
+			<artifactId>simple-email</artifactId>
+			<version>0.2.5-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- Nucleo do Hibernate -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>4.3.0.Final</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-c3p0</artifactId>
-			<version>4.3.0.Final</version>
-			<scope>compile</scope>
-		</dependency>
-
-
-		<!-- for JPA, use hibernate-entitymanager instead of hibernate-core -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.3.0.Final</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<!-- Ler arquivos -->
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.3.2</version>
-		</dependency>
-		<!-- Java email -->
+		<!-- Requerido para envio de e-mails -->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			<version>1.4</version>
+			<version>1.4.7</version>
+			<scope>compile</scope>
 		</dependency>
-
-		<!-- Bootstrap componentes Primefaces -->
-		<dependency>
-			<groupId>org.primefaces.themes</groupId>
-			<artifactId>bootstrap</artifactId>
-			<version>1.0.10</version>
-		</dependency>
-
-		<!--<dependency> <groupId>org.postgresql</groupId> <artifactId>postgresql</artifactId> 
-			<version>9.4-1203-jdbc42</version> </dependency> -->
-
 		
-
-
-
-		<!-- Leitura/Gravação Excel -->
+		<!-- Usamos para templates de emails -->
 		<dependency>
-			<groupId>net.sourceforge.jexcelapi</groupId>
-			<artifactId>jxl</artifactId>
-			<version>2.6</version>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.7</version>
+			<scope>compile</scope>
 		</dependency>
-
+		
+		<!-- Usamos para formatar números em templates -->
+		<dependency>
+			<groupId>velocity-tools</groupId>
+			<artifactId>velocity-tools-generic</artifactId>
+			<version>1.1</version>
+			<scope>compile</scope>
+		</dependency>
+		
 		<!-- Spring Security (autenticação e autorização) -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 			<version>3.1.4.RELEASE</version>
-		</dependency>
+		</dependency> 
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
 			<version>3.1.4.RELEASE</version>
-		</dependency>
+		</dependency> 
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 			<version>3.1.4.RELEASE</version>
 		</dependency>
+		
 		<dependency>
-			<groupId>c3p0</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>5.1.2</version>
+			<scope>compile</scope>
 		</dependency>
-
+		
+		<!-- API de Servlet -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
+	        <groupId>javax.servlet</groupId>
+	        <artifactId>javax.servlet-api</artifactId>
+	        <version>3.1.0</version>
+	        <scope>provided</scope>
 		</dependency>
+		
+		<!-- API Integra -->
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-csv</artifactId>
-			<version>1.0</version>
+			<groupId>IntegraAPI</groupId>
+			<artifactId>IntegraAPI</artifactId>
+			<version>2016</version>
 		</dependency>
+		
+		<!-- EstimarOfertaVagas -->
+		<dependency>
+			<groupId>br.ufjf.coordenacao</groupId>
+			<artifactId>EstimarOfertaVagas</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<!-- Apache CXF JAX-RS (requerido pelo Integra) -->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 			<version>2.7.11</version>
 			<type>jar</type>
 		</dependency>
-
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>7.0</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.primefaces.extensions</groupId>
-			<artifactId>primefaces-extensions</artifactId>
-			<version>3.2.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>3.13</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>3.13</version>
-		</dependency>
-
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.39</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>IntegraAPI</groupId>
-			<artifactId>IntegraAPI</artifactId>
-			<version>2016</version>
-		</dependency>
-
-
+		<!--<dependency>
+  			<groupId>org.apache.cxf</groupId>
+  			<artifactId>cxf-rt-rs-client</artifactId>
+  			<version>3.0.0-milestone1</version>
+		</dependency>-->
 	</dependencies>
-
 
 	<repositories>
 		<repository>
@@ -260,23 +263,31 @@
 		</repository>
 		
 		<repository>
-			<id>project-common</id>
-    			<name>Project Common</name>
+			<id>souzajbr-mvn-repo</id>
+    			<name>SouzaJBR MVN Repo</name>
     			<url>http://github.com/SouzaJBR/mvn-repo/raw/master/</url>
 		</repository>
+		
+		<repository>
+        	<id>spring-milestones</id>
+        	<name>Spring Milestones</name>
+        	<url>https://repo.spring.io/libs-milestone</url>
+        	<snapshots>
+            	<enabled>false</enabled>
+       		</snapshots>
+    	</repository>
 	</repositories>
-	
-	<build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <version>2.1</version>
-        <configuration>
-          <url>http://yourhost:8080/manager/text</url>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
