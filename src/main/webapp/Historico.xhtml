@@ -116,13 +116,13 @@
 										fileName="#{historicoController.aluno.matricula}_historico" />
 								</h:commandLink>			          
 			       </f:facet>
-					<p:column headerText="Código Disciplina" style="width: 12%;"
+					<p:column headerText="Código Disciplina" style="width: 13%;"
 						filterBy="#{historicoAluno.disciplina.codigo}"
 						filterMatchMode="contains"
 						sortBy="#{historicoAluno.disciplina.codigo}">
 						<h:outputText value="#{historicoAluno.disciplina.codigo}" />
 					</p:column>
-					<p:column headerText="Nome Disciplina" style="width: 50%;"
+					<p:column headerText="Nome Disciplina" style="width: 39%;"
 						filterBy="#{historicoAluno.disciplina.nome}"
 						filterMatchMode="contains"
 						sortBy="#{historicoAluno.disciplina.nome}">
@@ -135,12 +135,18 @@
 						sortBy="#{historicoAluno.semestreCursado}">
 						<h:outputText value="#{historicoAluno.semestreCursado}" />
 					</p:column>
-					<p:column headerText="Nota" style="width: 12%;text-align: center;"
-						filterBy="#{historicoAluno.nota}" filterMatchMode="contains"
+					<p:column headerText="Nota" style="width: 9%;text-align: center;"
+						filterBy="#{historicoAluno.nota}" filterMatchMode="contains" 
 						sortBy="#{historicoAluno.nota}">
 						<h:outputText value="#{historicoAluno.nota}" />
 					</p:column>
-					<p:column headerText="Status" style="width: 9%;text-align: center;"
+					<p:column headerText="Carga Horária" style="width: 11%;text-align: center;"
+						filterBy="#{historicoAluno.disciplina.cargaHoraria}"
+						filterMatchMode="contains"
+						sortBy="#{historicoAluno.disciplina.cargaHoraria}">
+						<h:outputText value="#{historicoAluno.disciplina.cargaHoraria}" />
+					</p:column>
+					<p:column headerText="Status" style="width: 10%;text-align: center;"
 						filterBy="#{historicoAluno.statusDisciplina}"
 						filterMatchMode="contains"
 						sortBy="#{historicoAluno.statusDisciplina}">

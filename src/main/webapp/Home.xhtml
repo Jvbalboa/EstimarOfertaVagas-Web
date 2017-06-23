@@ -1,17 +1,15 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:opt="http://primefaces.prime.com.tr/optimus"
 	xmlns:p="http://primefaces.org/ui">
 <ui:composition template="#{perfilController.perfil}">
 	<ui:define name="corpo">
 		<p:growl autoUpdate="true" />
+
 		<h:form class="formularioCentro" id="principalForm" method="post"
 			role="form" style="padding-left: 45px;height: 500px;">
 
@@ -52,7 +50,8 @@
 						<p:dataTable id="gridGeraisCurso" var="gerais"
 							value="#{homeController.listaDadosGeraisCurso}"
 							emptyMessage="Nenhum dado encontrado"
-							rendered="#{homeController.aparecerTabela}">
+							rendered="#{homeController.aparecerTabela}"
+							scrollable="true" scrollHeight="507">
 
 							<p:column headerText="Código Curso" sortBy="#{gerais.codigoCurso}" style="    font-size: 14px;    text-align: center;">
 								<h:outputText value="#{gerais.codigoCurso}" />
@@ -62,7 +61,7 @@
 								<h:outputText value="#{gerais.dataUltimaImportacao}" />
 							</p:column>
 
-							<p:column headerText="Alunos" sortBy="#{gerais.quantidadeAlunosGrade}" style="    font-size: 14px;    text-align: center;">
+							<p:column headerText="Alunos" sortBy="#{gerais.alunosTotaisCurso}" style="    font-size: 14px;    text-align: center;">
 								<h:outputText value="#{gerais.alunosTotaisCurso}"  />
 							</p:column>
 
@@ -74,7 +73,8 @@
 						<p:dataTable id="gridGerais" var="gerais"
 							value="#{homeController.listaDadosGerais}"
 							emptyMessage="Nenhum dado encontrado"
-							rendered="#{homeController.aparecerTabela}">
+							rendered="#{homeController.aparecerTabela}"
+							scrollable="true" scrollHeight="507">
 
 							<p:column headerText="Código Curso" sortBy="#{gerais.codigoCurso}" style="    font-size: 14px;    text-align: center;">
 								<h:outputText value="#{gerais.codigoCurso}" />
