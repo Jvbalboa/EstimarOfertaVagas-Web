@@ -135,6 +135,9 @@ public class ImportarHistorico implements Serializable {
 		grade.setHorasOpcionais(0);
 		grade.setNumeroMaximoPeriodos(0);
 		grade.setPeriodoInicio(1);
+		
+		grade = grades.persistir(grade);
+		
 		return grade;
 	}
 
@@ -167,10 +170,10 @@ public class ImportarHistorico implements Serializable {
 
 			WsLoginResponse user;
 
-			
-			 user = integra.login(usuarioController.getAutenticacao().getLogin(),
+			user = integra.login("01172222673", "4ca1e4a4616ef374d6e431835f5d6815" , "d6189421e0278587f113ca4b9e258c4a9f8de468");
+			 /*user = integra.login(usuarioController.getAutenticacao().getLogin(),
 			 usuarioController.getAutenticacao().getSenha(),
-			 usuarioController.getAutenticacao().getToken());
+			 usuarioController.getAutenticacao().getToken());*/
 			 
 			// if(usuarioController.getAutenticacao().getLogin().equals("admin"))
 			
