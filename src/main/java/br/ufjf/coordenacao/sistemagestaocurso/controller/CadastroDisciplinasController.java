@@ -51,25 +51,33 @@ public class CadastroDisciplinasController implements Serializable {
 	public void onRowEdit(RowEditEvent event) {
 		Disciplina disciplina = (Disciplina) event.getObject();		
 		if (disciplina.getNome().equals("") || disciplina.getNome() == null){
-			FacesMessage msg = new FacesMessage("Nome disciplina inv�lido!" );	
+			FacesMessage msg = new FacesMessage("Nome disciplina inválido!" );	
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		disciplina.setCodigo(disciplina.getCodigo().toUpperCase());
 		disciplina.setNome(disciplina.getNome().toUpperCase());
-		FacesMessage msg = new FacesMessage("Disciplina Editada!",((Disciplina) event.getObject()).getNome() );
-		FacesContext.getCurrentInstance().addMessage(null, msg);
+		
+		try{
+			disciplinas.persistir(disciplina);
+			FacesMessage msg = new FacesMessage("Disciplina Editada!",((Disciplina) event.getObject()).getNome() );
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		} catch(Exception e)
+		{
+			FacesMessage msg = new FacesMessage("Ocorreu um problema!",((Disciplina) event.getObject()).getNome() );
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
 	}
 
 	public void onRowCancel(RowEditEvent event) {
-		FacesMessage msg = new FacesMessage("Edi��o Cancelada!", ((Disciplina) event.getObject()).getNome());
+		FacesMessage msg = new FacesMessage("Edição Cancelada!", ((Disciplina) event.getObject()).getNome());
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 	}	
 
 	@Transactional
 	public void incluirDisciplina(){
 		if (disciplina.getCodigo() == null || disciplina.getCodigo().equals("")){
-			FacesMessage msg = new FacesMessage("Preencha o campo C�digo!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Código!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -81,13 +89,13 @@ public class CadastroDisciplinasController implements Serializable {
 		}
 
 		if (disciplina.getCargaHoraria() == null || disciplina.getCargaHoraria() == 0){
-			FacesMessage msg = new FacesMessage("Preecha o campo Carga Hor�ria!");
+			FacesMessage msg = new FacesMessage("Preecha o campo Carga Horária!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
 		
 		if (disciplinas.buscarPorCodigoDisciplina(disciplina.getCodigo().toUpperCase()) != null){
-			FacesMessage msg = new FacesMessage("Disciplina j� cadastrada!");
+			FacesMessage msg = new FacesMessage("Disciplina já cadastrada!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -95,7 +103,7 @@ public class CadastroDisciplinasController implements Serializable {
 		if (disciplina.getCargaHoraria() != null  && disciplina.getCodigo() != null && disciplina.getNome() != null){	
 			disciplina.setNome(disciplina.getNome().toUpperCase());
 			disciplina.setCodigo(disciplina.getCodigo().toUpperCase());		
-			disciplinas.persistir(disciplina);
+			disciplina = disciplinas.persistir(disciplina);
 			listaDisciplinas.add(disciplina);
 			ordenar.DisciplinaOrdenarCodigo(listaDisciplinas);
 			disciplina = new Disciplina();

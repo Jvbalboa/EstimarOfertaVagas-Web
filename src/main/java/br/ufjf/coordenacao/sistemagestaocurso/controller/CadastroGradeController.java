@@ -501,7 +501,7 @@ public class CadastroGradeController implements Serializable {
 
 		if(disciplina.getCodigo().equals("")){
 
-			FacesMessage msg = new FacesMessage("Preencha o campo Código Disciplina !");
+			FacesMessage msg = new FacesMessage("Preencha o campo Código Disciplina!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -510,7 +510,7 @@ public class CadastroGradeController implements Serializable {
 
 			if (disciplina.getNome() == null || disciplina.getNome().equals("")){
 
-				FacesMessage msg = new FacesMessage("Preencha o campo Nome Disciplina !");
+				FacesMessage msg = new FacesMessage("Preencha o campo Nome Disciplina!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 				return;
 			}
@@ -535,20 +535,28 @@ public class CadastroGradeController implements Serializable {
 		gradeDisciplina.setGrade(grade);	
 		List<GradeDisciplina> todos = gradeDisciplinaDAO.buscarTodasGradeDisciplinaPorGrade(grade.getId());
 
-		for (GradeDisciplina g:todos){
+		GradeDisciplina gdDisciplinaAntiga = gradeDisciplinaDAO.buscarPorDisciplinaGrade(grade.getId(), disciplina.getId());
+		if(gdDisciplinaAntiga != null)
+		{
+			FacesMessage msg = new FacesMessage("Disciplina já cadastrada nesta grade!");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			return;
+		}
+		
+		/*for (GradeDisciplina g:todos){
 			if(g.getDisciplina().getCodigo().equals(disciplina.getCodigo()) ){
 				FacesMessage msg = new FacesMessage("Disciplina já cadastrada nesta grade!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 				return;
 			}
-		}
+		}*/
 
 		if (!gradeDisciplina.getTipoDisciplina().equals("Obrigatoria") ){			
 			gradeDisciplina.setPeriodo((long) 0);
 		}
 
 		gradeDisciplina.setExcluirIra(false);
-		gradeDisciplinaDAO.persistir(gradeDisciplina);	
+		gradeDisciplina = gradeDisciplinaDAO.persistir(gradeDisciplina);	
 		DisciplinaGradeDisciplina disciplinaGradeDisciplina  = new DisciplinaGradeDisciplina();
 		disciplinaGradeDisciplina.setDisciplina(disciplina);
 		disciplinaGradeDisciplina.setGradeDisciplina(gradeDisciplina);	
@@ -704,7 +712,7 @@ public class CadastroGradeController implements Serializable {
 		}
 
 
-		if(disciplinaPre.getId() == linhaSelecionada.getDisciplina().getId()){
+		if(disciplinaPre.getCodigo().equals(linhaSelecionada.getDisciplina().getCodigo())){
 
 			FacesMessage msg = new FacesMessage("Não é possível incluir como pré-requisito a própria disciplina!!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -713,7 +721,7 @@ public class CadastroGradeController implements Serializable {
 			return;
 		}
 
-		preRequisitoDAO.persistir(preRequisito);
+		preRequisito = preRequisitoDAO.persistir(preRequisito);
 
 		listaPreRequisitos.add(preRequisito);
 
@@ -723,10 +731,6 @@ public class CadastroGradeController implements Serializable {
 		
 		estruturaArvore.removerEstrutura(grade);
 		usuarioController.setReseta(true);
-
-		
-		
-
 
 	}
 
@@ -749,11 +753,7 @@ public class CadastroGradeController implements Serializable {
 	public void deletarPreRequisito(){
 
 		preRequisitoDAO.remover(linhaSelecionadaPreRequisto);
-		List<PreRequisito> todos = linhaSelecionada.getGradeDisciplina().getPreRequisito();
-		listaPreRequisitos.clear();
-		for(PreRequisito p:todos){
-			listaPreRequisitos.add(p);
-		}
+		listaPreRequisitos.remove(linhaSelecionadaPreRequisto);
 
 		carregaPreRequisitos();
 		estruturaArvore.removerEstrutura(grade);
@@ -841,7 +841,7 @@ public class CadastroGradeController implements Serializable {
 		}
 
 		if(disciplinaEquivalenciaDois.getCodigo().equals(disciplinaEquivalenciaUm.getCodigo()) ){
-			FacesMessage msg = new FacesMessage("Não possível incluir equivalncia da própria disciplina!!");
+			FacesMessage msg = new FacesMessage("Não possível incluir equivalência da própria disciplina!!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			disciplinaEquivalenciaUm = new Disciplina();
 			disciplinaEquivalenciaDois = new Disciplina();
