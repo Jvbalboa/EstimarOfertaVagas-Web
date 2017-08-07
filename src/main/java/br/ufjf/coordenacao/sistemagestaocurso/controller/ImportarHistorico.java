@@ -171,10 +171,10 @@ public class ImportarHistorico implements Serializable {
 			WsLoginResponse user;
 
 			user = integra.login(usuarioController.getAutenticacao().getLogin(),
+
 			 usuarioController.getAutenticacao().getSenha(),
 			 usuarioController.getAutenticacao().getToken());
 			 
-			// if(usuarioController.getAutenticacao().getLogin().equals("admin"))
 			
 
 			logger.info("Recuperando dados do curso " + curso.getCodigo() + "...");
