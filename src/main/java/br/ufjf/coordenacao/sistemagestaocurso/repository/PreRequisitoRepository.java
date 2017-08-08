@@ -26,6 +26,8 @@ public class PreRequisitoRepository implements Serializable {
 
 	public void remover(PreRequisito objeto) {
 		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+		manager.createQuery("DELETE FROM PreRequisito WHERE id = :id").setParameter("id", objeto.getId()).executeUpdate();
+
 	}
 
 	public List<PreRequisito> listarTodos() {
@@ -44,10 +46,10 @@ public class PreRequisitoRepository implements Serializable {
 
 	public Integer buscarPorDisciplanaGradeId(Long idGrade, Long idDisciplina) {
 		try {
-		return (int) manager .createQuery("Select id FROM PreRequisito WHERE id_grade_disciplina = :idGrade and id_disciplina = :idDisciplina")
+		return ((Long) manager .createQuery("Select id FROM PreRequisito WHERE id_grade_disciplina = :idGrade and id_disciplina = :idDisciplina")
 				.setParameter("idGrade", idGrade)
 				.setParameter("idDisciplina", idDisciplina)
-				.getSingleResult();
+				.getSingleResult()).intValue();
 		}
 		catch (NoResultException e)
 		{

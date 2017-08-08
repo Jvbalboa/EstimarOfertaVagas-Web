@@ -229,7 +229,7 @@ public class CadastroPessoaController implements Serializable {
 	public void deletarPessoaCurso(){
 		List<PessoaCurso> listaPessoaCursoAuxiliar = (List<PessoaCurso>) pessoaCursoRepository.buscarTodasPessoaCursoPorPessoa(pessoaSelecionada.getId());
 		if(listaPessoaCursoAuxiliar.size() == 1){
-			FacesMessage msg = new FacesMessage("Usu�rio deve ter pelo menos um curso associado!");
+			FacesMessage msg = new FacesMessage("Usuário deve ter pelo menos um curso associado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}

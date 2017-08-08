@@ -26,6 +26,8 @@ public class GradeDisciplinaRepository implements Serializable {
 
 	public void remover(GradeDisciplina objeto) {
 		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+		manager.createQuery("DELETE FROM GradeDisciplina WHERE id = :id").setParameter("id", objeto.getId()).executeUpdate();
+
 	}
 
 	public List<GradeDisciplina> listarTodos() {
