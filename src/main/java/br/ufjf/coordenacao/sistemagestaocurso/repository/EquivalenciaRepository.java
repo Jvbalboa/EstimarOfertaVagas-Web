@@ -24,8 +24,9 @@ public class EquivalenciaRepository implements Serializable {
 		return manager.merge(objeto);
 	}
 
-	public void remover(Equivalencia objeto) {
-		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+	public void remover(Equivalencia equivalencia) {
+		// Verificar se equivalencia já foi persistida no banco
+		manager.remove(manager.find(Equivalencia.class, equivalencia.getId()));
 	}
 
 	public List<Equivalencia> listarTodos() {

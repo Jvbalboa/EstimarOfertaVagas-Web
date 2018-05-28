@@ -886,23 +886,13 @@ public class CadastroGradeController implements Serializable {
 
 	@Transactional
 	public void deletarEquivalencia(){		
-
 		equivalenciaDAO.remover(linhaSelecionadaEquivalencia);
 		estruturaArvore.removerEstrutura(grade);
 		usuarioController.setReseta(true);
 		listaEquivalencia.remove(linhaSelecionadaEquivalencia);
 		//usuarioController.atualizarPessoaLogada();
 		
-		Class c = null;
-		c = ClassFactory.getClass(grade.getCurso().getCodigo(),grade.getCodigo(), linhaSelecionadaEquivalencia.getDisciplinaGrade().getCodigo());
-		//TODO verificar se a remoção pode causar problemas
-		//ClassFactory.removeClass(grade.getCurso().getCodigo(),grade.getCodigo(), linhaSelecionadaEquivalencia.getDisciplinaEquivalente().getCodigo(), c);
-		
-		
-		
-		
-		atualizaGrids();		
-
+		atualizaGrids();
 	}
 	
 	@Transactional

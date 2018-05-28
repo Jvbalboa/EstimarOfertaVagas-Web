@@ -14,15 +14,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
-	<dependencies>
-		<!-- Tema do Bootstrap -->
-    	<dependency>
-    		<groupId>org.primefaces.themes</groupId>
-    		<artifactId>bootstrap</artifactId>
-    		<version>1.0.10</version>
-    		<scope>compile</scope>
-    	</dependency>
-    
+	<dependencies>   
 		<!-- Usado para geração de arquivos Excel -->
 		<dependency>
 		    <groupId>org.apache.poi</groupId>
@@ -127,9 +119,7 @@
 <!-- 		    <artifactId>omnifaces</artifactId> -->
 <!-- 		    <version>2.0</version> -->
 <!-- 		    <scope>compile</scope> -->
-<!-- 		</dependency> -->
-		
-		
+<!-- 		</dependency> -->		
 		
 		<!-- Implementação do Phrase -->
 		<dependency>
@@ -252,6 +242,14 @@
   			<artifactId>cxf-rt-rs-client</artifactId>
   			<version>3.0.0-milestone1</version>
 		</dependency>-->
+		
+		<!-- Apache Commons IO -->
+		<dependency>
+    		<groupId>commons-io</groupId>
+    		<artifactId>commons-io</artifactId>
+    		<version>2.4</version>
+		</dependency>
+		
 	</dependencies>
 
 	<repositories>

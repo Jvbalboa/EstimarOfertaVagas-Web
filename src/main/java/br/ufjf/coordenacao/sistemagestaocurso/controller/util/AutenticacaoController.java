@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.controller.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
@@ -39,8 +40,8 @@ public class AutenticacaoController implements Serializable {
 		estruturaArvore = EstruturaArvore.getInstance();
 
 		//PessoaRepository pessoaDAO = estruturaArvore.getPessoaDAO();
-		List<String> perfis = new ArrayList<String>();		
-		FileReader file = new FileReader("/opt/application.token");
+		List<String> perfis = new ArrayList<String>();
+		FileReader file = new FileReader("/dcc-config/ofertavagas/application.token");
 		BufferedReader bf = new BufferedReader(file);		
 		String token = bf.readLine();
 		bf.close();
@@ -90,49 +91,6 @@ public class AutenticacaoController implements Serializable {
 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ocorreu um problema", e.getMessage()));
 			}
 		}
-
-
-
-		/*************************************************************************************************/
-
-			/*int contador;
-		List<String> listaPeris = new ArrayList<String>();
-
-		listaPeris.add("200951711");
-		listaPeris.add("200976006");
-		listaPeris.add("1146429");
-
-		boolean achouCoord = false;
-		Pessoa pessoa = null;
-
-		for (contador = 0;contador < listaPeris.size() ; contador ++ ){				
-			pessoa = pessoaDAO.buscarPorSiapePessoa(listaPeris.get(contador));				
-			perfis.add(listaPeris.get(contador));			
-			if (pessoa != null){				
-				achouCoord = true;												
-			}				
-		}	
-
-		if (achouCoord == true){
-
-			autenticacao.setPessoa(pessoa);
-			autenticacao.setToken(token);
-			autenticacao.setTipoAcesso("coordenador");
-			autenticacao.setMaiorPermissao("coordenador");
-			estruturaArvore.setLoginUtilizado("coordenador");	
-			autenticacao.setPerfis(perfis);
-			return autenticacao;
-
-		}
-
-		autenticacao.setPerfis(perfis);
-		autenticacao.setTipoAcesso("aluno");
-		autenticacao.setMaiorPermissao("aluno");
-		estruturaArvore.setLoginUtilizado("aluno");
-		return autenticacao;	*/
-
-
-		/*******************************************************************************************************/
 
 		try {
 			List<Pessoa> TodasPessoas = (List<Pessoa>) pessoaDAO.listarTodos();
