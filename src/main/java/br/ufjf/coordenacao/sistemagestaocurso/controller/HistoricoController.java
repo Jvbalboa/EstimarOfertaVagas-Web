@@ -163,6 +163,11 @@ public class HistoricoController implements Serializable {
 			ira = (float) 0;
 		}
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
+	
+		DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot()
+				.findComponent("form:gridHistorico");
+		dataTable.clearInitialState();
+		dataTable.reset();
 	}
 
 	public void limpaAluno() {
@@ -172,10 +177,6 @@ public class HistoricoController implements Serializable {
 		ira = (float) 0;
 		periodo = 0;
 		listaHistorico = new ArrayList<Historico>();
-		DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot()
-				.findComponent("form:gridHistorico");
-		dataTable.clearInitialState();
-		dataTable.reset();
 	}
 
 	public int periodoCorrente(String ingresso) {
