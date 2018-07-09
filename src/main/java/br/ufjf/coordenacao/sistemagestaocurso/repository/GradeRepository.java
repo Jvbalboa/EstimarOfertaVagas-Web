@@ -2,6 +2,7 @@ package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -14,7 +15,7 @@ public class GradeRepository implements Serializable {
 
 	@Inject
 	private EntityManager manager;
-
+	
 	private static final long serialVersionUID = 1L;
 
 	public Grade porid(long id)

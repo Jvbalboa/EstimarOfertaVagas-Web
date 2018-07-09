@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.EventoAce;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -13,7 +14,7 @@ public class EventoAceRepository implements Serializable {
 
 	@Inject
 	private EntityManager manager;
-
+	
 	public EventoAceRepository(){ };
 	
 	public EventoAceRepository(EntityManager manager)

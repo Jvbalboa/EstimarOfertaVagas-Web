@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.util.config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,7 +17,13 @@ public class ConfHandler {
 
 	private ConfHandler() {
 		try {
-			InputStream inputStream = new FileInputStream("/dcc-config/ofertavagas/config.txt");
+			File f = new File("/dcc-config/ofertavagas/config.txt");
+			
+			if (!f.exists())
+				System.out.println("bugou " + f.getAbsolutePath());
+			
+			InputStream inputStream = new FileInputStream(f);
+			
 	        String arquivo = IOUtils.toString(inputStream);
 			confs = new HashMap<String, String>();
 			Pattern patternConf = Pattern.compile("(.*) = (.*)", Pattern.MULTILINE);

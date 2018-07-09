@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
+import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.*;
 
 @Entity
@@ -249,5 +250,24 @@ public class Aluno {
 
 	public void setIras(List<IRA> iras) {
 		this.iras = iras;
+	}
+	
+	@Transient
+	public SituacaoDisciplina getExcedenteEletivas() {
+		SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
+		disciplinaSituacao.setCodigo("");
+		disciplinaSituacao.setSituacao("");
+		disciplinaSituacao.setCargaHoraria(this.getSobraHorasEletivas() + "");
+		disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
+		return disciplinaSituacao;
+	}
+	
+	@Transient
+	public EventoAce getExcedenteOpcionais() {
+		EventoAce evento = new EventoAce();
+		evento.setDescricao("EXCEDENTE EM DISCIPLINAS OPCIONAIS");
+		evento.setHoras((long)this.getSobraHorasOpcionais());
+		evento.setExcluir(false);
+		return evento;
 	}
 }

@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Equivalencia;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -13,7 +14,7 @@ public class EquivalenciaRepository implements Serializable {
 
 	@Inject
 	private EntityManager manager;
-
+	
 	private static final long serialVersionUID = 1L;
 
 	public Equivalencia porid(long id) {

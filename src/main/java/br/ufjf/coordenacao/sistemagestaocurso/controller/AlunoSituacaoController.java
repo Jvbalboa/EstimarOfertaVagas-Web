@@ -98,23 +98,11 @@ public class AlunoSituacaoController
   
   private static final Logger logger = Logger.getLogger(AlunoSituacaoController.class);
   
-  public void preencheSobraHoras()
-	{
-		if(this.aluno.getSobraHorasEletivas() > 0)
-		{
-			SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
-			disciplinaSituacao.setCodigo("");
-			disciplinaSituacao.setSituacao("");
-			disciplinaSituacao.setCargaHoraria(this.aluno.getSobraHorasEletivas() + "");
-			disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
-			listaDisciplinaOpcionais.add(disciplinaSituacao);
-		}
-		
-	}
-	
 	@PostConstruct
 	public void init()  {
 		try {
+			
+			
 			estruturaArvore = EstruturaArvore.getInstance();		
 			Grade grade = new Grade();
 			grade.setHorasEletivas(0);
@@ -221,7 +209,11 @@ public class AlunoSituacaoController
 		}
 		
 		gerarDadosAluno(st,curriculum);
-		this.preencheSobraHoras();
+		
+		if (this.aluno.getSobraHorasEletivas() > 0) {
+			SituacaoDisciplina disciplinaSituacao = this.aluno.getExcedenteEletivas();
+			listaDisciplinaOpcionais.add(disciplinaSituacao);
+		}
 		
 		ira = aluno.getIra();
 		
@@ -242,11 +234,7 @@ public class AlunoSituacaoController
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
 			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
-			EventoAce evento = new EventoAce();
-			evento.setDescricao("EXCEDENTE EM DISCIPLINAS OPCIONAIS");
-			evento.setHoras((long)this.aluno.getSobraHorasOpcionais());
-			//evento.setPeriodo(this.aluno.getPeriodoReal());
-			evento.setExcluir(false);
+			EventoAce evento = this.aluno.getExcedenteOpcionais();
 			listaEventosAce.add(evento);
 		}
 		
@@ -254,6 +242,7 @@ public class AlunoSituacaoController
 		if (aluno.getGrade().getHorasAce() != 0){
 			percentualAce = (horasAceConcluidas* 100 / SomaInt) ;
 		}
+		this.resetaDataTables();
 	}
 
 	public void limpaAluno(){		
@@ -282,7 +271,11 @@ public class AlunoSituacaoController
 		grade.setHorasOpcionais(0);
 		grade.setHorasAce(0);
 		aluno = new Aluno();
-		aluno.setGrade(grade);	
+		aluno.setGrade(grade);
+		this.resetaDataTables();
+	}
+	
+	public void resetaDataTables() {
 		DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent("form:gridObrigatorias");
 		dataTable.clearInitialState();
 		dataTable.reset();

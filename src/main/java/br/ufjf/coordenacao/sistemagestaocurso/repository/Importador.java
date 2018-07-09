@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 public class Importador {
 
@@ -27,6 +28,7 @@ public class Importador {
 	*/
 	@Inject
 	private EntityManager manager;
+
 	private Logger logger = Logger.getLogger(Importador.class);
 	public void gravarRegistros(List<Grade> grades)
 	{

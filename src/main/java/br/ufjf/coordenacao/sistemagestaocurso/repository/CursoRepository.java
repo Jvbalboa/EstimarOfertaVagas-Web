@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 public class CursoRepository implements Serializable {
 
@@ -15,6 +16,7 @@ public class CursoRepository implements Serializable {
 
 	@Inject
 	private EntityManager manager;
+
 
 	public Curso porid(long id) {
 		return manager.find(Curso.class, id);

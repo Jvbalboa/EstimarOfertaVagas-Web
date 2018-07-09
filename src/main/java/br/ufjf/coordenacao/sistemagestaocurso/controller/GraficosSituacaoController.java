@@ -98,7 +98,7 @@ public class GraficosSituacaoController implements Serializable {
 	@Inject
 	private UsuarioController usuarioController;
 
-	public void preencheSobraHoras() {
+	public void preencheSobraHorasEletivas() {
 		if (this.aluno.getSobraHorasEletivas() > 0) {
 			SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 			disciplinaSituacao.setCodigo("");
@@ -106,6 +106,18 @@ public class GraficosSituacaoController implements Serializable {
 			disciplinaSituacao.setCargaHoraria(this.aluno.getSobraHorasEletivas() + "");
 			disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
 			listaDisciplinaOpcionais.add(disciplinaSituacao);
+		}
+	}
+	
+	public void preencheSobraHorasOpcionais() {
+		if(this.aluno.getSobraHorasOpcionais() > 0)
+		{
+			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
+			EventoAce evento = new EventoAce();
+			evento.setDescricao("EXCEDENTE EM DISCIPLINAS OPCIONAIS");
+			evento.setHoras((long)this.aluno.getSobraHorasOpcionais());
+			evento.setExcluir(false);
+			listaEventosAce.add(evento);
 		}
 	}
 
@@ -274,10 +286,23 @@ public class GraficosSituacaoController implements Serializable {
 		} else {
 			listaEventosAce = new ArrayList<EventoAce>();
 		}
-		if (horasAceConcluidas > aluno.getGrade().getHorasAce()) {
+		/*if (horasAceConcluidas > aluno.getGrade().getHorasAce()) {
 
 			horasAceConcluidas = aluno.getGrade().getHorasAce();
+		}*/
+		
+		if (this.aluno.getSobraHorasEletivas() > 0) {
+			SituacaoDisciplina disciplinaSituacao = this.aluno.getExcedenteEletivas();
+			listaDisciplinaOpcionais.add(disciplinaSituacao);
 		}
+		
+		if(this.aluno.getSobraHorasOpcionais() > 0)
+		{
+			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
+			EventoAce evento = this.aluno.getExcedenteOpcionais();
+			listaEventosAce.add(evento);
+		}
+		
 		gerarDadosAluno(st, curriculum);
 		ira = aluno.getIra();
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
@@ -309,8 +334,6 @@ public class GraficosSituacaoController implements Serializable {
 				.addRow("Horas Ace Completas", horasAceConcluidas)
 				.addRow("Horas Ace Incompletas", (horasIncompletasAce)).build();
 		dadosGraficoAluno();
-
-		preencheSobraHoras();
 	}
 
 	public void limpaAluno() {
