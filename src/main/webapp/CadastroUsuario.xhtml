@@ -38,7 +38,7 @@
 							disabled="#{cadastroPessoaController.lgCodigoCurso}"
 							forceSelection="true">
 							<p:ajax event="itemSelect"
-								listener="#{cadastroPessoaController.onItemSelectCodigoCurso()}"
+								listener="#{cadastroPessoaController.onItemSelectCodigoCurso}"
 								update="codigoCurso nomeCurso" />
 						</p:autoComplete>
 					</div>
@@ -58,7 +58,7 @@
 								<h:outputText value="#{cl.nome}" />
 							</p:column>
 							<p:ajax event="itemSelect"
-								listener="#{cadastroPessoaController.onItemSelectNomeCurso()}"
+								listener="#{cadastroPessoaController.onItemSelectNomeCurso}"
 								update="nomeCurso codigoCurso" />
 						</p:autoComplete>
 					</div>
@@ -191,19 +191,20 @@
 									disabled="#{cadastroPessoaController.lgCodigoPessoaCurso}"
 									forceSelection="true" size="7">
 									<p:ajax event="itemSelect"
-										listener="#{cadastroPessoaController.onItemSelectCodigoPessoaCurso()}"
+										listener="#{cadastroPessoaController.onItemSelectPessoaCurso}"
 										update="nomePessoaCurso codigoPessoaCurso" />
 								</p:autoComplete>
 							</div>
 							<div style="width: 53%;">
 								<p:outputLabel value="Nome Curso:"></p:outputLabel>
 								<p:autoComplete id="nomePessoaCurso"
-									value="#{cadastroPessoaController.curso.nome}"
+									value="#{cadastroPessoaController.curso}"
 									completeMethod="#{cadastroPessoaController.cursoNomes}"
 									disabled="#{cadastroPessoaController.lgNomePessoaCurso}"
-									forceSelection="true" size="36">
+									forceSelection="true" size="36" converter="entityConverter"
+									var="curso" itemValue="#{curso}" itemLabel="#{curso.nome}">
 									<p:ajax event="itemSelect"
-										listener="#{cadastroPessoaController.onItemSelectNomePessoaCurso()}"
+										listener="#{cadastroPessoaController.onItemSelectPessoaCurso}"
 										update="nomePessoaCurso codigoPessoaCurso" />
 								</p:autoComplete>
 							</div>

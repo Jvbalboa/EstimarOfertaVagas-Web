@@ -186,7 +186,7 @@ public class CadastroPessoaController implements Serializable {
 		List<String> todos = cursos.buscarTodosCodigosCurso(codigo);
 		return todos;	
 	}
-
+	
 	public List<Curso> cursoNomes(String codigo) {	
 		codigo = codigo.toUpperCase();
 		List<Curso> todos = cursos.buscarTodosNomesObjetoCurso(codigo);
@@ -205,14 +205,8 @@ public class CadastroPessoaController implements Serializable {
 		lgNomeCurso = true;
 	}
 
-	public void onItemSelectCodigoPessoaCurso() {
+	public void onItemSelectPessoaCurso() {
 		curso = cursos.buscarPorCodigo(curso.getCodigo());
-		lgCodigoPessoaCurso = true;
-		lgNomePessoaCurso = true;
-	}
-
-	public void onItemSelectNomePessoaCurso() {
-		curso = cursos.buscarPorNome(curso.getNome());
 		lgCodigoPessoaCurso = true;
 		lgNomePessoaCurso = true;
 	}
