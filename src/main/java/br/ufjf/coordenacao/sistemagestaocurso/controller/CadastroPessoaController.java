@@ -10,7 +10,6 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
 
 import org.primefaces.event.RowEditEvent;
 
@@ -37,8 +36,6 @@ public class CadastroPessoaController implements Serializable {
 	private CursoRepository cursos ;
 	@Inject
 	private PessoaCursoRepository pessoaCursoRepository ;
-	@Inject
-	private EntityManager manager;
 	
 	private Curso curso = new Curso();
 	private Pessoa pessoa = new Pessoa();

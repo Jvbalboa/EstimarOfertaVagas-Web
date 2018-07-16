@@ -120,7 +120,7 @@
 							onclick="PF('editarCursoPessoa').show();"
 							title="Ver Cursos Associados"
 							update=":pessoaCursoForm:nomePessoaSelecionada :pessoaCursoForm:gridPessoaCurso"
-							action="#{cadastroPessoaController.carregaPessoaCurso()}">
+							action="#{cadastroPessoaController.carregaPessoaCurso}">
 							<f:setPropertyActionListener value="#{pessoa}"
 								target="#{cadastroPessoaController.pessoaSelecionada}" />
 						</p:commandLink>
@@ -149,7 +149,7 @@
 				widgetVar="deletarPessoa" showEffect="fade" hideEffect="fade">
 				<p:commandButton class="btn btn-default-sm" value="Sim"
 					onclick="reprovar.hide()"
-					actionListener="#{cadastroPessoaController.deletarPessoa()}"
+					actionListener="#{cadastroPessoaController.deletarPessoa}"
 					update="pessoas" ajax="true" />
 				<p:commandButton class="btn btn-default-sm" value="Não"
 					onclick="reprovar.hide();" update="pessoas" ajax="true" />
@@ -159,7 +159,7 @@
 				widgetVar="resetSenha" showEffect="fade" hideEffect="fade">
 				<p:commandButton class="btn btn-default-sm" value="Sim"
 					onclick="reprovar.hide()"
-					actionListener="#{cadastroPessoaController.resetarSenha()}"
+					actionListener="#{cadastroPessoaController.resetarSenha}"
 					ajax="true" />
 				<p:commandButton class="btn btn-default-sm" value="Não"
 					onclick="reprovar.hide();" ajax="true" />
@@ -212,7 +212,7 @@
 								<h:commandButton id="incluirPessoaCurso" value="Incluir"
 									class="btn btn-success btn-sm" style="margin-right: 5px;">
 									<f:ajax
-										listener="#{cadastroPessoaController.incluiPessoaCurso()}"
+										listener="#{cadastroPessoaController.incluiPessoaCurso}"
 										execute="gridPessoaCurso"
 										render="gridPessoaCurso nomePessoaCurso codigoPessoaCurso" />
 								</h:commandButton>
@@ -220,7 +220,7 @@
 									class="btn btn-info btn-sm" style="margin-right: 5px;">
 
 									<f:ajax
-										listener="#{cadastroPessoaController.limpaPessoaCurso()}"
+										listener="#{cadastroPessoaController.limpaPessoaCurso}"
 										execute="gridPessoaCurso"
 										render="gridPessoaCurso nomePessoaCurso codigoPessoaCurso" />
 								</h:commandButton>
@@ -252,7 +252,7 @@
 									<p:commandButton value="Sim" type="button"
 										styleClass="ui-confirmdialog-no" ajax="true">
 										<p:ajax event="click"
-											listener="#{cadastroPessoaController.deletarPessoaCurso()}"
+											listener="#{cadastroPessoaController.deletarPessoaCurso}"
 											update="gridPessoaCurso" />
 									</p:commandButton>
 									<p:commandButton value="Não" type="button"
