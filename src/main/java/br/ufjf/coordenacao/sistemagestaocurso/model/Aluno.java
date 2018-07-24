@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -111,6 +112,17 @@ public class Aluno {
 	@OneToMany(mappedBy = "aluno", targetEntity = Historico.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<Historico> getGrupoHistorico() {
 		return grupoHistorico;
+	}
+	
+
+	@Transient
+	public List<Historico> getGrupoHistorico(String statusDisciplina) {
+		List<Historico> historicos = new ArrayList<Historico>();
+		for(Historico h : this.getGrupoHistorico()) {
+			if(statusDisciplina.equals(h.getStatusDisciplina()))
+				historicos.add(h);
+		}
+		return historicos;
 	}
 
 	public void setGrupoHistorico(List<Historico> grupoHistorico) {

@@ -179,9 +179,14 @@ public class PlanejamentoFormaturaController implements Serializable {
 		return true;
 	}
 
-	public String corDisciplina(int periodoDisciplina,int periodoInclusao){
+	public String corDisciplina(int periodoDisciplina,int periodoInclusao, String codigoDisciplina){
 		periodoDisciplina = periodoDisciplina % 2;
 		periodoInclusao = periodoInclusao % 2;
+		
+		for(Historico h : this.aluno.getGrupoHistorico("Matriculado")) {
+			if(codigoDisciplina.equals(h.getDisciplina().getCodigo()))
+				return "blue";
+		}
 		if ( periodoInclusao ==  0 && periodoDisciplina == 1 && aluno.getGrade().getPeriodoInicio() == 3 && periodoInicio == 3){
 			return "black";
 		}
@@ -613,7 +618,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 				int  periodo = 0;
 				if (gradeDisciplina != null){
 					periodo = (int) (long) gradeDisciplina.getPeriodo();
-					disciplinaPlanejamento.setCor(corDisciplina(periodo,((i))));
+					disciplinaPlanejamento.setCor(corDisciplina(periodo, i, disciplinaPlanejamento.getCodigo()));
 					if(gradeDisciplina.getTipoDisciplina().equals("Eletiva")){}
 				}
 				else {	disciplinaPlanejamento.setCor("black");
