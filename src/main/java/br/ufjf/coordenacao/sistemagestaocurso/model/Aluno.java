@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,6 +16,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
+import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.*;
 
 @Entity
@@ -110,6 +112,17 @@ public class Aluno {
 	@OneToMany(mappedBy = "aluno", targetEntity = Historico.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	public List<Historico> getGrupoHistorico() {
 		return grupoHistorico;
+	}
+	
+
+	@Transient
+	public List<Historico> getGrupoHistorico(String statusDisciplina) {
+		List<Historico> historicos = new ArrayList<Historico>();
+		for(Historico h : this.getGrupoHistorico()) {
+			if(statusDisciplina.equals(h.getStatusDisciplina()))
+				historicos.add(h);
+		}
+		return historicos;
 	}
 
 	public void setGrupoHistorico(List<Historico> grupoHistorico) {
@@ -249,5 +262,24 @@ public class Aluno {
 
 	public void setIras(List<IRA> iras) {
 		this.iras = iras;
+	}
+	
+	@Transient
+	public SituacaoDisciplina getExcedenteEletivas() {
+		SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
+		disciplinaSituacao.setCodigo("");
+		disciplinaSituacao.setSituacao("");
+		disciplinaSituacao.setCargaHoraria(this.getSobraHorasEletivas() + "");
+		disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
+		return disciplinaSituacao;
+	}
+	
+	@Transient
+	public EventoAce getExcedenteOpcionais() {
+		EventoAce evento = new EventoAce();
+		evento.setDescricao("EXCEDENTE EM DISCIPLINAS OPCIONAIS");
+		evento.setHoras((long)this.getSobraHorasOpcionais());
+		evento.setExcluir(false);
+		return evento;
 	}
 }

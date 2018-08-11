@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.util.arvore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
@@ -25,17 +27,23 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 
-public class ContadorHorasIntegralizadas {
+public class ContadorHorasIntegralizadas implements Serializable{
+	private static final long serialVersionUID = 1L;
 
 	private Aluno aluno;
 	private Grade grade;
 	
 	private Logger logger;
-	
+
+	@Inject
 	private EntityManager manager;
+	
 	private DisciplinaRepository disciplinas;
 	private EventoAceRepository eventosace;
-	
+
+	//private DisciplinaRepository disciplinas = new DisciplinaRepository();
+	//private EventoAceRepository eventosace = new EventoAceRepository();
+
 	private int horasObrigatoriasCompletadas;
 	private int horasEletivasCompletadas;
 	private int sobraHorasEletivas;
@@ -107,9 +115,9 @@ public class ContadorHorasIntegralizadas {
 	
 	private void calculaHorasCompletadas()
 	{
-		this.manager = Persistence.createEntityManagerFactory("sgcPU").createEntityManager();
-		this.disciplinas = new DisciplinaRepository(this.manager);
-		this.eventosace = new EventoAceRepository(this.manager);
+		//this.manager = Persistence.createEntityManagerFactory("sgcPU").createEntityManager();
+		this.disciplinas = new DisciplinaRepository();
+		this.eventosace = new EventoAceRepository();
 		
 		logger.info("Calculando horas integralizadas pelo aluno " + this.aluno.getMatricula());
 		this.horasObrigatoriasCompletadas = 0;
@@ -141,6 +149,7 @@ public class ContadorHorasIntegralizadas {
 			for(Class c: cur.getMandatories().get(i))
 			{
 				if(aprovado.containsKey(c)){
+					
 					Disciplina d = disciplinas.buscarPorCodigoDisciplina(c.getId());
 					if(d != null)
 					{
