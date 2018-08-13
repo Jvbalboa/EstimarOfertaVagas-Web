@@ -100,11 +100,7 @@ public class GraficosSituacaoController implements Serializable {
 
 	public void preencheSobraHorasEletivas() {
 		if (this.aluno.getSobraHorasEletivas() > 0) {
-			SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
-			disciplinaSituacao.setCodigo("");
-			disciplinaSituacao.setSituacao("");
-			disciplinaSituacao.setCargaHoraria(this.aluno.getSobraHorasEletivas() + "");
-			disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
+			SituacaoDisciplina disciplinaSituacao = this.aluno.getExcedenteEletivas();
 			listaDisciplinaOpcionais.add(disciplinaSituacao);
 		}
 	}
@@ -113,10 +109,7 @@ public class GraficosSituacaoController implements Serializable {
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
 			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
-			EventoAce evento = new EventoAce();
-			evento.setDescricao("EXCEDENTE EM DISCIPLINAS OPCIONAIS");
-			evento.setHoras((long)this.aluno.getSobraHorasOpcionais());
-			evento.setExcluir(false);
+			EventoAce evento = this.aluno.getExcedenteOpcionais();
 			listaEventosAce.add(evento);
 		}
 	}

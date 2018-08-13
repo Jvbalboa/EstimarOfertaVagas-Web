@@ -26,6 +26,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.EventoAce;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 public class ContadorHorasIntegralizadas implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -40,9 +41,6 @@ public class ContadorHorasIntegralizadas implements Serializable{
 	
 	private DisciplinaRepository disciplinas;
 	private EventoAceRepository eventosace;
-
-	//private DisciplinaRepository disciplinas = new DisciplinaRepository();
-	//private EventoAceRepository eventosace = new EventoAceRepository();
 
 	private int horasObrigatoriasCompletadas;
 	private int horasEletivasCompletadas;
@@ -115,9 +113,10 @@ public class ContadorHorasIntegralizadas implements Serializable{
 	
 	private void calculaHorasCompletadas()
 	{
-		//this.manager = Persistence.createEntityManagerFactory("sgcPU").createEntityManager();
-		this.disciplinas = new DisciplinaRepository();
-		this.eventosace = new EventoAceRepository();
+		EntityManagerProducer managerProducer = new EntityManagerProducer();
+		this.manager = managerProducer.createEntityManager();
+		this.disciplinas = new DisciplinaRepository(this.manager);
+		this.eventosace = new EventoAceRepository(this.manager);
 		
 		logger.info("Calculando horas integralizadas pelo aluno " + this.aluno.getMatricula());
 		this.horasObrigatoriasCompletadas = 0;
