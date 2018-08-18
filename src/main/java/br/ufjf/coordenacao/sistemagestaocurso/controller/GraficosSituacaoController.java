@@ -251,6 +251,8 @@ public class GraficosSituacaoController implements Serializable {
 	public void onItemSelectMatriculaAluno() {
 
 		aluno = alunoDAO.buscarPorMatricula(aluno.getMatricula());
+		aluno.setDisciplinaRepository(disciplinaDAO);
+		aluno.setEventoAceRepository(eventosace);
 
 		if (aluno == null) {
 			FacesMessage msg = new FacesMessage("Matrícula não cadastrada na base!");

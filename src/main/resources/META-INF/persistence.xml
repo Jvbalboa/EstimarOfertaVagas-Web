@@ -7,12 +7,12 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		
 		<properties>
-			
+			<!-- 
 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/sgc" />
 			<property name="javax.persistence.jdbc.user" value="root" />
 			<property name="javax.persistence.jdbc.password" value="1234" />
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-			
+			-->
 			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<!-- Caso seja necessário exibir o sql, tambem deve-se alterar a config do Log4J em log4j.xml -->
 			<property name="hibernate.show_sql" value="false" />

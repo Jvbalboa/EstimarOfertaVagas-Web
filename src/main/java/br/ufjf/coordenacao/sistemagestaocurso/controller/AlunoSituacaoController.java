@@ -184,6 +184,9 @@ public class AlunoSituacaoController
 		horasOpcionais = gradeAluno.getHorasOpcionais();
 		horasACE = gradeAluno.getHorasAce();
 		
+		aluno.setDisciplinaRepository(disciplinas);
+		aluno.setEventoAceRepository(eventosAceRepository);
+		
 		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
 		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
 		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
