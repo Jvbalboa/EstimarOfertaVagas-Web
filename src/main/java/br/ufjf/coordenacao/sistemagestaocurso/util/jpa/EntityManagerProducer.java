@@ -36,7 +36,6 @@ public class EntityManagerProducer {
 	@Produces @RequestScoped
 	public EntityManager createEntityManager()
 	{
-		System.out.println("CreateEntityManager");
 		return factory.createEntityManager();
 	}
 	

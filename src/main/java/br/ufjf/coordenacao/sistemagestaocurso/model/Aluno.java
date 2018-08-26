@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -239,13 +240,23 @@ public class Aluno {
 		
 		HashMap<Class, ArrayList<String[]>> aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
 		
+		//++
+		List<Disciplina> disciplinas = disciplinaRepository.listarTodos();
+				
 		for(int i: cur.getMandatories().keySet())
 		{
 			for(Class c: cur.getMandatories().get(i))
 			{
 				if(aprovado.containsKey(c)){
 					
-					Disciplina d = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					//Disciplina d = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					Disciplina d = null;
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							d = disciplina;
+						}
+					}
+						
 					if(d != null)
 					{
 						c.setWorkload(d.getCargaHoraria());
@@ -271,7 +282,14 @@ public class Aluno {
 			Class c = i.next();
 			for(String[] s2: aprovado.get(c))	{
 				if (s2[1].equals("APR") || s2[1].equals("A")){
-					Disciplina d = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					//Disciplina d = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					
+					Disciplina d = null;
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							d = disciplina;
+						}
+					}
 					
 					if(d != null)
 						c.setWorkload(d.getCargaHoraria());
@@ -280,7 +298,13 @@ public class Aluno {
 				}
 				else
 				{
-					Disciplina opcional = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					//Disciplina opcional = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					Disciplina opcional = null;
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							opcional = disciplina;
+						}
+					}
 					horasOpcionaisCompletadas += opcional.getCargaHoraria();
 				}
 			}

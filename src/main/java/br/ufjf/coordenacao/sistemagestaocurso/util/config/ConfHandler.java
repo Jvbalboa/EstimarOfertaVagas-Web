@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.io.IOUtils;
 
 public class ConfHandler {
@@ -17,10 +19,8 @@ public class ConfHandler {
 
 	private ConfHandler() {
 		try {
-			File f = new File("/dcc-config/ofertavagas/config.txt");
-			
-			if (!f.exists())
-				System.out.println("bugou " + f.getAbsolutePath());
+			String configPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("") + "/WEB-INF/config.txt";
+			File f = new File(configPath);
 			
 			InputStream inputStream = new FileInputStream(f);
 			
