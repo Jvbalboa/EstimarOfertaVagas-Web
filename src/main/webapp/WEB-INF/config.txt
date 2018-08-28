@@ -1,5 +1,0 @@
-# JPA
-JDBC.URL = jdbc:mysql://localhost:3306/sgc
-JDBC.USER = root
-JDBC.PASSWORD = 1234
-JDBC.DRIVER = com.mysql.jdbc.Driver
