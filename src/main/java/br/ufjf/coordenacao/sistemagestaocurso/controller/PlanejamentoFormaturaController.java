@@ -29,6 +29,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.DisciplinaPlanejamento;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.GradeDisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
@@ -100,6 +101,8 @@ public class PlanejamentoFormaturaController implements Serializable {
 	private DisciplinaRepository disciplinaDAO ;
 	@Inject
 	private ImportarArvore importador;
+	@Inject
+	private EventoAceRepository eventoAceRepository;
 	@Inject
 	private GradeDisciplinaRepository gradeDisciplinas;
 	private int[] horasPeriodo = new int[12];
@@ -445,6 +448,9 @@ public class PlanejamentoFormaturaController implements Serializable {
 	public void onItemSelectAluno() {
 		aluno = alunos.buscarPorMatricula(aluno.getMatricula());
 		
+		aluno.setDisciplinaRepository(disciplinaDAO);
+		aluno.setEventoAceRepository(eventoAceRepository);
+		
 		lgMatriculaAluno = true;
 		lgNomeAluno = true;	
 		lgCampoHrsPeriodo = false;
@@ -461,6 +467,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 			return;
 
 		}
+		
 		
 		horasObrigatorias = aluno.getGrade().getHorasObrigatorias();
 		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();

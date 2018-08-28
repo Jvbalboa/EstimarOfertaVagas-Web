@@ -1,8 +1,14 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +22,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
+import br.ufjf.coordenacao.OfertaVagas.model.Class;
+import br.ufjf.coordenacao.OfertaVagas.model.ClassStatus;
+import br.ufjf.coordenacao.OfertaVagas.model.Curriculum;
+import br.ufjf.coordenacao.OfertaVagas.model.Student;
+import br.ufjf.coordenacao.OfertaVagas.model.StudentsHistory;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.*;
 
 @Entity
@@ -40,7 +53,10 @@ public class Aluno {
 	private int horasAceConcluidas;
 	private int sobraHorasOpcionais;
 
-	private boolean horasCalculadas; 
+	private boolean horasCalculadas;
+	
+	private DisciplinaRepository disciplinaRepository;
+	private EventoAceRepository eventoAceRepository;
 
 	// ==========================GETTERS_AND_SETTERS======================================================================================================//
 
@@ -192,15 +208,122 @@ public class Aluno {
 	@Transient
 	public void calculaHorasCompletadas()
 	{
-		ContadorHorasIntegralizadas contador = new ContadorHorasIntegralizadas(this);
+		/*ContadorHorasIntegralizadas contador = new ContadorHorasIntegralizadas(this);
 		this.horasAceConcluidas = contador.getHorasAceConcluidas();
 		this.horasEletivasCompletadas = contador.getHorasEletivasCompletadas();
 		this.horasObrigatoriasCompletadas = contador.getHorasObrigatoriasCompletadas();
 		this.horasOpcionaisCompletadas = contador.getHorasOpcionaisCompletadas();
 		this.sobraHorasEletivas = contador.getSobraHorasEletivas();
 		this.sobraHorasOpcionais = contador.getSobraHorasOpcionais();
-		this.horasCalculadas = true;
 		contador.dispose();
+		*/
+
+		this.horasObrigatoriasCompletadas = 0;
+		this.horasEletivasCompletadas = 0;
+		this.horasOpcionaisCompletadas = 0;
+		this.sobraHorasEletivas = 0;
+		this.horasCalculadas = false;
+		
+		ImportarArvore importador;
+		EstruturaArvore estruturaArvore = EstruturaArvore.getInstance();
+		importador = estruturaArvore.recuperarArvore(this.grade,false);
+		
+		Curriculum cur = importador.get_cur();
+		StudentsHistory sh = importador.getSh();		
+		Student st = sh.getStudents().get(this.getMatricula());
+		
+		if (st == null){
+			FacesMessage msg = new FacesMessage("O aluno:" + this.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			return;
+		}
+		
+		HashMap<Class, ArrayList<String[]>> aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
+		
+		//++
+		List<Disciplina> disciplinas = disciplinaRepository.listarTodos();
+				
+		for(int i: cur.getMandatories().keySet())
+		{
+			for(Class c: cur.getMandatories().get(i))
+			{
+				if(aprovado.containsKey(c)){
+					
+					//Disciplina d = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					Disciplina d = null;
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							d = disciplina;
+						}
+					}
+						
+					if(d != null)
+					{
+						c.setWorkload(d.getCargaHoraria());
+					}
+					
+					this.horasObrigatoriasCompletadas += c.getWorkload();
+					aprovado.remove(c);
+				}
+				
+				
+			}
+		}
+		
+		for(Class c: cur.getElectives())
+			if(aprovado.containsKey(c))	{
+				this.horasEletivasCompletadas += c.getWorkload();
+				aprovado.remove(c);
+			}
+		
+		Set<Class> ap = aprovado.keySet();
+		Iterator<Class> i = ap.iterator();
+		while(i.hasNext()){
+			Class c = i.next();
+			for(String[] s2: aprovado.get(c))	{
+				if (s2[1].equals("APR") || s2[1].equals("A")){
+					//Disciplina d = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					
+					Disciplina d = null;
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							d = disciplina;
+						}
+					}
+					
+					if(d != null)
+						c.setWorkload(d.getCargaHoraria());
+					
+					horasAceConcluidas += c.getWorkload();
+				}
+				else
+				{
+					//Disciplina opcional = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+					Disciplina opcional = null;
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							opcional = disciplina;
+						}
+					}
+					horasOpcionaisCompletadas += opcional.getCargaHoraria();
+				}
+			}
+		}
+		
+		if(this.horasEletivasCompletadas > this.grade.getHorasEletivas())
+		{
+			this.sobraHorasEletivas = this.horasEletivasCompletadas - this.grade.getHorasEletivas();
+			this.horasEletivasCompletadas -= this.sobraHorasEletivas;
+			this.horasOpcionaisCompletadas += this.sobraHorasEletivas;
+		}
+		
+		if(this.horasOpcionaisCompletadas > this.grade.getHorasOpcionais())
+		{
+			this.sobraHorasOpcionais = this.horasOpcionaisCompletadas - this.grade.getHorasOpcionais();
+			this.horasOpcionaisCompletadas -= this.sobraHorasOpcionais;
+		}
+		
+		this.horasCalculadas = true;
 	}
 	
 	@Transient
@@ -237,9 +360,20 @@ public class Aluno {
 	}
 	
 	@Transient
-	public int getHorasAceConcluidas() {
+	public int getHorasAceConcluidas() {		
 		if(!this.horasCalculadas)
 			this.calculaHorasCompletadas();
+		
+		int aceCadastradas = 0;
+		
+		List<EventoAce> eventos = this.eventoAceRepository.buscarPorMatricula(this.getMatricula());
+		
+		for(EventoAce evento: eventos)
+		{
+			aceCadastradas += evento.getHoras();
+		}
+				
+		this.horasAceConcluidas =  Math.min((horasAceConcluidas + aceCadastradas), this.grade.getHorasAce());
 		
 		return this.horasAceConcluidas;
 	}
@@ -281,5 +415,15 @@ public class Aluno {
 		evento.setHoras((long)this.getSobraHorasOpcionais());
 		evento.setExcluir(false);
 		return evento;
+	}
+	
+	@Transient
+	public void setEventoAceRepository(EventoAceRepository eventoAceRepository) {
+		this.eventoAceRepository = eventoAceRepository;
+	}
+	
+	@Transient
+	public void setDisciplinaRepository(DisciplinaRepository disciplinaRepository) {
+		this.disciplinaRepository = disciplinaRepository;
 	}
 }
