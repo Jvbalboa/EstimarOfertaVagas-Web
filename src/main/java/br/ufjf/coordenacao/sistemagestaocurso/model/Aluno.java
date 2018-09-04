@@ -22,6 +22,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
+import org.apache.poi.ss.formula.functions.T;
+
 import br.ufjf.coordenacao.OfertaVagas.model.Class;
 import br.ufjf.coordenacao.OfertaVagas.model.ClassStatus;
 import br.ufjf.coordenacao.OfertaVagas.model.Curriculum;
@@ -48,12 +50,12 @@ public class Aluno {
 	private List<IRA> iras;
 	private int horasObrigatoriasCompletadas;
 	private int horasEletivasCompletadas;
-	private List<Class> disciplinasEletivasExtras;
+	private List<Disciplina> disciplinasEletivasCompletadas;
 	private List<String> codigoEletivasExtras;
 	private int sobraHorasEletivas;
 	private int horasOpcionaisCompletadas;
 	private int horasAceConcluidas;
-	private List<Disciplina> disciplinasOpcionaisExtras;
+	private List<Disciplina> disciplinasOpcionaisCompletadas;
 	private List<String> codigoOpcionaisExtras;
 	private int sobraHorasOpcionais;
 
@@ -212,8 +214,8 @@ public class Aluno {
 	@Transient
 	public void calculaHorasCompletadas()
 	{
-		this.disciplinasOpcionaisExtras = new ArrayList<Disciplina>();
-		this.disciplinasEletivasExtras = new ArrayList<Class>();
+		this.disciplinasOpcionaisCompletadas = new ArrayList<Disciplina>();
+		this.disciplinasEletivasCompletadas = new ArrayList<Disciplina>();
 		
 		this.horasObrigatoriasCompletadas = 0;
 		this.horasEletivasCompletadas = 0;
@@ -266,7 +268,14 @@ public class Aluno {
 		for(Class c: cur.getElectives()) {
 			if(aprovado.containsKey(c))	{
 				this.horasEletivasCompletadas += c.getWorkload();
-				this.disciplinasEletivasExtras.add(c);
+				Disciplina d = null;
+				for(Disciplina disciplina: disciplinas) {
+					if(disciplina.getCodigo().equals(c.getId())) {
+						d = disciplina;
+						this.disciplinasEletivasCompletadas.add(d);
+					}
+				}
+				
 				aprovado.remove(c);
 			}
 		}
@@ -295,7 +304,7 @@ public class Aluno {
 					for(Disciplina disciplina: disciplinas) {
 						if(disciplina.getCodigo().equals(c.getId())) {
 							opcional = disciplina;
-							this.disciplinasOpcionaisExtras.add(opcional);
+							this.disciplinasOpcionaisCompletadas.add(opcional);
 						}
 					}
 					horasOpcionaisCompletadas += opcional.getCargaHoraria();
@@ -309,19 +318,8 @@ public class Aluno {
 			this.horasEletivasCompletadas -= this.sobraHorasEletivas;
 			this.horasOpcionaisCompletadas += this.sobraHorasEletivas;
 			
-			
 			//--
-			this.codigoEletivasExtras = new ArrayList<String>();
-			int horasEletivasExtras = this.sobraHorasEletivas; //variável auxiliar
-			for(Class c : this.disciplinasEletivasExtras) {
-					if(c.getWorkload() <= horasEletivasExtras) {
-						this.codigoEletivasExtras.add(c.getId());
-						horasEletivasExtras -= c.getWorkload();
-					}
-					if(horasEletivasExtras == 0)
-						break;
-			}
-			//--
+			this.codigoEletivasExtras = this.selecionaExcedentes(this.sobraHorasEletivas, this.disciplinasEletivasCompletadas);
 		}
 		
 		if(this.horasOpcionaisCompletadas > this.grade.getHorasOpcionais())
@@ -331,20 +329,67 @@ public class Aluno {
 			this.horasAceConcluidas += this.sobraHorasOpcionais;
 			
 			//--
-			this.codigoOpcionaisExtras = new ArrayList<String>();
-			int horasOpcionaisExtras =  this.sobraHorasOpcionais; // variável auxiliar
-			for(Disciplina d : this.disciplinasOpcionaisExtras) {
-				if(d.getCargaHoraria() <= horasOpcionaisExtras) {
-					this.codigoOpcionaisExtras.add(d.getCodigo().toString());
-					horasOpcionaisExtras -= d.getCargaHoraria();
-				}
-				if(horasOpcionaisExtras == 0)
-					break;
-			}
-			//--
+			this.codigoOpcionaisExtras = this.selecionaExcedentes(this.sobraHorasOpcionais, this.disciplinasOpcionaisCompletadas);
 		}
 		//-----------------------------
 		this.horasCalculadas = true;
+	}
+	
+	@Transient
+	private ArrayList<String> selecionaExcedentes(int horasExcedentes, List<Disciplina> disciplinasCompletadas){
+		ArrayList<String> solucao = new ArrayList<String>(); // lista com codigo das disciplinas que vao ser selecionadas como excedentes
+		int tamanhoConjunto = disciplinasCompletadas.size(); // tamanho do conjunto das disciplinas
+		boolean[][] tabela = new boolean[tamanhoConjunto + 1][horasExcedentes+1]; // tabela auxiliar
+		int[] pesos = new int[tamanhoConjunto + 1]; // vetor contendo as horas de cada disciplina
+		
+		
+		// atribuindo os valores dos pesos de acordo com a carga horária da disciplina
+		for(int i = 1; i <= tamanhoConjunto; i++) {
+			pesos[i] = disciplinasCompletadas.get(i-1).getCargaHoraria();
+			// inserindo a primeira coluna
+			tabela[i][0] = true;
+		}
+		tabela[0][0] = true;
+		
+		//inicio do subset sum
+		boolean s;
+		for(int j = 1; j < horasExcedentes+1; j++) {
+			//zerando a primeira linha
+			tabela[0][j] = false;
+			
+			for(int i = 1; i < tamanhoConjunto+1; i++) {
+				//se já tiver conseguido essa subsoma s == 1
+				s = tabela[i-1][j];
+				
+				//se ainda nao tiver conseguido a subsoma e este elemento for viavel
+				if(s == false && pesos[i] <= j) {
+					s = tabela[i-1][j-pesos[i]];
+				}
+				
+				tabela[i][j] = s;
+			}
+		}
+		
+		// encontra melhor solução
+		solucao = this.encontraSolucao(tabela, pesos, tamanhoConjunto, horasExcedentes, disciplinasCompletadas, solucao);
+
+		return solucao;
+	}
+	
+	@Transient
+	private ArrayList<String> encontraSolucao(boolean tabela[][], int pesos[], int tamanhoConjunto, int horasExcedentes, List<Disciplina> disciplinasCompletadas, ArrayList<String> solucao){
+		if(horasExcedentes == 0) {
+			return solucao;
+		}
+		else {
+			for(int i = 0; i < tamanhoConjunto; i++) {
+				if(tabela[i][horasExcedentes]) {
+					solucao.add(disciplinasCompletadas.get(i-1).getCodigo());
+					return this.encontraSolucao(tabela, pesos, tamanhoConjunto, horasExcedentes - pesos[i], disciplinasCompletadas, solucao);
+				}
+			}
+		}
+		return solucao;
 	}
 	
 	@Transient
@@ -428,7 +473,7 @@ public class Aluno {
 			disciplinaSituacao.setCodigo(disciplina.getCodigo());
 			disciplinaSituacao.setSituacao("APROVADO");
 			disciplinaSituacao.setCargaHoraria(disciplina.getCargaHoraria() + "");
-			disciplinaSituacao.setNome("Excedente Eletiva: "+disciplina.getNome());
+			disciplinaSituacao.setNome(disciplina.getNome() + " : Excedente Eletiva");
 			eletivasExcedentes.add(disciplinaSituacao);
 		}
 		return eletivasExcedentes;
@@ -438,10 +483,10 @@ public class Aluno {
 	public List<EventoAce> getExcedenteOpcionais() { // tp
 		List<EventoAce> opcionaisExcedentes = new ArrayList<EventoAce>();
 		for(String eletivaExtra : this.codigoOpcionaisExtras) {
-			for(Disciplina d : this.disciplinasOpcionaisExtras) {
+			for(Disciplina d : this.disciplinasOpcionaisCompletadas) {
 				if(d.getCodigo() == eletivaExtra) {
 					EventoAce evento = new EventoAce();
-					evento.setDescricao("Disciplina Excedente Opcional: " + d.getCodigo() + " " + d.getNome());
+					evento.setDescricao(d.getCodigo() + " " + d.getNome() + " : Disciplina Excedente Opcional");
 					evento.setHoras((long) d.getCargaHoraria());
 					evento.setExcluir(false);
 					opcionaisExcedentes.add(evento);
