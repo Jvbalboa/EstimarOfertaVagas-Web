@@ -203,7 +203,7 @@ public class AlunoSituacaoController
 
 		}
 
-		listaEventosAce = new ArrayList<EventoAce>(eventosAceRepository.buscarPorMatricula(aluno.getMatricula()));		
+		listaEventosAce = new ArrayList<EventoAce>(eventosAceRepository.buscarPorMatricula(aluno.getMatricula()));
 		if (listaEventosAce != null){
 			horasAceConcluidas = eventosAceRepository.recuperarHorasConcluidasPorMatricula(aluno.getMatricula());
 		}
@@ -214,8 +214,9 @@ public class AlunoSituacaoController
 		gerarDadosAluno(st,curriculum);
 		
 		if (this.aluno.getSobraHorasEletivas() > 0) {
-			SituacaoDisciplina disciplinaSituacao = this.aluno.getExcedenteEletivas();
-			listaDisciplinaOpcionais.add(disciplinaSituacao);
+			List<SituacaoDisciplina> disciplinaSituacao = this.aluno.getExcedenteEletivas();
+			for(SituacaoDisciplina eletivaExtra : disciplinaSituacao)
+				listaDisciplinaOpcionais.add(eletivaExtra);
 		}
 		
 		ira = aluno.getIra();
@@ -236,9 +237,11 @@ public class AlunoSituacaoController
 		
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
+			List<EventoAce> ExcedentesOpcionais = this.aluno.getExcedenteOpcionais();
+			for(EventoAce eventoAceExtra : ExcedentesOpcionais) {
+				listaEventosAce.add(eventoAceExtra);
+			}
 			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
-			EventoAce evento = this.aluno.getExcedenteOpcionais();
-			listaEventosAce.add(evento);
 		}
 		
 		SomaInt = aluno.getGrade().getHorasAce();
