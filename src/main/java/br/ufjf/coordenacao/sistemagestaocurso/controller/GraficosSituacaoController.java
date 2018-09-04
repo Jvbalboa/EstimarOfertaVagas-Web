@@ -100,7 +100,11 @@ public class GraficosSituacaoController implements Serializable {
 
 	public void preencheSobraHorasEletivas() {
 		if (this.aluno.getSobraHorasEletivas() > 0) {
-			SituacaoDisciplina disciplinaSituacao = this.aluno.getExcedenteEletivas();
+			SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
+			disciplinaSituacao.setCodigo("");
+			disciplinaSituacao.setSituacao("");
+			disciplinaSituacao.setCargaHoraria(this.aluno.getSobraHorasEletivas() + "");
+			disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
 			listaDisciplinaOpcionais.add(disciplinaSituacao);
 		}
 	}
@@ -109,7 +113,10 @@ public class GraficosSituacaoController implements Serializable {
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
 			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
-			EventoAce evento = this.aluno.getExcedenteOpcionais();
+			EventoAce evento = new EventoAce();
+			evento.setDescricao("EXCEDENTE EM DISCIPLINAS OPCIONAIS");
+			evento.setHoras((long)this.aluno.getSobraHorasOpcionais());
+			evento.setExcluir(false);
 			listaEventosAce.add(evento);
 		}
 	}
@@ -287,15 +294,17 @@ public class GraficosSituacaoController implements Serializable {
 		}*/
 		
 		if (this.aluno.getSobraHorasEletivas() > 0) {
-			SituacaoDisciplina disciplinaSituacao = this.aluno.getExcedenteEletivas();
-			listaDisciplinaOpcionais.add(disciplinaSituacao);
+			List<SituacaoDisciplina> disciplinaSituacao = this.aluno.getExcedenteEletivas();
+			for(SituacaoDisciplina eletivaExtra : disciplinaSituacao)
+				listaDisciplinaOpcionais.add(eletivaExtra);
 		}
 		
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
 			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
-			EventoAce evento = this.aluno.getExcedenteOpcionais();
-			listaEventosAce.add(evento);
+			List<EventoAce> eventosAceExtras = this.aluno.getExcedenteOpcionais();
+			for(EventoAce opcionalExtra : eventosAceExtras)
+				listaEventosAce.add(opcionalExtra);
 		}
 		
 		gerarDadosAluno(st, curriculum);
