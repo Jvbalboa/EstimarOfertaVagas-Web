@@ -58,7 +58,6 @@ public class Aluno {
 	private List<Disciplina> disciplinasOpcionaisCompletadas;
 	private List<String> codigoOpcionaisExtras;
 	private int sobraHorasOpcionais;
-
 	private boolean horasCalculadas;
 	
 	private DisciplinaRepository disciplinaRepository;
@@ -353,7 +352,7 @@ public class Aluno {
 		
 		//inicio do subset sum
 		boolean s;
-		for(int j = 1; j < horasExcedentes+1; j++) {
+		for(int j = 1; j < horasExcedentes+1; j = j++) {
 			//zerando a primeira linha
 			tabela[0][j] = false;
 			
@@ -371,7 +370,12 @@ public class Aluno {
 		}
 		
 		// encontra melhor solução
-		solucao = this.encontraSolucao(tabela, pesos, tamanhoConjunto, horasExcedentes, disciplinasCompletadas, solucao);
+		for(int i = horasExcedentes; i > 0; i--) {
+			if(tabela[tamanhoConjunto][i]) {
+				solucao = this.encontraSolucao(tabela, pesos, tamanhoConjunto, i, disciplinasCompletadas, solucao);
+				break;
+			}
+		}
 
 		return solucao;
 	}

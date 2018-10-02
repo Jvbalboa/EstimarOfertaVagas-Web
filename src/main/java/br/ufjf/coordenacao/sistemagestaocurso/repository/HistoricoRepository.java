@@ -43,5 +43,10 @@ public class HistoricoRepository implements Serializable {
 					.setParameter("codigo",  codigo )
 					.getResultList();
 	}
-
+	
+	public List<Historico> buscarHistoricosAprovadosPorMatriculaSemestre(long idAluno, String semestre) {
+		return manager.createQuery("FROM Historico WHERE status_disciplinas = 'Aprovado' and id_matricula = :idAluno and semestre_cursado = :semestre", Historico.class)
+				.setParameter("idAluno",  idAluno).setParameter("semestre", semestre)
+				.getResultList();
+	}
 }
