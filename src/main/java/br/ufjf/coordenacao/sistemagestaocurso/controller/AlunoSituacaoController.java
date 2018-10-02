@@ -35,6 +35,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.HistoricoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
@@ -69,14 +70,16 @@ public class AlunoSituacaoController
   private int horasEletivas;
   private int horasOpcionais;
   private int horasACE;
+  private String acompanhamentoAcademico;
   
-  //private AlunoRepository alunos;
   @Inject
   private DisciplinaRepository disciplinas;
   @Inject
   private EventoAceRepository eventosAceRepository;
   @Inject
   private EventoAce eventoAceSelecionado;
+  @Inject
+  private HistoricoRepository historicoRepository;
   @Inject
   private CursoRepository cursos;
   @Inject
@@ -114,7 +117,6 @@ public class AlunoSituacaoController
 
 			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
 				aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
-				
 				lgMatriculaAluno = true;
 				lgNomeAluno = true;
 				lgAluno = false;
@@ -222,6 +224,7 @@ public class AlunoSituacaoController
 		ira = aluno.getIra();
 		
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
+		
 		int SomaInt = 0;
 		if (horasObrigatorias != 0){
 			percentualObrigatorias =   (horasObrigatoriasConcluidas * 100 / horasObrigatorias);
@@ -249,6 +252,9 @@ public class AlunoSituacaoController
 			percentualAce = (horasAceConcluidas* 100 / SomaInt) ;
 		}
 		this.resetaDataTables();
+		
+		//verificarAcompanhamentoAcademico();
+		this.setAcompanhamentoAcademico("Está em acompanhamento acadêmico!");
 	}
 
 	public void limpaAluno(){		
@@ -765,5 +771,45 @@ public class AlunoSituacaoController
 
 	public void setHorasACE(int horasACE) {
 		this.horasACE = horasACE;
+	}
+	
+	public String getAcompanhamentoAcademico() {
+		return this.acompanhamentoAcademico;
+	}
+	
+	public void setAcompanhamentoAcademico(String acompanhamentoAcademico) {
+		this.acompanhamentoAcademico = acompanhamentoAcademico;
+	}
+	
+	private void verificarAcompanhamentoAcademico() {
+		boolean emAcompanhamentoAcademico = false;
+		double chm = (this.getHorasObrigatorias() + this.getHorasEletivas() + this.getHorasOpcionais() + this.getHorasACE())
+				/ (this.getAluno().getGrade().getNumeroMaximoPeriodos() / 2);
+		
+		if (this.periodo >= 4) {
+			 
+					
+		} else if (this.periodo == 3) {
+			int cei = this.getHorasObrigatoriasConcluidas() + this.getHorasEletivasConcluidas() + this.getHorasOpcionaisConcluidas() + this.getHorasAceConcluidas();
+			
+			if (cei < chm) {
+				emAcompanhamentoAcademico = true;
+			}
+		}
+		
+		if (emAcompanhamentoAcademico) {
+			this.acompanhamentoAcademico = "Em acompanhamento acadêmico!";
+		}
+	}
+	
+	private int getHorasCompletadasPorSemestre(String semestre) {
+		List<Historico> historicosAprovadosNoSemestre = this.historicoRepository.buscarHistoricosAprovadosPorMatriculaSemestre(this.getAluno().getId(), semestre);
+		int horasCompletadasNoSemestre = 0;
+		
+		for (Historico historico : historicosAprovadosNoSemestre) {
+			horasCompletadasNoSemestre = horasCompletadasNoSemestre + historico.getDisciplina().getCargaHoraria();
+		}
+		
+		return horasCompletadasNoSemestre;
 	}
 }

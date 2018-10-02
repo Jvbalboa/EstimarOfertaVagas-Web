@@ -1,5 +1,6 @@
-# Arquivo de configuração
-src/main/webapp/WEB-INF/config.txt
+# Arquivo de configuraï¿½ï¿½o
+config.txt
+application.token
 
 # Eclipse
 .classpath
