@@ -38,10 +38,10 @@ public class AutenticacaoController implements Serializable {
 
 		EstruturaArvore estruturaArvore;
 		estruturaArvore = EstruturaArvore.getInstance();
+		final String tokenPath = FacesContext.getCurrentInstance().getExternalContext().getInitParameter("tokenPath");
 
-		//PessoaRepository pessoaDAO = estruturaArvore.getPessoaDAO();
 		List<String> perfis = new ArrayList<String>();
-		FileReader file = new FileReader("/dcc-config/ofertavagas/application.token");
+		FileReader file = new FileReader(tokenPath);
 		BufferedReader bf = new BufferedReader(file);		
 		String token = bf.readLine();
 		bf.close();
