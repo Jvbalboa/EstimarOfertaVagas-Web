@@ -1,7 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -44,9 +43,14 @@ public class HistoricoRepository implements Serializable {
 					.getResultList();
 	}
 	
-	public List<Historico> buscarHistoricosAprovadosPorMatriculaSemestre(long idAluno, String semestre) {
-		return manager.createQuery("FROM Historico WHERE status_disciplinas = 'Aprovado' and id_matricula = :idAluno and semestre_cursado = :semestre", Historico.class)
-				.setParameter("idAluno",  idAluno).setParameter("semestre", semestre)
-				.getResultList();
+	public List<Historico> buscarHistoricosAprovadosUltimosTresSemestres(long idAluno) {
+		List<Historico> historicosAgrupadosUltimosTresSemestres = manager.createQuery("FROM Historico WHERE id_matricula = :idAluno AND status_disciplina <> 'Matriculado' GROUP BY semestre_cursado ORDER BY semestre_cursado DESC", Historico.class)
+				.setParameter("idAluno", idAluno).setMaxResults(3).getResultList();
+		
+		final int INDEX_ANTEPENULTIMO_SEMESTRE = historicosAgrupadosUltimosTresSemestres.size() - 1;
+		String antepenultimoSemestre = historicosAgrupadosUltimosTresSemestres.get(INDEX_ANTEPENULTIMO_SEMESTRE).getSemestreCursado();
+		
+		return manager.createQuery("FROM Historico WHERE id_matricula = :idAluno AND status_disciplina = 'Aprovado' AND semestre_cursado >= :antepenultimoSemestre", Historico.class)
+				.setParameter("idAluno", idAluno).setParameter("antepenultimoSemestre", antepenultimoSemestre).getResultList();
 	}
 }

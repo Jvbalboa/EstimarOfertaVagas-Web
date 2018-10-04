@@ -32,7 +32,6 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.HistoricoRepository;
@@ -70,7 +69,7 @@ public class AlunoSituacaoController
   private int horasEletivas;
   private int horasOpcionais;
   private int horasACE;
-  private String acompanhamentoAcademico;
+  private int cet;
   
   @Inject
   private DisciplinaRepository disciplinas;
@@ -80,8 +79,6 @@ public class AlunoSituacaoController
   private EventoAce eventoAceSelecionado;
   @Inject
   private HistoricoRepository historicoRepository;
-  @Inject
-  private CursoRepository cursos;
   @Inject
   private AlunoRepository alunos;
   
@@ -253,8 +250,7 @@ public class AlunoSituacaoController
 		}
 		this.resetaDataTables();
 		
-		//verificarAcompanhamentoAcademico();
-		this.setAcompanhamentoAcademico("Está em acompanhamento acadêmico!");
+		this.calcularCet();
 	}
 
 	public void limpaAluno(){		
@@ -468,6 +464,23 @@ public class AlunoSituacaoController
 			percentualAce = (horasAceConcluidas* 100 / aluno.getGrade().getHorasAce()) ;
 		}		
 		listaEventosAce.remove(eventoAceSelecionado);
+	}
+	
+	public void calcularCet() {
+		this.cet = 0;
+		
+		if (this.periodo >= 4) {
+			List<Historico> historicosAprovadosUltimosTresSemestres = this.historicoRepository.buscarHistoricosAprovadosUltimosTresSemestres(this.aluno.getId());
+			List<EventoAce> eventosAceUltimosTresSemestres = this.eventosAceRepository.buscarEventosAceUltimosTresSemestres(this.aluno.getMatricula());
+			
+			for (Historico historico : historicosAprovadosUltimosTresSemestres) {
+				this.cet = this.cet + historico.getDisciplina().getCargaHoraria();
+			}
+			
+			for (EventoAce eventoAce : eventosAceUltimosTresSemestres) {
+				this.cet = (int) (this.cet + eventoAce.getHoras());
+			}
+		}
 	}
 
 
@@ -773,43 +786,11 @@ public class AlunoSituacaoController
 		this.horasACE = horasACE;
 	}
 	
-	public String getAcompanhamentoAcademico() {
-		return this.acompanhamentoAcademico;
+	public int getCet() {
+		return this.cet;
 	}
 	
-	public void setAcompanhamentoAcademico(String acompanhamentoAcademico) {
-		this.acompanhamentoAcademico = acompanhamentoAcademico;
-	}
-	
-	private void verificarAcompanhamentoAcademico() {
-		boolean emAcompanhamentoAcademico = false;
-		double chm = (this.getHorasObrigatorias() + this.getHorasEletivas() + this.getHorasOpcionais() + this.getHorasACE())
-				/ (this.getAluno().getGrade().getNumeroMaximoPeriodos() / 2);
-		
-		if (this.periodo >= 4) {
-			 
-					
-		} else if (this.periodo == 3) {
-			int cei = this.getHorasObrigatoriasConcluidas() + this.getHorasEletivasConcluidas() + this.getHorasOpcionaisConcluidas() + this.getHorasAceConcluidas();
-			
-			if (cei < chm) {
-				emAcompanhamentoAcademico = true;
-			}
-		}
-		
-		if (emAcompanhamentoAcademico) {
-			this.acompanhamentoAcademico = "Em acompanhamento acadêmico!";
-		}
-	}
-	
-	private int getHorasCompletadasPorSemestre(String semestre) {
-		List<Historico> historicosAprovadosNoSemestre = this.historicoRepository.buscarHistoricosAprovadosPorMatriculaSemestre(this.getAluno().getId(), semestre);
-		int horasCompletadasNoSemestre = 0;
-		
-		for (Historico historico : historicosAprovadosNoSemestre) {
-			horasCompletadasNoSemestre = horasCompletadasNoSemestre + historico.getDisciplina().getCargaHoraria();
-		}
-		
-		return horasCompletadasNoSemestre;
+	public void setCet(int cet) {
+		this.cet = cet;
 	}
 }
