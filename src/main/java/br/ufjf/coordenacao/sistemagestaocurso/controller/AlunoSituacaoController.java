@@ -32,9 +32,9 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.HistoricoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
@@ -69,8 +69,8 @@ public class AlunoSituacaoController
   private int horasEletivas;
   private int horasOpcionais;
   private int horasACE;
+  private int cet;
   
-  //private AlunoRepository alunos;
   @Inject
   private DisciplinaRepository disciplinas;
   @Inject
@@ -78,7 +78,7 @@ public class AlunoSituacaoController
   @Inject
   private EventoAce eventoAceSelecionado;
   @Inject
-  private CursoRepository cursos;
+  private HistoricoRepository historicoRepository;
   @Inject
   private AlunoRepository alunos;
   
@@ -114,7 +114,6 @@ public class AlunoSituacaoController
 
 			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
 				aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
-				
 				lgMatriculaAluno = true;
 				lgNomeAluno = true;
 				lgAluno = false;
@@ -222,6 +221,7 @@ public class AlunoSituacaoController
 		ira = aluno.getIra();
 		
 		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
+		
 		int SomaInt = 0;
 		if (horasObrigatorias != 0){
 			percentualObrigatorias =   (horasObrigatoriasConcluidas * 100 / horasObrigatorias);
@@ -249,6 +249,8 @@ public class AlunoSituacaoController
 			percentualAce = (horasAceConcluidas* 100 / SomaInt) ;
 		}
 		this.resetaDataTables();
+		
+		this.calcularCet();
 	}
 
 	public void limpaAluno(){		
@@ -462,6 +464,23 @@ public class AlunoSituacaoController
 			percentualAce = (horasAceConcluidas* 100 / aluno.getGrade().getHorasAce()) ;
 		}		
 		listaEventosAce.remove(eventoAceSelecionado);
+	}
+	
+	public void calcularCet() {
+		this.cet = 0;
+		
+		if (this.periodo >= 4) {
+			List<Historico> historicosAprovadosUltimosTresSemestres = this.historicoRepository.buscarHistoricosAprovadosUltimosTresSemestres(this.aluno.getId());
+			List<EventoAce> eventosAceUltimosTresSemestres = this.eventosAceRepository.buscarEventosAceUltimosTresSemestres(this.aluno.getMatricula());
+			
+			for (Historico historico : historicosAprovadosUltimosTresSemestres) {
+				this.cet = this.cet + historico.getDisciplina().getCargaHoraria();
+			}
+			
+			for (EventoAce eventoAce : eventosAceUltimosTresSemestres) {
+				this.cet = (int) (this.cet + eventoAce.getHoras());
+			}
+		}
 	}
 
 
@@ -765,5 +784,13 @@ public class AlunoSituacaoController
 
 	public void setHorasACE(int horasACE) {
 		this.horasACE = horasACE;
+	}
+	
+	public int getCet() {
+		return this.cet;
+	}
+	
+	public void setCet(int cet) {
+		this.cet = cet;
 	}
 }

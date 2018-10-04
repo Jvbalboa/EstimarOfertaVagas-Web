@@ -19,9 +19,8 @@ public class ConfHandler {
 
 	private ConfHandler() {
 		try {
-			String configPath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("") + "/WEB-INF/config.txt";
+			final String configPath = FacesContext.getCurrentInstance().getExternalContext().getInitParameter("configPath");
 			File f = new File(configPath);
-			
 			InputStream inputStream = new FileInputStream(f);
 			
 	        String arquivo = IOUtils.toString(inputStream);
