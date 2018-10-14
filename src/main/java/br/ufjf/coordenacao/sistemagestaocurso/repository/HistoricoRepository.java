@@ -42,15 +42,4 @@ public class HistoricoRepository implements Serializable {
 					.setParameter("codigo",  codigo )
 					.getResultList();
 	}
-	
-	public List<Historico> buscarHistoricosAprovadosUltimosTresSemestres(long idAluno) {
-		List<Historico> historicosAgrupadosUltimosTresSemestres = manager.createQuery("FROM Historico WHERE id_matricula = :idAluno AND status_disciplina <> 'Matriculado' GROUP BY semestre_cursado ORDER BY semestre_cursado DESC", Historico.class)
-				.setParameter("idAluno", idAluno).setMaxResults(3).getResultList();
-		
-		final int INDEX_ANTEPENULTIMO_SEMESTRE = historicosAgrupadosUltimosTresSemestres.size() - 1;
-		String antepenultimoSemestre = historicosAgrupadosUltimosTresSemestres.get(INDEX_ANTEPENULTIMO_SEMESTRE).getSemestreCursado();
-		
-		return manager.createQuery("FROM Historico WHERE id_matricula = :idAluno AND status_disciplina = 'Aprovado' AND semestre_cursado >= :antepenultimoSemestre", Historico.class)
-				.setParameter("idAluno", idAluno).setParameter("antepenultimoSemestre", antepenultimoSemestre).getResultList();
-	}
 }

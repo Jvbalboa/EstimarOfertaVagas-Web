@@ -69,7 +69,6 @@ public class AlunoSituacaoController
   private int horasEletivas;
   private int horasOpcionais;
   private int horasACE;
-  private int cet;
   
   @Inject
   private DisciplinaRepository disciplinas;
@@ -170,6 +169,7 @@ public class AlunoSituacaoController
 				break;
 			}
 		}
+		
 		lgAce = false;
 		lgNomeAluno = true;	
 		lgMatriculaAluno = true;
@@ -194,12 +194,10 @@ public class AlunoSituacaoController
 		StudentsHistory sh = importador.getSh();		
 		Student st = sh.getStudents().get(aluno.getMatricula());
 
-		if (st == null){
-
+		if (st == null) {
 			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " não tem nenhum histórico de matrícula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
-
 		}
 
 		listaEventosAce = new ArrayList<EventoAce>(eventosAceRepository.buscarPorMatricula(aluno.getMatricula()));
@@ -218,9 +216,11 @@ public class AlunoSituacaoController
 				listaDisciplinaOpcionais.add(eletivaExtra);
 		}
 		
+		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
+		
 		ira = aluno.getIra();
 		
-		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
+		aluno.calcularCet();
 		
 		int SomaInt = 0;
 		if (horasObrigatorias != 0){
@@ -249,8 +249,6 @@ public class AlunoSituacaoController
 			percentualAce = (horasAceConcluidas* 100 / SomaInt) ;
 		}
 		this.resetaDataTables();
-		
-		this.calcularCet();
 	}
 
 	public void limpaAluno(){		
@@ -465,24 +463,6 @@ public class AlunoSituacaoController
 		}		
 		listaEventosAce.remove(eventoAceSelecionado);
 	}
-	
-	public void calcularCet() {
-		this.cet = 0;
-		
-		if (this.periodo >= 4) {
-			List<Historico> historicosAprovadosUltimosTresSemestres = this.historicoRepository.buscarHistoricosAprovadosUltimosTresSemestres(this.aluno.getId());
-			List<EventoAce> eventosAceUltimosTresSemestres = this.eventosAceRepository.buscarEventosAceUltimosTresSemestres(this.aluno.getMatricula());
-			
-			for (Historico historico : historicosAprovadosUltimosTresSemestres) {
-				this.cet = this.cet + historico.getDisciplina().getCargaHoraria();
-			}
-			
-			for (EventoAce eventoAce : eventosAceUltimosTresSemestres) {
-				this.cet = (int) (this.cet + eventoAce.getHoras());
-			}
-		}
-	}
-
 
 	//========================================================= GET - SET ==================================================================================//
 
@@ -784,13 +764,5 @@ public class AlunoSituacaoController
 
 	public void setHorasACE(int horasACE) {
 		this.horasACE = horasACE;
-	}
-	
-	public int getCet() {
-		return this.cet;
-	}
-	
-	public void setCet(int cet) {
-		this.cet = cet;
 	}
 }

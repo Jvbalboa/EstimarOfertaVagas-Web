@@ -61,22 +61,4 @@ public class EventoAceRepository implements Serializable {
 		else
 			return 0;
 	}
-	
-	public List<EventoAce> buscarEventosAceUltimosTresSemestres(String matricula) {
-		List<EventoAce> eventosAceUltimosTresSemestres = new ArrayList<>();
-		
-		List<EventoAce> eventosAceAgrupadosUltimosTresSemestres = manager.createQuery("FROM EventoAce WHERE matricula = :matricula GROUP BY periodo ORDER BY periodo DESC", EventoAce.class)
-				.setParameter("matricula",  matricula).setMaxResults(3).getResultList();
-		
-		if (eventosAceAgrupadosUltimosTresSemestres.size() != 0) {
-			final int INDEX_ANTEPENULTIMO_SEMESTRE = eventosAceAgrupadosUltimosTresSemestres.size() - 1;
-			int antepenultimoSemestre = eventosAceAgrupadosUltimosTresSemestres.get(INDEX_ANTEPENULTIMO_SEMESTRE).getPeriodo();
-			
-			eventosAceUltimosTresSemestres = manager.createQuery("FROM EventoAce WHERE matricula = :matricula AND periodo >= :antepenultimoSemestre", EventoAce.class)
-					.setParameter("matricula", matricula).setParameter("antepenultimoSemestre", antepenultimoSemestre).getResultList();
-		}
-		
-		return eventosAceUltimosTresSemestres;
-	}
-
 }

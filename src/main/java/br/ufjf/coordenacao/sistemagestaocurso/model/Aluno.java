@@ -1,10 +1,10 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import javax.faces.application.FacesMessage;
@@ -21,8 +21,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
-
-import org.apache.poi.ss.formula.functions.T;
 
 import br.ufjf.coordenacao.OfertaVagas.model.Class;
 import br.ufjf.coordenacao.OfertaVagas.model.ClassStatus;
@@ -59,6 +57,10 @@ public class Aluno {
 	private List<String> codigoOpcionaisExtras;
 	private int sobraHorasOpcionais;
 	private boolean horasCalculadas;
+	private List<String> ultimosTresSemestres = new ArrayList<String>();
+	private int cet;
+	private boolean emAcompanhamentoAcademico;
+	private List<Float> iraUltimosTresSemestres = new ArrayList<Float>();
 	
 	private DisciplinaRepository disciplinaRepository;
 	private EventoAceRepository eventoAceRepository;
@@ -456,7 +458,7 @@ public class Aluno {
 		
 		return this.sobraHorasOpcionais;
 	}
-	
+
 	@Transient
 	public void dadosAlterados()
 	{
@@ -509,5 +511,111 @@ public class Aluno {
 	@Transient
 	public void setDisciplinaRepository(DisciplinaRepository disciplinaRepository) {
 		this.disciplinaRepository = disciplinaRepository;
+	}
+	
+	@Transient
+	public List<String> getUltimosTresSemestres() {
+		return ultimosTresSemestres;
+	}
+
+
+	public void setUltimosTresSemestres(List<String> ultimosTresSemestres) {
+		this.ultimosTresSemestres = ultimosTresSemestres;
+	}
+	
+	@Transient
+	public int getCet() {
+		return cet;
+	}
+	
+	public void setCet(int cet) {
+		this.cet = cet;
+	}
+
+	@Transient
+	public boolean isEmAcompanhamentoAcademico() {
+		return emAcompanhamentoAcademico;
+	}
+
+
+	public void setEmAcompanhamentoAcademico(boolean emAcompanhamentoAcademico) {
+		this.emAcompanhamentoAcademico = emAcompanhamentoAcademico;
+	}
+	
+	@Transient
+	public List<Float> getIraUltimosTresSemestres() {
+		return iraUltimosTresSemestres;
+	}
+	
+	public void setIraUltimosTresSemestres(List<Float> iraUltimosTresSemestres) {
+		this.iraUltimosTresSemestres = iraUltimosTresSemestres;
+	}
+	
+	public void buscarUltimosTresSemestres() {		
+		for (ListIterator<Historico> it = this.getGrupoHistorico().listIterator(this.getGrupoHistorico().size()); it.hasPrevious() && this.ultimosTresSemestres.size() < 3;) {
+			Historico historico = it.previous();
+			if (!historico.getStatusDisciplina().equals("Matriculado") && !historico.getStatusDisciplina().equals("Trancado") && !this.ultimosTresSemestres.contains(historico.getSemestreCursado())) {
+					this.ultimosTresSemestres.add(historico.getSemestreCursado());
+			}
+		}
+	}
+	
+	public void calcularCet() {
+		this.cet = 0;
+		
+		if (this.ultimosTresSemestres.isEmpty()) {
+			this.buscarUltimosTresSemestres();
+		}
+				
+		if (ultimosTresSemestres.size() == 3) {
+			List<EventoAce> eventosAce = this.eventoAceRepository.buscarPorMatricula(this.getMatricula());
+			
+			for (Historico historico : this.getGrupoHistorico()) {
+				if (ultimosTresSemestres.contains(historico.getSemestreCursado()) && historico.getStatusDisciplina().equals("Aprovado")) {
+					this.cet = this.cet + historico.getDisciplina().getCargaHoraria();
+				}					
+			}
+			
+			for (EventoAce eventoAce : eventosAce) {
+				if (ultimosTresSemestres.contains(eventoAce.getPeriodo().toString())) {
+					this.cet = (int) (this.cet + eventoAce.getHoras());
+				}
+			}
+		}
+	}
+	
+	public void verificarAcompanhamentoAcademico() {
+		int cargaHorariaTotal = this.getGrade().getHorasObrigatorias() + this.getGrade().getHorasEletivas() + this.getGrade().getHorasOpcionais() + this.getGrade().getHorasAce();
+		
+		int numeroMedioPeriodos = 1;
+		for (GradeDisciplina disciplina : this.getGrade().getGrupoGradeDisciplina()) {
+			if (disciplina.getPeriodo() > numeroMedioPeriodos) {
+				numeroMedioPeriodos = disciplina.getPeriodo().intValue();
+			}
+		}
+		
+		int chm = cargaHorariaTotal / numeroMedioPeriodos;
+		
+		this.calcularCet();
+		
+		if (this.cet < 1.5 * chm) {
+			this.emAcompanhamentoAcademico = true;
+		} else {
+			this.emAcompanhamentoAcademico = false;
+		}
+	}
+	
+	public void calcularIraUltimosTresSemestres() {
+		if (this.ultimosTresSemestres.isEmpty()) {
+			this.buscarUltimosTresSemestres();
+		}
+		
+		if (this.ultimosTresSemestres.size() == 3) {
+			for (IRA ira : this.getIras()) {
+				if (this.ultimosTresSemestres.contains(ira.getSemestre())) {
+					this.iraUltimosTresSemestres.add(ira.getIraAcumulado());
+				}
+			}
+		}
 	}
 }
