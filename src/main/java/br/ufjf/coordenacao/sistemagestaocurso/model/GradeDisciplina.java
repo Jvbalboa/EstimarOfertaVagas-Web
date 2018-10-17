@@ -35,10 +35,6 @@ public class GradeDisciplina {
 
 	// ==========================GETTERS_AND_SETTERS======================================================================================================//
 
-	
-	
-	
-
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="grade_disciplina_sequencia")
 	public Long getId() {
@@ -129,22 +125,4 @@ public class GradeDisciplina {
 	public void setCarregou(Boolean carregou) {
 		this.carregou = carregou;
 	}
-
-	
-
-	//@Transient
-	/*public String getPreRequisitos() {		
-		String pre = "";		
-		for (PreRequisito preRequisito : this.preRequisito){			
-			pre = pre + preRequisito.getDisciplina().getCodigo() + " : ";			
-		}		
-		return pre;
-	}*/
-	
-	
-	
-	
-	
-	
-	
 }

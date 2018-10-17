@@ -16,8 +16,6 @@ public class AlunoRepository implements Serializable {
 
 	@Inject
 	private EntityManager manager;
-//	EntityManagerProducer emf = new EntityManagerProducer();
-//	private EntityManager manager = emf.createEntityManager();
 	
 
 	public Aluno buscarPorId(long id) {

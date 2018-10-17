@@ -32,7 +32,6 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.HistoricoRepository;
@@ -70,7 +69,6 @@ public class AlunoSituacaoController
   private int horasEletivas;
   private int horasOpcionais;
   private int horasACE;
-  private String acompanhamentoAcademico;
   
   @Inject
   private DisciplinaRepository disciplinas;
@@ -80,8 +78,6 @@ public class AlunoSituacaoController
   private EventoAce eventoAceSelecionado;
   @Inject
   private HistoricoRepository historicoRepository;
-  @Inject
-  private CursoRepository cursos;
   @Inject
   private AlunoRepository alunos;
   
@@ -173,6 +169,7 @@ public class AlunoSituacaoController
 				break;
 			}
 		}
+		
 		lgAce = false;
 		lgNomeAluno = true;	
 		lgMatriculaAluno = true;
@@ -197,12 +194,10 @@ public class AlunoSituacaoController
 		StudentsHistory sh = importador.getSh();		
 		Student st = sh.getStudents().get(aluno.getMatricula());
 
-		if (st == null){
-
+		if (st == null) {
 			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " não tem nenhum histórico de matrícula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
-
 		}
 
 		listaEventosAce = new ArrayList<EventoAce>(eventosAceRepository.buscarPorMatricula(aluno.getMatricula()));
@@ -221,9 +216,11 @@ public class AlunoSituacaoController
 				listaDisciplinaOpcionais.add(eletivaExtra);
 		}
 		
+		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
+		
 		ira = aluno.getIra();
 		
-		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
+		aluno.calcularCet();
 		
 		int SomaInt = 0;
 		if (horasObrigatorias != 0){
@@ -252,9 +249,6 @@ public class AlunoSituacaoController
 			percentualAce = (horasAceConcluidas* 100 / SomaInt) ;
 		}
 		this.resetaDataTables();
-		
-		//verificarAcompanhamentoAcademico();
-		this.setAcompanhamentoAcademico("Está em acompanhamento acadêmico!");
 	}
 
 	public void limpaAluno(){		
@@ -469,7 +463,6 @@ public class AlunoSituacaoController
 		}		
 		listaEventosAce.remove(eventoAceSelecionado);
 	}
-
 
 	//========================================================= GET - SET ==================================================================================//
 
@@ -771,45 +764,5 @@ public class AlunoSituacaoController
 
 	public void setHorasACE(int horasACE) {
 		this.horasACE = horasACE;
-	}
-	
-	public String getAcompanhamentoAcademico() {
-		return this.acompanhamentoAcademico;
-	}
-	
-	public void setAcompanhamentoAcademico(String acompanhamentoAcademico) {
-		this.acompanhamentoAcademico = acompanhamentoAcademico;
-	}
-	
-	private void verificarAcompanhamentoAcademico() {
-		boolean emAcompanhamentoAcademico = false;
-		double chm = (this.getHorasObrigatorias() + this.getHorasEletivas() + this.getHorasOpcionais() + this.getHorasACE())
-				/ (this.getAluno().getGrade().getNumeroMaximoPeriodos() / 2);
-		
-		if (this.periodo >= 4) {
-			 
-					
-		} else if (this.periodo == 3) {
-			int cei = this.getHorasObrigatoriasConcluidas() + this.getHorasEletivasConcluidas() + this.getHorasOpcionaisConcluidas() + this.getHorasAceConcluidas();
-			
-			if (cei < chm) {
-				emAcompanhamentoAcademico = true;
-			}
-		}
-		
-		if (emAcompanhamentoAcademico) {
-			this.acompanhamentoAcademico = "Em acompanhamento acadêmico!";
-		}
-	}
-	
-	private int getHorasCompletadasPorSemestre(String semestre) {
-		List<Historico> historicosAprovadosNoSemestre = this.historicoRepository.buscarHistoricosAprovadosPorMatriculaSemestre(this.getAluno().getId(), semestre);
-		int horasCompletadasNoSemestre = 0;
-		
-		for (Historico historico : historicosAprovadosNoSemestre) {
-			horasCompletadasNoSemestre = horasCompletadasNoSemestre + historico.getDisciplina().getCargaHoraria();
-		}
-		
-		return horasCompletadasNoSemestre;
 	}
 }
