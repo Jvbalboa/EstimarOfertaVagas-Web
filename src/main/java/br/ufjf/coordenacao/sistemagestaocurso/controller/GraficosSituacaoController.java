@@ -294,17 +294,17 @@ public class GraficosSituacaoController implements Serializable {
 		}*/
 		
 		if (this.aluno.getSobraHorasEletivas() > 0) {
-			List<SituacaoDisciplina> disciplinaSituacao = this.aluno.getExcedenteEletivas();
-			for(SituacaoDisciplina eletivaExtra : disciplinaSituacao)
-				listaDisciplinaOpcionais.add(eletivaExtra);
+			//List<SituacaoDisciplina> disciplinaSituacao = this.aluno.getExcedenteEletivas();
+			//for(SituacaoDisciplina eletivaExtra : disciplinaSituacao)
+				//listaDisciplinaOpcionais.add(eletivaExtra);
 		}
 		
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
 			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
-			List<EventoAce> eventosAceExtras = this.aluno.getExcedenteOpcionais();
-			for(EventoAce opcionalExtra : eventosAceExtras)
-				listaEventosAce.add(opcionalExtra);
+			//List<EventoAce> eventosAceExtras = this.aluno.getExcedenteOpcionais();
+			//for(EventoAce opcionalExtra : eventosAceExtras)
+				//listaEventosAce.add(opcionalExtra);
 		}
 		
 		gerarDadosAluno(st, curriculum);

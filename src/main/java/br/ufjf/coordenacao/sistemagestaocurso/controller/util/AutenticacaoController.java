@@ -57,10 +57,13 @@ public class AutenticacaoController implements Serializable {
 			Pessoa pessoa = null;
 
 			for (contador = 0;contador < infos.getProfileList().getProfile().size() ; contador ++ ){				
-				pessoa = pessoaDAO.buscarPorSiapePessoa(infos.getProfileList().getProfile().get(contador).getMatricula());				
+				
+				Pessoa pessoaTemp = pessoaDAO.buscarPorSiapePessoa(infos.getProfileList().getProfile().get(contador).getMatricula());
+				
 				perfis.add(infos.getProfileList().getProfile().get(contador).getMatricula());			
-				if (pessoa != null){				
-					achouCoord = true;												
+				if (pessoaTemp != null){				
+					achouCoord = true;
+					pessoa = pessoaTemp;
 				}				
 			}	
 

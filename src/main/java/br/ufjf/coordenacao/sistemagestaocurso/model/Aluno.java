@@ -311,6 +311,7 @@ public class Aluno {
 			}
 		}
 
+		
 		if(this.horasEletivasCompletadas > this.grade.getHorasEletivas())
 		{
 			this.sobraHorasEletivas = this.horasEletivasCompletadas - this.grade.getHorasEletivas();
@@ -318,7 +319,7 @@ public class Aluno {
 			this.horasOpcionaisCompletadas += this.sobraHorasEletivas;
 			
 			//--
-			this.codigoEletivasExtras = this.selecionaExcedentes(this.sobraHorasEletivas, this.disciplinasEletivasCompletadas);
+			//this.codigoEletivasExtras = this.selecionaExcedentes(this.sobraHorasEletivas, this.disciplinasEletivasCompletadas);
 		}
 		
 		if(this.horasOpcionaisCompletadas > this.grade.getHorasOpcionais())
@@ -328,12 +329,14 @@ public class Aluno {
 			this.horasAceConcluidas += this.sobraHorasOpcionais;
 			
 			//--
-			this.codigoOpcionaisExtras = this.selecionaExcedentes(this.sobraHorasOpcionais, this.disciplinasOpcionaisCompletadas);
+			//this.codigoOpcionaisExtras = this.selecionaExcedentes(this.sobraHorasOpcionais, this.disciplinasOpcionaisCompletadas);
 		}
+		
 		//-----------------------------
 		this.horasCalculadas = true;
 	}
 	
+	/*
 	@Transient
 	private ArrayList<String> selecionaExcedentes(int horasExcedentes, List<Disciplina> disciplinasCompletadas){
 		ArrayList<String> solucao = new ArrayList<String>(); // lista com codigo das disciplinas que vao ser selecionadas como excedentes
@@ -395,7 +398,7 @@ public class Aluno {
 		}
 		return solucao;
 	}
-	
+	*/
 	@Transient
 	public int getHorasObrigatoriasCompletadas() {
 		if(!this.horasCalculadas)
@@ -468,6 +471,7 @@ public class Aluno {
 		this.iras = iras;
 	}
 	
+	/*
 	@Transient
 	public List<SituacaoDisciplina> getExcedenteEletivas() {  // cria uma situação disciplina com  a carga horária igual as horas extras eletivas
 		List<SituacaoDisciplina> eletivasExcedentes = new ArrayList<SituacaoDisciplina>();
@@ -500,6 +504,7 @@ public class Aluno {
 		
 		return opcionaisExcedentes;
 	}
+	*/
 	
 	@Transient
 	public void setEventoAceRepository(EventoAceRepository eventoAceRepository) {

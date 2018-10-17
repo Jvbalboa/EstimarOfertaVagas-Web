@@ -22,6 +22,7 @@ import br.ufjf.coordenacao.OfertaVagas.model.Student;
 import br.ufjf.coordenacao.OfertaVagas.model.StudentsHistory;
 import br.ufjf.coordenacao.OfertaVagas.model.Class;
 import br.ufjf.coordenacao.OfertaVagas.model.ClassStatus;
+import br.ufjf.coordenacao.sistemagestaocurso.controller.util.CalculadorMateriasExcedentes;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.Ordenar;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
@@ -80,8 +81,6 @@ public class AlunoSituacaoController
   private EventoAce eventoAceSelecionado;
   @Inject
   private HistoricoRepository historicoRepository;
-  @Inject
-  private CursoRepository cursos;
   @Inject
   private AlunoRepository alunos;
   
@@ -216,9 +215,11 @@ public class AlunoSituacaoController
 		gerarDadosAluno(st,curriculum);
 		
 		if (this.aluno.getSobraHorasEletivas() > 0) {
-			List<SituacaoDisciplina> disciplinaSituacao = this.aluno.getExcedenteEletivas();
-			for(SituacaoDisciplina eletivaExtra : disciplinaSituacao)
+			List<SituacaoDisciplina> disciplinaSituacao = CalculadorMateriasExcedentes.getExcedentesEletivas(this.aluno.getGrade().getHorasEletivas(), this.listaDisciplinaEletivas);
+			for(SituacaoDisciplina eletivaExtra : disciplinaSituacao) {
 				listaDisciplinaOpcionais.add(eletivaExtra);
+				listaDisciplinaEletivas.remove(eletivaExtra);
+			}
 		}
 		
 		ira = aluno.getIra();
@@ -240,9 +241,15 @@ public class AlunoSituacaoController
 		
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
-			List<EventoAce> ExcedentesOpcionais = this.aluno.getExcedenteOpcionais();
+			List<EventoAce> ExcedentesOpcionais = CalculadorMateriasExcedentes.getExcedentesOpcionais(this.aluno.getGrade().getHorasOpcionais(), this.listaDisciplinaOpcionais);
 			for(EventoAce eventoAceExtra : ExcedentesOpcionais) {
 				listaEventosAce.add(eventoAceExtra);
+				for(SituacaoDisciplina d : listaDisciplinaOpcionais) {
+					if(d.getCodigo().equals(eventoAceExtra.getMatricula())){
+						listaDisciplinaOpcionais.remove(d);
+						break;
+					}
+				}
 			}
 			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
 		}
