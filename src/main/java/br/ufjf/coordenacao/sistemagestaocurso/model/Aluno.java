@@ -27,7 +27,6 @@ import br.ufjf.coordenacao.OfertaVagas.model.ClassStatus;
 import br.ufjf.coordenacao.OfertaVagas.model.Curriculum;
 import br.ufjf.coordenacao.OfertaVagas.model.Student;
 import br.ufjf.coordenacao.OfertaVagas.model.StudentsHistory;
-import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.*;
@@ -49,12 +48,10 @@ public class Aluno {
 	private int horasObrigatoriasCompletadas;
 	private int horasEletivasCompletadas;
 	private List<Disciplina> disciplinasEletivasCompletadas;
-	private List<String> codigoEletivasExtras;
 	private int sobraHorasEletivas;
 	private int horasOpcionaisCompletadas;
 	private int horasAceConcluidas;
 	private List<Disciplina> disciplinasOpcionaisCompletadas;
-	private List<String> codigoOpcionaisExtras;
 	private int sobraHorasOpcionais;
 	private boolean horasCalculadas;
 	private List<String> ultimosTresSemestres = new ArrayList<String>();
@@ -519,7 +516,7 @@ public class Aluno {
 		if (this.ultimosTresSemestres.size() == 3) {
 			for (IRA ira : this.getIras()) {
 				if (this.ultimosTresSemestres.contains(ira.getSemestre())) {
-					this.iraUltimosTresSemestres.add(ira.getIraAcumulado());
+					this.iraUltimosTresSemestres.add(ira.getIraSemestre());
 				}
 			}
 		}
