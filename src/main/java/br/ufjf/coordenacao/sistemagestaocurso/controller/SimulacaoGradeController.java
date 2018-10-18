@@ -62,6 +62,7 @@ public class SimulacaoGradeController implements Serializable {
   @Inject
   private UsuarioController usuarioController;
   private boolean lgNomeAluno = false;
+  private boolean lgGradeAluno = false;
   private boolean lgMatriculaAluno = false;
   private boolean lgAce = true;
   private boolean lgAluno = true;
@@ -122,6 +123,7 @@ public class SimulacaoGradeController implements Serializable {
 				aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
 				lgMatriculaAluno = true;
 				lgNomeAluno = true;
+				lgGradeAluno = false;
 				lgAluno = false;
 				
 				if (aluno == null || aluno.getMatricula() == null){
@@ -159,10 +161,11 @@ public class SimulacaoGradeController implements Serializable {
 	}
 	
 	public List<String> codigoGrades(String codigo) {
+		
 		codigo = codigo.toUpperCase();
 		List<String> todos = new ArrayList<String>();
-		for (Grade grade : grades.listarTodos()) {
-			if(grade.getCodigo().contains(codigo))
+		for (Grade grade : curso.getGrupoGrades()) {
+			if(grade.getCodigo().contains(codigo) && Integer.valueOf(grade.getCodigo()) >= Integer.valueOf(aluno.getGrade().getCodigo()))
 				todos.add(grade.getCodigo());
 		}
 		return todos;
@@ -401,6 +404,7 @@ public class SimulacaoGradeController implements Serializable {
 	public void calculaSituacaoAluno() {
 		lgAce = false;
 		lgNomeAluno = true;	
+		lgGradeAluno = false;
 		lgMatriculaAluno = true;
 		//grade_aluno
 		importador = estruturaArvore.recuperarArvore(aluno.getGrade(),true);
@@ -490,6 +494,7 @@ public class SimulacaoGradeController implements Serializable {
 
 		lgAce = true;
 		lgNomeAluno  = false;
+		lgGradeAluno = true;
 		lgMatriculaAluno = false;
 		eventosAce =  new EventoAce();
 		listaEventosAce = new ArrayList<EventoAce>();
@@ -508,6 +513,7 @@ public class SimulacaoGradeController implements Serializable {
 		percentualOpcionais = 0;
 		percentualAce = 0;
 		Grade grade = new Grade();
+		this.gradeSimulada = new Grade();
 		grade.setHorasEletivas(0);
 		grade.setHorasOpcionais(0);
 		grade.setHorasAce(0);
@@ -587,8 +593,14 @@ public class SimulacaoGradeController implements Serializable {
 
 
 	//========================================================= GET - SET ==================================================================================//
-
-
+	public boolean isLgGradeAluno() {
+		return lgGradeAluno;
+	}
+	
+	public void setLgGradeAluno(boolean lgGradeAluno) {
+		this.lgGradeAluno = lgGradeAluno;
+	}
+	
 	public boolean isLgMatriculaAluno() {
 		return lgMatriculaAluno;
 	}
