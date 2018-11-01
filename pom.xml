@@ -216,13 +216,6 @@
 	        <scope>provided</scope>
 		</dependency>
 		
-		<!-- API Integra -->
-		<dependency>
-			<groupId>IntegraAPI</groupId>
-			<artifactId>IntegraAPI</artifactId>
-			<version>2016</version>
-		</dependency>
-		
 		<!-- EstimarOfertaVagas -->
 		<dependency>
 			<groupId>br.ufjf.coordenacao</groupId>

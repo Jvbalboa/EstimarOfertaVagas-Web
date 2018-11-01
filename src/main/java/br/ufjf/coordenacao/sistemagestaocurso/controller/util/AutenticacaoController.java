@@ -19,10 +19,10 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Pessoa;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.Autenticacao;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.PessoaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
-import br.ufjf.ice.integra3.ws.login.interfaces.IWsLogin;
-import br.ufjf.ice.integra3.ws.login.interfaces.WsLoginResponse;
-import br.ufjf.ice.integra3.ws.login.interfaces.WsUserInfoResponse;
-import br.ufjf.ice.integra3.ws.login.service.WSLogin;
+import br.ufjf.ice.integra3.ws.login.IWsLogin;
+import br.ufjf.ice.integra3.ws.login.WsLoginResponse;
+import br.ufjf.ice.integra3.ws.login.WsUserInfoResponse;
+import br.ufjf.ice.integra3.ws.login.WSLogin;
 
 @Named
 public class AutenticacaoController implements Serializable {
