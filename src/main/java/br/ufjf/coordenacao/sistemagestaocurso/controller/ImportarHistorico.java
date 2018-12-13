@@ -37,9 +37,9 @@ import br.ufjf.ice.integra3.rs.restclient.RSCursoAlunosDiscSituacao;
 import br.ufjf.ice.integra3.rs.restclient.RSCursoAlunosDiscSituacao.ServiceVersion;
 import br.ufjf.ice.integra3.rs.restclient.model.v2.AlunoCurso;
 import br.ufjf.ice.integra3.rs.restclient.model.v2.CursoAlunosSituacaoResponse;
-import br.ufjf.ice.integra3.ws.login.interfaces.IWsLogin;
-import br.ufjf.ice.integra3.ws.login.interfaces.WsLoginResponse;
-import br.ufjf.ice.integra3.ws.login.service.WSLogin;
+import br.ufjf.ice.integra3.ws.login.IWsLogin;
+import br.ufjf.ice.integra3.ws.login.WsLoginResponse;
+import br.ufjf.ice.integra3.ws.login.WSLogin;
 
 @Named
 @ViewScoped
