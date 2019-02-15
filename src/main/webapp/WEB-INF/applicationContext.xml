@@ -43,7 +43,8 @@
 		<intercept-url pattern="/ImportarGrade.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
 		<intercept-url pattern="/CadastroUsuario.xhtml" access="hasAnyRole('admin')" />
 		<intercept-url pattern="/Historico.xhtml" access="isAuthenticated()" />
-		<intercept-url pattern="/ImportarDados.xhtml" access="hasAnyRole('coordenador')" />
+		<intercept-url pattern="/ImportarDados.xhtml" access="hasAnyRole('admin', 'coordenador')" />
+		<intercept-url pattern="/ExportarDados.xhtml" access="hasAnyRole('admin', 'coordenador')" />
 		<intercept-url pattern="/PlanejamentoFormatura.xhtml" access="isAuthenticated()" />
 		<intercept-url pattern="/SituacaoAluno.xhtml" access="isAuthenticated()" />
 		<intercept-url pattern="/VisaoGeral.xhtml" access="hasAnyRole('admin','externo','coordenador')" />

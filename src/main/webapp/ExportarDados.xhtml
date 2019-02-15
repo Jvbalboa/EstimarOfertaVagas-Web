@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:p="http://primefaces.org/ui">
+   <ui:composition template="#{perfilController.perfil}">
+      <ui:define name="corpo">
+         <h:form class="formularioCentro" id="principalForm" method="post"
+            role="form" style="padding-left: 45px;height: 500px;">
+            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+            <div class="ui-grid ui-grid-responsive">
+               <div class="ui-grid-row ">
+                  <div class="ui-grid-col-12 "
+                     style="font-family: 'Oxygen Mono', Tahoma, Arial, sans-serif;">
+                     <div style="padding-bottom: 10px;">Você está logado com o
+                        curso de código <b>#{usuarioController.autenticacao.cursoSelecionado.codigo} </b>de nome
+                        <b>#{usuarioController.autenticacao.cursoSelecionado.nome}</b>.
+                     </div>
+                     <div style="padding-bottom: 10px;">Caso não seja este curso
+                        que você deseja exportar, mude o perfil que se encontra logo após
+                        seu nome no canto superior direito desta tela.
+                     </div>
+                     <p:dataTable id="historico" var="historico" value="#{exportarHistorico.historicoCurso}"
+                        paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                        paginator="true" rows="20" style="margin-bottom:20px"
+                        scrollable="true" scrollWidth="100%">
+                        <f:facet name="{Exporters}">
+                           <div style="float:right;padding-top: 5px;">
+                              <h:commandLink>
+									<p:graphicImage name="/img/csv.png" width="30" height="30"
+										style="float: right;" />
+									<p:dataExporter type="csv" target="historico"
+										fileName="#{exportarHistorico.nomeArquivo}" />
+								</h:commandLink>
+								<h:commandLink>
+									<p:graphicImage name="/img/pdf.png"
+										style="float: right;" />
+									<p:dataExporter type="pdf" target="historico"
+										fileName="#{exportarHistorico.nomeArquivo}" />
+								</h:commandLink>
+								<h:commandLink>
+									<p:graphicImage name="/img/excel.png"
+										style="float: right;" />
+									<p:dataExporter type="xls" target="historico"
+										fileName="#{exportarHistorico.nomeArquivo}" />
+								</h:commandLink>
+                           </div>
+                        </f:facet>
+                        <p:column style="width:70px">
+                           <f:facet name="header">
+                              <h:outputText value="Curso" />
+                           </f:facet>
+                           <h:outputText value="#{historico.getAluno().getCurso().getCodigo()}" />
+                        </p:column>
+                        <p:column style="width:110px">
+                           <f:facet name="header">
+                              <h:outputText value="Matrícula" />
+                           </f:facet>
+                           <h:outputText value="#{historico.getAluno().getMatricula()}" />
+                        </p:column>
+                        <p:column style="width:280px">
+                           <f:facet name="header">
+                              <h:outputText value="Aluno" />
+                           </f:facet>
+                           <h:outputText value="#{historico.getAluno().getNome()}" />
+                        </p:column>
+                        <p:column style="width:70px">
+                           <f:facet name="header">
+                              <h:outputText value="Grade" />
+                           </f:facet>
+                           <h:outputText value="#{historico.getAluno().getGrade().getCodigo()}" />
+                        </p:column>
+                        <p:column style="width:100px">
+                           <f:facet name="header">
+                              <h:outputText value="Semestre cursado" />
+                           </f:facet>
+                           <h:outputText value="#{historico.semestreCursado}" />
+                        </p:column>
+                        <p:column style="width:90px">
+                           <f:facet name="header">
+                              <h:outputText value="Disciplina" />
+                           </f:facet>
+                           <h:outputText value="#{historico.getDisciplina().getCodigo()}" />
+                        </p:column>
+                        <p:column style="width:60px">
+                           <f:facet name="header">
+                              <h:outputText value="Nota"	 />
+                           </f:facet>
+                           <h:outputText value="#{historico.nota}" />
+                        </p:column>
+                        <p:column style="width:100px">
+                           <f:facet name="header">
+                              <h:outputText value="Situação" />
+                           </f:facet>
+                           <h:outputText value="#{historico.statusDisciplina}" />
+                        </p:column>
+                        <p:column style="width:120px">
+                           <f:facet name="header">
+                              <h:outputText value="Carga Horária" />
+                           </f:facet>
+                           <h:outputText value="#{historico.getDisciplina().getCargaHoraria()}" />
+                        </p:column>
+                     </p:dataTable>
+                  </div>
+               </div>
+            </div>
+         </h:form>
+      </ui:define>
+   </ui:composition>
+</html>
