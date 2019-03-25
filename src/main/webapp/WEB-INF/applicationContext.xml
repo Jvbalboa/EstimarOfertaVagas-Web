@@ -47,6 +47,8 @@
 		<intercept-url pattern="/ExportarDados.xhtml" access="hasAnyRole('admin', 'coordenador')" />
 		<intercept-url pattern="/PlanejamentoFormatura.xhtml" access="isAuthenticated()" />
 		<intercept-url pattern="/SituacaoAluno.xhtml" access="isAuthenticated()" />
+		<intercept-url pattern="/SimulacaoGrade.xhtml" access="isAuthenticated()" />
+		<intercept-url pattern="/AlunosAptosEstagio.xhtml" access="isAuthenticated()" />
 		<intercept-url pattern="/VisaoGeral.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
 		<intercept-url pattern="/GraficoDisciplinasAprovada.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
 		<intercept-url pattern="/GraficoIra.xhtml" access="hasAnyRole('admin','externo','coordenador')" />
