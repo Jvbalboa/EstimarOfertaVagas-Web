@@ -606,19 +606,99 @@
 				</p:dataTable>
 			</div>
 			
-			
-			
+			<div class="subtitulo espacoLinha">
+				<legend>Cadastro de disciplinas com horas a serem ignoradas</legend>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row espacoLinha">
 
-			<p:confirmDialog header="Deletar Disciplina"
-				message="Tem certeza que deseja deletar a disciplina?"
-				widgetVar="deletarDisciplinaIra" showEffect="fade" hideEffect="fade">
-				<p:commandButton class="btn btn-default-sm" value="Sim"
-					update="gridIra" onclick="reprovar.hide()"
-					actionListener="#{cadastroGradeController.deletarDisciplinaIra()}"
-					ajax="true" />
-				<p:commandButton class="btn btn-default-sm" value="Não"
-					update="gridIra" onclick="reprovar.hide();" ajax="true" />
-			</p:confirmDialog>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Código Disciplina:"
+							style="    font-size: 13px;" />
+						<p:autoComplete id="codigoDisciplinaIgnorada"
+							value="#{cadastroGradeController.disciplinaIgnorarHoras}"
+							completeMethod="#{cadastroGradeController.getTodasDisciplinas}"
+							disabled="#{cadastroGradeController.lgDisciplinaIgnorarHoras}"
+							converter="entityConverter" var="cl" itemValue="#{cl}"
+							itemLabel="#{cl.codigo}" forceSelection="true">
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectDisciplinaIgnorarHoras}"
+								update="codigoDisciplinaIgnorada nomeDisciplinaIgnorada" />
+						</p:autoComplete>
+					</div>
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Nome Disciplina:"
+							style="    font-size: 13px;" />
+						<p:autoComplete id="nomeDisciplinaIgnorada"
+							value="#{cadastroGradeController.disciplinaIgnorarHoras}"
+							completeMethod="#{cadastroGradeController.disciplinaNomes}"
+							disabled="#{cadastroGradeController.lgDisciplinaIgnorarHoras}"
+							converter="entityConverter" var="cl" itemValue="#{cl}"
+							itemLabel="#{cl.nome}" forceSelection="true">
+							<p:column style="width: 20px; color: #DCDCDC; font-size: 12px;">
+								<h:outputText value="#{cl.codigo}" />
+							</p:column>
+							<p:column style="width: 300px; font-size: 12px;">
+								<h:outputText value="#{cl.nome}" />
+							</p:column>
+							<p:ajax event="itemSelect"
+								listener="#{cadastroGradeController.onItemSelectDisciplinaIgnorarHoras}"
+								update="codigoDisciplinaIgnorada nomeDisciplinaIgnorada" />
+						</p:autoComplete>
+					</div>
+
+					<div class="ui-grid-col-2">
+						<p:commandButton class="btn btn-success btn-sm botao"
+							value="Incluir"
+							actionListener="#{cadastroGradeController.incluirDisciplinaIgnorarHoras}"
+							disabled="#{cadastroGradeController.lgIncluirDisciplina}"
+							update="codigoDisciplinaIgnorada nomeDisciplinaIgnorada gridIgnoradas gridIra"
+							id="incluirDisciplinaIgnorada">
+						</p:commandButton>
+						<p:commandButton class="btn btn-info btn-sm botao"
+							id="limparDisciplinaIgnorada"
+							actionListener="#{cadastroGradeController.limpaDisciplinaIgnorarHoras}"
+							disabled="#{cadastroGradeController.lgLimparDisciplina}"
+							update="codigoDisciplinaIgnorada nomeDisciplinaIgnorada gridIgnoradas"
+							value="Limpar"></p:commandButton>
+					</div>
+				</div>
+			</div>
+
+			<div class="gridTamanho espacoLinha">
+				<p:dataTable var="materias"
+					value="#{cadastroGradeController.listaDisciplinasHorasIgnoradas}" id="gridIgnoradas"
+					emptyMessage="Nenhuma Disciplina Cadastrada"
+					filteredValue="#{cadastroGradeController.listaFiltradaDisciplinaHorasIgnoradas}"
+					paginator="true" rows="20"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorAlwaysVisible="false">
+					<f:facet name="header">
+			          Discplinas com horas ignoradas
+			       </f:facet>
+					<p:column headerText="Código" style="width: 15%;padding: 0px 10px;"
+						filterBy="#{materias.disciplina.codigo}"
+						filterMatchMode="contains" sortBy="#{materias.disciplina.codigo}">
+						<h:outputText value="#{materias.disciplina.codigo}" />
+					</p:column>
+					<p:column headerText="Nome" style="width: 30%;padding: 0px 10px;"
+						filterBy="#{materias.disciplina.nome}" filterMatchMode="contains"
+						sortBy="#{materias.disciplina.nome}">
+						<h:outputText value="#{materias.disciplina.nome}" />
+					</p:column>
+
+					<p:column style="width: 1.5%;text-align: center;padding: 0px 10px;"
+						exportable="false">
+						<p:commandLink ajax="true" title="Deletar Disciplina"
+							onclick="PF('deletarDisciplinaHorasIgnoradas').show()"
+							styleClass="ui-icon ui-icon-cancel">
+							<f:setPropertyActionListener value="#{materias}"
+								target="#{cadastroGradeController.gradeDisciplinaHorasIgnoradasSelecionada}" />
+						</p:commandLink>
+					</p:column>
+				</p:dataTable>
+			</div>
+			
 			<p:confirmDialog header="Deletar Disciplina da Equivalencia"
 				message="Tem certeza que deseja deletar a equivalencia da grade?"
 				widgetVar="deletarEquivalencia" showEffect="fade" hideEffect="fade">
@@ -629,6 +709,27 @@
 				<p:commandButton class="btn btn-default-sm" value="Não"
 					update="gridEquivalencias" onclick="reprovar.hide();" ajax="true" />
 			</p:confirmDialog>
+			<p:confirmDialog header="Deletar Disciplina"
+				message="Tem certeza que deseja deletar a disciplina?"
+				widgetVar="deletarDisciplinaIra" showEffect="fade" hideEffect="fade">
+				<p:commandButton class="btn btn-default-sm" value="Sim"
+					update="gridIra" onclick="reprovar.hide()"
+					actionListener="#{cadastroGradeController.deletarDisciplinaIra()}"
+					ajax="true" />
+				<p:commandButton class="btn btn-default-sm" value="Não"
+					update="gridIra" onclick="reprovar.hide();" ajax="true" />
+			</p:confirmDialog>
+			<p:confirmDialog header="Deletar Disciplina"
+				message="Tem certeza que deseja deletar a disciplina?"
+				widgetVar="deletarDisciplinaHorasIgnoradas" showEffect="fade" hideEffect="fade">
+				<p:commandButton class="btn btn-default-sm" value="Sim"
+					update="gridIgnoradas" onclick="reprovar.hide()"
+					actionListener="#{cadastroGradeController.deletarDisciplinaHorasIgnoradas()}"
+					ajax="true" />
+				<p:commandButton class="btn btn-default-sm" value="Não"
+					update="gridIgnoradas gridIra" onclick="reprovar.hide();" ajax="true" />
+			</p:confirmDialog>
+			
 		</h:form>
 		<h:form class="formularioPreRequisito" id="preRequisitoForm"
 			style="padding-left: 45px;">

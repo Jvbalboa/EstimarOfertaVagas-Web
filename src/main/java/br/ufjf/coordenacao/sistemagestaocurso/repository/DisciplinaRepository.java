@@ -38,6 +38,11 @@ public class DisciplinaRepository implements Serializable {
 	public List<Disciplina> listarTodos() {
 		return manager.createQuery("FROM Disciplina", Disciplina.class).getResultList();
 	}
+	
+	public List<Disciplina> buscarTodosDisciplinaCodigo(String codigo) {
+		return manager.createQuery("FROM Disciplina WHERE codigo like :codigo", Disciplina.class)
+				.setParameter("codigo", "%" + codigo + "%").getResultList();
+	}
 
 	public List<String> buscarTodosCodigosDisciplina(String variavel) {
 		return manager

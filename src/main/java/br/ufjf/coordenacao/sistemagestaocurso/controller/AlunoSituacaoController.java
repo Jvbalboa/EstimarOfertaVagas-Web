@@ -30,12 +30,13 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Disciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.EventoAce;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
+import br.ufjf.coordenacao.sistemagestaocurso.model.GradeDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.HistoricoRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.GradeDisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
@@ -72,15 +73,15 @@ public class AlunoSituacaoController
   private int horasACE;
   
   @Inject
-  private DisciplinaRepository disciplinas;
+  private DisciplinaRepository disciplinaRepository;
   @Inject
   private EventoAceRepository eventosAceRepository;
   @Inject
   private EventoAce eventoAceSelecionado;
   @Inject
-  private HistoricoRepository historicoRepository;
+  private AlunoRepository alunoRepository;
   @Inject
-  private AlunoRepository alunos;
+  private GradeDisciplinaRepository gradeDisciplinaRepository;
   
   private List<EventoAce> listaEventosAceSelecionadas;
   private List<SituacaoDisciplina> listaDisciplinaEletivasSelecionadas;
@@ -113,7 +114,7 @@ public class AlunoSituacaoController
 			usuarioController.atualizarPessoaLogada();
 
 			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
-				aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
+				aluno = alunoRepository.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
 				lgMatriculaAluno = true;
 				lgNomeAluno = true;
 				lgAluno = false;
@@ -184,7 +185,7 @@ public class AlunoSituacaoController
 		horasOpcionais = gradeAluno.getHorasOpcionais();
 		horasACE = gradeAluno.getHorasAce();
 		
-		aluno.setDisciplinaRepository(disciplinas);
+		aluno.setDisciplinaRepository(disciplinaRepository);
 		aluno.setEventoAceRepository(eventosAceRepository);
 		
 		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
@@ -310,113 +311,98 @@ public class AlunoSituacaoController
 		listaDisciplinaObrigatorias = new ArrayList<SituacaoDisciplina>();
 		listaDisciplinaEletivas = new ArrayList<SituacaoDisciplina>();
 		listaDisciplinaOpcionais = new ArrayList<SituacaoDisciplina>();
-		horasObrigatorias = 0;
-		//horasObrigatoriasConcluidas = 0;
-		//horasOpcionaisConcluidas = 0;
-		//horasEletivasConcluidas = 0;
-		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
 		TreeSet<String> naocompletado = new TreeSet<String>();		
+		horasObrigatorias = 0;
 		boolean lgPeriodoAtual = false;
+		
+		aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
+				
 		for(int i: cur.getMandatories().keySet()){
 			for(Class c: cur.getMandatories().get(i)){
-				horasObrigatorias = horasObrigatorias + c.getWorkload();
+				horasObrigatorias = horasObrigatorias + c.getWorkload();			
+				
 				if(!aprovado.containsKey(c)){					
+					
 					if (lgPeriodoAtual == false){						
 						aluno.setPeriodoReal(i);
 						lgPeriodoAtual = true;						
-					}					
+					}	
+					
 					naocompletado.add(c.getId());
 					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 					disciplinaSituacao.setSituacao("NAO APROVADO");
 					disciplinaSituacao.setCodigo(c.getId());
 					disciplinaSituacao.setPeriodo(Integer.toString(i));
 					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));					
-					disciplinaSituacao.setNome(disciplinas.buscarPorCodigoDisciplina(c.getId()).getNome());
-					String preRequisito = "";
+					disciplinaSituacao.setNome(disciplinaRepository.buscarPorCodigoDisciplina(c.getId()).getNome());
+					
+					String preRequisito = "";					
 					for(Class cl: c.getPrerequisite()){
 						preRequisito =  cl.getId() + " : " + preRequisito;
 					}
 					for(Class cl: c.getCorequisite()){
 						preRequisito =  cl.getId() + " : " + preRequisito;
 					}
+					
 					disciplinaSituacao.setListaPreRequisitos(preRequisito);
 					listaDisciplinaObrigatorias.add(disciplinaSituacao);
 				}
+				// adiciona na lista disciplinas obrigatórias
 				else{
-					//horasObrigatoriasConcluidas = horasObrigatoriasConcluidas + c.getWorkload();
 					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 					disciplinaSituacao.setCodigo(c.getId());
 					disciplinaSituacao.setSituacao("APROVADO");
 					disciplinaSituacao.setPeriodo(Integer.toString(i));
 					disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));					
-					disciplinaSituacao.setNome(disciplinas.buscarPorCodigoDisciplina(c.getId()).getNome());
+					disciplinaSituacao.setNome(disciplinaRepository.buscarPorCodigoDisciplina(c.getId()).getNome());
+					
 					String preRequisito = "";
 					for(Class cl: c.getPrerequisite()){
 						if (!preRequisito.contains(cl.getId())){
 							preRequisito =  cl.getId() + " : " + preRequisito;
 						}
 					}
+					
 					disciplinaSituacao.setListaPreRequisitos(preRequisito);
 					listaDisciplinaObrigatorias.add(disciplinaSituacao);
 					aprovado.remove(c);
 				}
 			}	
 		}
-		//int creditos = 0;
+
+		// adiciona na lista disciplinas eletivas
 		for(Class c: cur.getElectives()){
-			if(aprovado.containsKey(c))	{
+			if(aprovado.containsKey(c))	{				
 				SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
 				disciplinaSituacao.setCodigo(c.getId());
 				disciplinaSituacao.setSituacao("APROVADO");
 				logger.info(c.getId() + " eletiva");
 				disciplinaSituacao.setCargaHoraria(Integer.toString(c.getWorkload()));
-				disciplinaSituacao.setNome(disciplinas.buscarPorCodigoDisciplina(c.getId()).getNome());
+				disciplinaSituacao.setNome(disciplinaRepository.buscarPorCodigoDisciplina(c.getId()).getNome());
 				listaDisciplinaEletivas.add(disciplinaSituacao);
-				//creditos += c.getWorkload();
 				aprovado.remove(c);
 			} 	
 		}
-
-		//horasEletivasConcluidas = creditos;
-		//creditos = 0;
+		
 		Set<Class> ap = aprovado.keySet();
 		Iterator<Class> i = ap.iterator();
 		while(i.hasNext()){
 			Class c = i.next();
-			ArrayList<String[]> classdata = aprovado.get(c);
-			for(String[] s2: classdata)	{
-				if (s2[1].equals("APR") || s2[1].equals("A")){
-					EventoAce evento =  new EventoAce();
-					horasAceConcluidas = horasAceConcluidas + c.getWorkload();
-					evento.setDescricao(disciplinas.buscarPorCodigoDisciplina(c.getId()).getNome());
-					
-					Disciplina d = disciplinas.buscarPorCodigoDisciplina(c.getId());
-					
-					if(d != null)
-						c.setWorkload(d.getCargaHoraria());
-					
-					evento.setHoras((long) c.getWorkload());
-					String periodo = s2[0];
-					evento.setPeriodo(Integer.parseInt(periodo));
-					evento.setExcluir(false);
-					listaEventosAce.add(evento);
-				}
-				else{
-					Disciplina opcional = disciplinas.buscarPorCodigoDisciplina(c.getId());
-					SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
-					disciplinaSituacao.setCodigo(c.getId());			
-					disciplinaSituacao.setSituacao("APROVADO");
-					disciplinaSituacao.setCargaHoraria(opcional.getCargaHoraria().toString());
-					disciplinaSituacao.setNome(opcional.getNome());
-					listaDisciplinaOpcionais.add(disciplinaSituacao);
-					//creditos += c.getWorkload();
-				}
+			
+			Disciplina disciplinaOpcional = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+			Long idGrade = aluno.getGrade().getId();
+			Long idDisciplina = disciplinaOpcional.getId();
+			GradeDisciplina gradeDisciplina = gradeDisciplinaRepository.buscarPorDisciplinaGrade(idGrade, idDisciplina);
+			
+			if (gradeDisciplina == null || !gradeDisciplina.isIgnorarHoras()) {
+				SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
+				disciplinaSituacao.setCodigo(c.getId());			
+				disciplinaSituacao.setSituacao("APROVADO");
+				disciplinaSituacao.setCargaHoraria(disciplinaOpcional.getCargaHoraria().toString());
+				disciplinaSituacao.setNome(disciplinaOpcional.getNome());
+				listaDisciplinaOpcionais.add(disciplinaSituacao);				
 			}
 		}
-		
-		
-		
-		//horasOpcionaisConcluidas = creditos;
 	}
 
 	@Transactional

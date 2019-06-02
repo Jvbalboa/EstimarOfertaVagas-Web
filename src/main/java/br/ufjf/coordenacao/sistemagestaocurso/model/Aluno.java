@@ -282,31 +282,19 @@ public class Aluno {
 		Iterator<Class> i = ap.iterator();
 		while(i.hasNext()){
 			Class c = i.next();
-			for(String[] s2: aprovado.get(c))	{
-				if (s2[1].equals("APR") || s2[1].equals("A")){
-					Disciplina d = null;
-					for(Disciplina disciplina: disciplinas) {
-						if(disciplina.getCodigo().equals(c.getId())) {
-							d = disciplina;
-						}
-					}
-					
-					if(d != null)
-						c.setWorkload(d.getCargaHoraria());
-					horasAceConcluidas += c.getWorkload();
-				}
-				else
-				{
-					Disciplina opcional = null;
-					
-					for(Disciplina disciplina: disciplinas) {
-						if(disciplina.getCodigo().equals(c.getId())) {
-							opcional = disciplina;
-							this.disciplinasOpcionaisCompletadas.add(opcional);
-						}
-					}
-					horasOpcionaisCompletadas += opcional.getCargaHoraria();
-				}
+			
+			Disciplina disciplinaOpcional = disciplinaRepository.buscarPorCodigoDisciplina(c.getId());
+			GradeDisciplina gradeDisciplinaOpicional = null;
+			List<GradeDisciplina> gradeDisciplinas = getGrade().getGrupoGradeDisciplina();
+			
+			for (GradeDisciplina gradeDisciplina: gradeDisciplinas) {
+				if (gradeDisciplina.getId() == disciplinaOpcional.getId())
+					gradeDisciplinaOpicional = gradeDisciplina;
+			}
+			
+			if (gradeDisciplinaOpicional == null || !gradeDisciplinaOpicional.isIgnorarHoras()) {
+				this.disciplinasOpcionaisCompletadas.add(disciplinaOpcional);
+				horasOpcionaisCompletadas += disciplinaOpcional.getCargaHoraria();
 			}
 		}
 

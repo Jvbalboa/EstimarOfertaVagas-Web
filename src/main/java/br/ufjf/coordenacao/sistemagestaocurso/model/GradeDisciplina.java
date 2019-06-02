@@ -30,6 +30,7 @@ public class GradeDisciplina {
 	private List<PreRequisito> preRequisito = new ArrayList<PreRequisito>();
 	private Boolean excluirIra;
 	private Long id = null;
+	private Boolean ignorarHoras;
 	private String preRequisitos;
 	private Boolean carregou = false;
 
@@ -98,6 +99,15 @@ public class GradeDisciplina {
 
 	public void setExcluirIra(Boolean excluirIra) {
 		this.excluirIra = excluirIra;
+	}
+	
+	@Column(name="IGNORAR_HORAS")
+	public Boolean isIgnorarHoras() {
+		return ignorarHoras;
+	}
+	
+	public void setIgnorarHoras(Boolean ignorarHoras) {
+		this.ignorarHoras = ignorarHoras;
 	}
 
 	@Transient

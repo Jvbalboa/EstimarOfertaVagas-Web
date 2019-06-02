@@ -14,8 +14,6 @@ import javax.inject.Named;
 import org.hibernate.Hibernate;
 import org.primefaces.component.datatable.DataTable;
 
-import br.ufjf.coordenacao.OfertaVagas.model.ClassFactory;
-import br.ufjf.coordenacao.OfertaVagas.model.Class;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.Ordenar;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
@@ -33,8 +31,6 @@ import br.ufjf.coordenacao.sistemagestaocurso.repository.GradeRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.PreRequisitoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
-
-
 
 @Named 
 @ViewScoped
@@ -65,6 +61,7 @@ public class CadastroGradeController implements Serializable {
 	private boolean lgCodigoDisciplinaEquivalenciaUm = true;
 	private boolean lgCodigoDisciplinaEquivalenciaDois = true;
 	private boolean lgDisciplinaIra = true;
+	private boolean lgDisciplinaIgnorarHoras = true;
 
 	private List<Equivalencia> listaEquivalenciaSelecionada ;
 	private List<Equivalencia> listaEquivalencia = new ArrayList<Equivalencia>();	
@@ -72,8 +69,10 @@ public class CadastroGradeController implements Serializable {
 	private List<DisciplinaGradeDisciplina> listaObrigatoriasSelecionada ;
 	private List<DisciplinaGradeDisciplina> listaEletivas = new ArrayList<DisciplinaGradeDisciplina>();
 	private List<DisciplinaGradeDisciplina> listaObrigatorias = new ArrayList<DisciplinaGradeDisciplina>();		
-	private List<GradeDisciplina> listaIra = new ArrayList<GradeDisciplina>();	
-	private List<GradeDisciplina> listaIraSelecionados ;
+	private List<GradeDisciplina> listaIra = new ArrayList<GradeDisciplina>();
+	private List<GradeDisciplina> listaIraSelecionados;
+	private List<GradeDisciplina> listaDisciplinasHorasIgnoradas = new ArrayList<GradeDisciplina>();
+	private List<GradeDisciplina> listaFiltradaDisciplinasHorasIgnoradas;
 	private List<PreRequisito> listaPreRequisitos = new ArrayList<PreRequisito>();	
 
 	private Grade grade = new Grade();	
@@ -83,6 +82,7 @@ public class CadastroGradeController implements Serializable {
 	private Disciplina disciplinaPre = new Disciplina();
 	private Disciplina disciplinaNova = new Disciplina();
 	private Disciplina disciplinaIra = new Disciplina();
+	private Disciplina disciplinaIgnorarHoras = new Disciplina();
 	private Disciplina disciplinaEquivalenciaUm = new Disciplina();
 	private Disciplina disciplinaEquivalenciaDois = new Disciplina();
 	private GradeDisciplina gradeDisciplina = new GradeDisciplina();	
@@ -90,6 +90,7 @@ public class CadastroGradeController implements Serializable {
 	private Equivalencia linhaSelecionadaEquivalencia = new Equivalencia();
 	private DisciplinaGradeDisciplina linhaSelecionada = new DisciplinaGradeDisciplina();	
 	private GradeDisciplina gradeDisciplinaIraSelecionada = new GradeDisciplina();
+	private GradeDisciplina gradeDisciplinaHorasIgnoradasSelecionada = new GradeDisciplina();
 
 	@Inject
 	private GradeRepository gradeDAO ;
@@ -195,6 +196,7 @@ public class CadastroGradeController implements Serializable {
 			lgIncluirEquivalencia = false;
 			lgLimparEquivalencia = false;			
 			lgDisciplinaIra = false;
+			lgDisciplinaIgnorarHoras = false;
 			lgExcluirGrade = false;
 			atualizaGrids();
 		}
@@ -228,6 +230,7 @@ public class CadastroGradeController implements Serializable {
 			lgIncluirEquivalencia = false;
 			lgLimparEquivalencia = false;
 			lgDisciplinaIra = false;
+			lgDisciplinaIgnorarHoras = false;
 			lgExcluirGrade = false;
 		}
 	}
@@ -281,6 +284,7 @@ public class CadastroGradeController implements Serializable {
 		gradeDisciplina = new GradeDisciplina();
 		listaEquivalencia = new ArrayList<Equivalencia>();
 		listaIra = new ArrayList<GradeDisciplina>();
+		listaDisciplinasHorasIgnoradas = new ArrayList<GradeDisciplina>();
 		lgCodigoGrade = false;
 		lgHorasEletivas = true;
 		lgHorasOpcionais  = true;
@@ -301,6 +305,7 @@ public class CadastroGradeController implements Serializable {
 		lgIncluirEquivalencia = true;
 		lgLimparEquivalencia = true;
 		lgDisciplinaIra = true;
+		lgDisciplinaIgnorarHoras = true;
 		lgExcluirGrade = true;
 		listaObrigatorias = new ArrayList<DisciplinaGradeDisciplina>();
 		listaEletivas = new ArrayList<DisciplinaGradeDisciplina>();
@@ -382,6 +387,13 @@ public class CadastroGradeController implements Serializable {
 		}
 		codigo = codigo.toUpperCase();
 		return listaNomesSelecionados;
+	}
+	
+	public List<Disciplina> getTodasDisciplinas(String codigo) {
+		codigo = codigo.toUpperCase();
+		List<Disciplina> todasDisciplinas = disciplinaDAO.buscarTodosDisciplinaCodigo(codigo);
+		
+		return todasDisciplinas;
 	}
 
 	public void limparDisciplina(){
@@ -473,8 +485,11 @@ public class CadastroGradeController implements Serializable {
 	}
 
 	public void onItemSelectDisciplinaIra() {
-
 		lgDisciplinaIra = true;
+	}
+	
+	public void onItemSelectDisciplinaIgnorarHoras() {
+		lgDisciplinaIgnorarHoras = true;
 	}
 
 	public void onItemSelectCodigoDisciplinaEquivalenciaDois() {
@@ -533,7 +548,7 @@ public class CadastroGradeController implements Serializable {
 
 		gradeDisciplina.setDisciplina(disciplina);
 		gradeDisciplina.setGrade(grade);	
-		List<GradeDisciplina> todos = gradeDisciplinaDAO.buscarTodasGradeDisciplinaPorGrade(grade.getId());
+		//List<GradeDisciplina> todos = gradeDisciplinaDAO.buscarTodasGradeDisciplinaPorGrade(grade.getId());
 
 		GradeDisciplina gdDisciplinaAntiga = gradeDisciplinaDAO.buscarPorDisciplinaGrade(grade.getId(), disciplina.getId());
 		if(gdDisciplinaAntiga != null)
@@ -636,12 +651,16 @@ public class CadastroGradeController implements Serializable {
 		//listaEquivalencia = equivalenciaDAO.buscarTodasEquivalenciasPorGrade(grade.getId());
 		listaEquivalencia = equivalenciaDAO.buscarTodasEquivalenciasPorGrade(grade.getId());
 		listaIra = new ArrayList<GradeDisciplina>();
+		listaDisciplinasHorasIgnoradas = new ArrayList<GradeDisciplina>();
 
 		List<GradeDisciplina> todos = gradeDisciplinaDAO.buscarTodasGradeDisciplinaPorGrade(grade.getId());
 		//List<GradeDisciplina> todos = grade.getGrupoGradeDisciplina();	
 		for(GradeDisciplina gradeDisciplinaSelecionada : todos){
 			if(gradeDisciplinaSelecionada.getExcluirIra() != null && gradeDisciplinaSelecionada.getExcluirIra() == true){		
 				listaIra.add(gradeDisciplinaSelecionada);
+			}
+			if(gradeDisciplinaSelecionada.isIgnorarHoras() == true) {
+				listaDisciplinasHorasIgnoradas.add(gradeDisciplinaSelecionada);
 			}
 		}
 		//listaIra = gradeDisciplinaDAO.buscarPorIra(grade.getId(), true);
@@ -664,7 +683,7 @@ public class CadastroGradeController implements Serializable {
 		listaEletivasSelecionada =  null;
 	    listaObrigatoriasSelecionada  =  null;
 	    listaIraSelecionados = null;
-		
+		listaFiltradaDisciplinasHorasIgnoradas = null;
 	}
 
 	@Transactional
@@ -802,6 +821,49 @@ public class CadastroGradeController implements Serializable {
 		//usuarioController.atualizarPessoaLogada();
 		
 	}
+	
+	@Transactional
+	public void incluirDisciplinaIgnorarHoras() {
+		GradeDisciplina gradeDisc = null;
+		FacesMessage msg = new FacesMessage();
+		
+		if (disciplinaIgnorarHoras.getCodigo() != null && !disciplinaIgnorarHoras.getCodigo().equals("")) {		
+			gradeDisc = gradeDisciplinaDAO.buscarPorDisciplinaGrade(grade.getId(), disciplinaIgnorarHoras.getId());
+
+			if (gradeDisc == null) {
+				gradeDisc = new GradeDisciplina();
+				gradeDisc.setDisciplina(disciplinaIgnorarHoras);
+				gradeDisc.setGrade(grade);
+				gradeDisc.setIgnorarHoras(true);
+				gradeDisc.setExcluirIra(true);
+				gradeDisc.setTipoDisciplina("");
+				gradeDisc.setPeriodo(Integer.toUnsignedLong(0));
+				
+				gradeDisciplinaDAO.persistir(gradeDisc);
+				listaDisciplinasHorasIgnoradas.add(gradeDisc);
+				listaIra.add(gradeDisc);
+				
+				estruturaArvore.removerEstrutura(grade);
+				usuarioController.setReseta(true);
+			}
+			else if (gradeDisc.isIgnorarHoras()) {		
+				msg = new FacesMessage("Essa disciplina já está sendo ignorada.");
+				FacesContext.getCurrentInstance().addMessage(null, msg);		
+			}
+			else {
+				msg = new FacesMessage("Disciplinas contidas na grade não podem ser ignoradas.");
+				FacesContext.getCurrentInstance().addMessage(null, msg);	
+			}
+			
+		}
+		else {
+			msg = new FacesMessage("Insira uma disciplina para ser ignorada no calculo de horas completadas.");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
+		
+		disciplinaIgnorarHoras = new Disciplina();
+		lgDisciplinaIgnorarHoras = false;
+	}
 
 	@Transactional
 	public void incluiEquivalencia(){
@@ -872,6 +934,12 @@ public class CadastroGradeController implements Serializable {
 		disciplinaIra = new Disciplina();
 		lgDisciplinaIra = false;
 	}
+	
+	public void limpaDisciplinaIgnorarHoras(){
+		disciplinaIgnorarHoras = new Disciplina();
+		lgDisciplinaIgnorarHoras = false;
+	}
+
 
 	public void limpaEquivalencia(){
 
@@ -896,15 +964,28 @@ public class CadastroGradeController implements Serializable {
 	}
 	
 	@Transactional
-	public void deletarDisciplinaIra(){		
-		listaIra.remove(gradeDisciplinaIraSelecionada);
-		gradeDisciplinaIraSelecionada.setExcluirIra(false);
-		gradeDisciplinaDAO.persistir(gradeDisciplinaIraSelecionada);
+	public void deletarDisciplinaIra(){	
+		if (!gradeDisciplinaIraSelecionada.isIgnorarHoras()) {
+			listaIra.remove(gradeDisciplinaIraSelecionada);
+			gradeDisciplinaIraSelecionada.setExcluirIra(false);
+			gradeDisciplinaDAO.persistir(gradeDisciplinaIraSelecionada);
+			estruturaArvore.removerEstrutura(grade);
+			usuarioController.setReseta(true);
+			//usuarioController.atualizarPessoaLogada();
+		}
+		else {
+			FacesMessage msg = new FacesMessage("Disciplinas com horas sendo ignoradas não podem entrar no cálculo do IRA.");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
+	}
+	
+	@Transactional
+	public void deletarDisciplinaHorasIgnoradas() {		
+		listaDisciplinasHorasIgnoradas.remove(gradeDisciplinaHorasIgnoradasSelecionada);
+		listaIra.remove(gradeDisciplinaHorasIgnoradasSelecionada);
+		gradeDisciplinaDAO.remover(gradeDisciplinaHorasIgnoradasSelecionada);
 		estruturaArvore.removerEstrutura(grade);
 		usuarioController.setReseta(true);
-		//usuarioController.atualizarPessoaLogada();
-		
-		
 	}
 
 	//========================================================= GET - SET ==================================================================================//
@@ -1252,39 +1333,85 @@ public class CadastroGradeController implements Serializable {
 			List<DisciplinaGradeDisciplina> listaEletivasSelecionada) {
 		this.listaEletivasSelecionada = listaEletivasSelecionada;
 	}
+	
 	public Disciplina getDisciplinaIra() {
 		return disciplinaIra;
 	}
+	
 	public void setDisciplinaIra(Disciplina disciplinaIra) {
 		this.disciplinaIra = disciplinaIra;
 	}
+	
+	public Disciplina getDisciplinaIgnorarHoras() {
+		return disciplinaIgnorarHoras;
+	}
+	
+	public void setDisciplinaIgnorarHoras(Disciplina disciplinaIgnorarHoras) {
+		this.disciplinaIgnorarHoras = disciplinaIgnorarHoras;
+	}
+	
 	public boolean isLgDisciplinaIra() {
 		return lgDisciplinaIra;
 	}
+	
 	public void setLgDisciplinaIra(boolean lgDisciplinaIra) {
 		this.lgDisciplinaIra = lgDisciplinaIra;
 	}
+	
+	public boolean isLgDisciplinaIgnorarHoras() {
+		return lgDisciplinaIgnorarHoras;
+	}
+	
+	public void setLgDisciplinaIgnorarHoras(boolean lgDisciplinaIgnorarHoras) {
+		this.lgDisciplinaIgnorarHoras = lgDisciplinaIgnorarHoras;
+	}
+	
 	public List<GradeDisciplina> getListaIra() {
 		return listaIra;
 	}
+	
 	public void setListaIra(List<GradeDisciplina> listaIra) {
 		this.listaIra = listaIra;
 	}
+	
 	public List<GradeDisciplina> getListaIraSelecionados() {
 		return listaIraSelecionados;
 	}
+	
 	public void setListaIraSelecionados(List<GradeDisciplina> listaIraSelecionados) {
 		this.listaIraSelecionados = listaIraSelecionados;
 	}
+	
+	public List<GradeDisciplina> getListaDisciplinasHorasIgnoradas() {
+		return listaDisciplinasHorasIgnoradas;
+	}
+	
+	public void setListaDisciplinasHorasIgnoradas(List<GradeDisciplina> listaDisciplinasHorasIgnoradas) {
+		this.listaDisciplinasHorasIgnoradas = listaDisciplinasHorasIgnoradas;
+	}
+	
+	public List<GradeDisciplina> getListaFiltradaDisciplinaHorasIgnoradas() {
+		return listaFiltradaDisciplinasHorasIgnoradas;
+	}
+	
+	public void setListaFiltradaDisciplinaHorasIgnoradas(List<GradeDisciplina> listaFiltradaDisciplinaHorasIgnoradas) {
+		this.listaFiltradaDisciplinasHorasIgnoradas = listaFiltradaDisciplinaHorasIgnoradas;
+	}
+	
 	public GradeDisciplina getGradeDisciplinaIraSelecionada() {
 		return gradeDisciplinaIraSelecionada;
 	}
+	
 	public void setGradeDisciplinaIraSelecionada(
 			GradeDisciplina gradeDisciplinaIraSelecionada) {
 		this.gradeDisciplinaIraSelecionada = gradeDisciplinaIraSelecionada;
 	}
-
-
-
-
+	
+	public GradeDisciplina getGradeDisciplinaHorasIgnoradasSelecionada() {
+		return gradeDisciplinaHorasIgnoradasSelecionada;
+	}
+	
+	public void setGradeDisciplinaHorasIgnoradasSelecionada(GradeDisciplina gradeDisciplinaHorasIgnoradasSelecionada) {
+		this.gradeDisciplinaHorasIgnoradasSelecionada = gradeDisciplinaHorasIgnoradasSelecionada;
+	}
 }
