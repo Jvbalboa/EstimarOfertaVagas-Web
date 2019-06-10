@@ -11,8 +11,8 @@ import javax.ws.rs.core.MediaType;
 public class RSCursoAlunosDiscSituacao 
 {
     // URL do serviço
-    private static final String REST_URL_V1 = "http://integra.ufjf.br/integra/services/rs/alunos/curso/situacao/v1/getcursoalunosdiscsituacao";
-    private static final String REST_URL_V2 = "http://integra.ufjf.br/integra/services/rs/alunos/curso/situacao/v2/getcursoalunosdiscsituacao";
+    private static final String REST_URL_V1 = "http://login.integra.nrc.ice.ufjf.br:8080/integra/services/rs/alunos/curso/situacao/v1/getcursoalunosdiscsituacao";
+    private static final String REST_URL_V2 = "http://login.integra.nrc.ice.ufjf.br:8080/integra/services/rs/alunos/curso/situacao/v2/getcursoalunosdiscsituacao";
 
     // Versão do serviço
     public enum ServiceVersion { V1, V2 };
