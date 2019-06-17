@@ -511,7 +511,8 @@ public class PlanejamentoFormaturaController implements Serializable {
 				}
 				else
 				{
-					horasFaltamOpcionais -= h.getDisciplina().getCargaHoraria();
+					if (!equivalenciaRepository.existeDisciplinaEquivalente(h.getDisciplina().getId(), aluno.getGrade().getId()))
+						horasFaltamOpcionais -= h.getDisciplina().getCargaHoraria();
 				}
 
 			}
@@ -569,6 +570,7 @@ public class PlanejamentoFormaturaController implements Serializable {
 
 			curriculumAluno = g.generate();
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Erro ao gerar o planejamento para " + aluno.getMatricula(), e);
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ocorreu um problema ao gerar o planejamento", e.getLocalizedMessage());
 			FacesContext.getCurrentInstance().addMessage(null, msg);

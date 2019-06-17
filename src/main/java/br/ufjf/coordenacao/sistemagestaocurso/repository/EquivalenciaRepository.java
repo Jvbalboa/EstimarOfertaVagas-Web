@@ -1,7 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Equivalencia;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -52,5 +51,14 @@ public class EquivalenciaRepository implements Serializable {
 			return null;
 		}
 	}
-
+	
+	public boolean existeDisciplinaEquivalente(long idDisciplina, long idGrade) {
+		return manager
+				.createQuery(
+						"FROM Equivalencia WHERE id_disciplina = :iddisciplina and id_grade = :idgrade",
+						Equivalencia.class)
+				.setParameter("iddisciplina", idDisciplina)
+				.setParameter("idgrade", idGrade)
+				.getResultList().size() > 0;
+	}
 }
