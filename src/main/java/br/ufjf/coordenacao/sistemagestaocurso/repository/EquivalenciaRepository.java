@@ -7,13 +7,14 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 public class EquivalenciaRepository implements Serializable {
 
 	@Inject
 	private EntityManager manager;
-
+	
 	private static final long serialVersionUID = 1L;
 
 	public Equivalencia porid(long id) {
@@ -21,12 +22,33 @@ public class EquivalenciaRepository implements Serializable {
 	}
 
 	public Equivalencia persistir(Equivalencia objeto) {
-		return manager.merge(objeto);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			objeto = manager.merge(objeto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
 	}
 
 	public void remover(Equivalencia equivalencia) {
-		// Verificar se equivalencia já foi persistida no banco
-		manager.remove(manager.find(Equivalencia.class, equivalencia.getId()));
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.remove(manager.contains(equivalencia) ? equivalencia : manager.merge(equivalencia));
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
 	}
 
 	public List<Equivalencia> listarTodos() {
@@ -51,5 +73,14 @@ public class EquivalenciaRepository implements Serializable {
 			return null;
 		}
 	}
-
+	
+	public boolean existeDisciplinaEquivalente(long idDisciplina, long idGrade) {
+		return manager
+				.createQuery(
+						"FROM Equivalencia WHERE id_disciplina = :iddisciplina and id_grade = :idgrade",
+						Equivalencia.class)
+				.setParameter("iddisciplina", idDisciplina)
+				.setParameter("idgrade", idGrade)
+				.getResultList().size() > 0;
+	}
 }

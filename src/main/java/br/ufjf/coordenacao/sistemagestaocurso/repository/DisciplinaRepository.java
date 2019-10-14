@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Disciplina;
@@ -15,7 +16,7 @@ public class DisciplinaRepository implements Serializable {
 
 	@Inject
 	private EntityManager manager;
-
+	
 	public DisciplinaRepository() 	{ }
 	
 	public DisciplinaRepository(EntityManager manager)
@@ -26,13 +27,35 @@ public class DisciplinaRepository implements Serializable {
 	public Disciplina porid(long id) {
 		return manager.find(Disciplina.class, id);
 	}
-
+	
 	public Disciplina persistir(Disciplina objeto) {
-		return manager.merge(objeto);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			objeto = manager.merge(objeto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
 	}
 
 	public void remover(Disciplina objeto) {
-		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
 	}
 
 	public List<Disciplina> listarTodos() {

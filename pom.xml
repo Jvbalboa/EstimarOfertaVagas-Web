@@ -216,19 +216,7 @@
 	        <scope>provided</scope>
 		</dependency>
 		
-		<!-- API Integra -->
-		<dependency>
-			<groupId>IntegraAPI</groupId>
-			<artifactId>IntegraAPI</artifactId>
-			<version>2016</version>
-		</dependency>
-		
 		<!-- EstimarOfertaVagas -->
-		<dependency>
-			<groupId>br.ufjf.coordenacao</groupId>
-			<artifactId>EstimarOfertaVagas</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
-		</dependency>
 		
 		<!-- Apache CXF JAX-RS (requerido pelo Integra) -->
 		<dependency>

@@ -45,31 +45,51 @@
 			</div>
 			
 		<div class="ui-grid ui-grid-responsive">
-				<div class="ui-grid-row espacoLinha">
-					<div class="ui-grid-col-2 ">
-						<p:outputLabel value="Código da Nova Grade:" />
-						<p:inputText value="#{importarGradeController.novaGrade}"/>
-					</div>
-					
+				<div class="ui-grid-row espacoLinha">					
 					<div class="ui-grid-col-2">
-					<p:outputLabel value="Grade a Ser Clonada:" />
-						<p:autoComplete id="codigoGrade"
-							value="#{importarGradeController.codImportar}"
-							completeMethod="#{cadastroGradeController.gradeCodigos}"
-							disabled="#{cadastroGradeController.lgCodigoGrade}">
+						<p:outputLabel value="Código do curso:" />
+						<p:autoComplete id="codigoCurso"
+							value="#{importarGradeController.codigoCurso}"
+							completeMethod="#{importarGradeController.buscarCodigosCursos}"
+							disabled="#{importarGradeController.lgCodigoCurso}">
+							<p:ajax event="itemSelect"
+								listener="#{importarGradeController.onItemSelectCodigoCurso}" />
 						</p:autoComplete>
 					</div>
 					
+					<div class="ui-grid-col-2">
+						<p:outputLabel value="Código da grade:" />
+						<p:autoComplete id="codigoGrade"
+							value="#{importarGradeController.codigoGrade}"
+							completeMethod="#{importarGradeController.gradeCodigos}"
+							disabled="#{importarGradeController.lgCodigoGrade}">>
+							<p:ajax event="itemSelect"
+								listener="#{importarGradeController.onItemSelectCodigoGrade}" 
+								update="@form" />
+						</p:autoComplete>
+					</div>
 					
-						<p:commandButton class="btn btn-success btn-sm botao"
-							value="Clonar"
-							actionListener="#{importarGradeController.importaGrade}"
-							ajax="true">
-						</p:commandButton>
+					<div class="ui-grid-col-2 ">
+						<p:outputLabel value="Código da nova grade:" />
+						<p:inputText value="#{importarGradeController.codigoNovaGrade}"
+							disabled="#{importarGradeController.lgCodigoNovaGrade}"/>
+					</div>
+					
+					<p:commandButton class="btn btn-success btn-sm botao"
+						value="Clonar"
+						actionListener="#{importarGradeController.importaGrade}"
+						ajax="true">
+					</p:commandButton>
 					
 					</div>
-				</div>
-		
+				</div>		
 		</h:form>
+		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
+			oncomplete="PF('start').hide();">
+		</p:ajaxStatus>
+		<p:dialog widgetVar="start" modal="true" draggable="false"
+			closable="false" resizable="false" showHeader="false">
+			<h:graphicImage value="#{resource['img:carregandoo.gif']}"></h:graphicImage>
+		</p:dialog>
 </h:body>	
 </html>

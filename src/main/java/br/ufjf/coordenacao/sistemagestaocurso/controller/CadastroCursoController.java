@@ -27,7 +27,7 @@ public class CadastroCursoController implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Curso curso = new Curso();
-	private Ordenar ordenar = new Ordenar();	
+	private Ordenar ordenar = new Ordenar();
 	
 	@Inject
 	private CursoRepository cursos ;	
@@ -103,7 +103,18 @@ public class CadastroCursoController implements Serializable {
 
 	public void limpaCurso(){		
 		curso = new Curso();
-	}	
+	}
+	
+	@Transactional
+	public void deletarCurso(){
+		cursos.remover(curso);
+		List<Curso> listaCursoAuxiliar = new ArrayList<Curso>();	
+		listaCursoAuxiliar = (List<Curso>) cursos.listarTodos();
+		listaCurso.clear();
+		for(Curso curso:listaCursoAuxiliar){
+			listaCurso.add(curso);
+		}		
+	}
 
 	//========================================================= GET - SET ==================================================================================//
 

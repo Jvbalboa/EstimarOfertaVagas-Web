@@ -167,7 +167,8 @@ public class VisaoGeralController implements Serializable {
 			for (String stid : student) {
 				boolean naoGravar = false;
 				Student st = sh.getStudents().get(stid);
-				String anoIngresso = (st.getFirstSemester() + "").substring(0,4);
+				//String anoIngresso = this.gradeHistoricoSelecionado.getMatricula().substring(0, 4);
+				String anoIngresso = (stid).substring(0,4);
 				listaAlunosTodos.add(stid);
 				if( listaAnoTodos != null && !listaAnoTodos.contains(anoIngresso)               ){
 					listaAnoTodos.add(anoIngresso);
@@ -521,10 +522,12 @@ public class VisaoGeralController implements Serializable {
 
 	public List<String> alunoAno(String codigo) {
 		List<String> listaSelecionadas = new ArrayList<String>();
+		System.out.println("Entrando alunoAno");
 		for (String alunoAno:listaAnoTodos ){
-			if (alunoAno.indexOf(codigo.toUpperCase()) >= 0){
+			System.out.println(alunoAno);
+			//if (alunoAno.indexOf(2015) >= 0){
 				listaSelecionadas.add(alunoAno);
-			}
+			//}
 		}
 		Collections.sort(listaSelecionadas);
 		return listaSelecionadas;

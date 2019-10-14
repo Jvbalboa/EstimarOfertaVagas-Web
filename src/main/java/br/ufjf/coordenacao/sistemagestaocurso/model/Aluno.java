@@ -1,7 +1,14 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +22,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
+import br.ufjf.coordenacao.OfertaVagas.model.Class;
+import br.ufjf.coordenacao.OfertaVagas.model.ClassStatus;
+import br.ufjf.coordenacao.OfertaVagas.model.Curriculum;
+import br.ufjf.coordenacao.OfertaVagas.model.Student;
+import br.ufjf.coordenacao.OfertaVagas.model.StudentsHistory;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.*;
 
 @Entity
@@ -33,12 +47,20 @@ public class Aluno {
 	private List<IRA> iras;
 	private int horasObrigatoriasCompletadas;
 	private int horasEletivasCompletadas;
+	private List<Disciplina> disciplinasEletivasCompletadas;
 	private int sobraHorasEletivas;
 	private int horasOpcionaisCompletadas;
 	private int horasAceConcluidas;
+	private List<Disciplina> disciplinasOpcionaisCompletadas;
 	private int sobraHorasOpcionais;
-
-	private boolean horasCalculadas; 
+	private boolean horasCalculadas;
+	private List<String> ultimosTresSemestres = new ArrayList<String>();
+	private int cet;
+	private boolean emAcompanhamentoAcademico;
+	private List<Float> iraUltimosTresSemestres = new ArrayList<Float>();
+	
+	private DisciplinaRepository disciplinaRepository;
+	private EventoAceRepository eventoAceRepository;
 
 	// ==========================GETTERS_AND_SETTERS======================================================================================================//
 
@@ -111,6 +133,17 @@ public class Aluno {
 	public List<Historico> getGrupoHistorico() {
 		return grupoHistorico;
 	}
+	
+
+	@Transient
+	public List<Historico> getGrupoHistorico(String statusDisciplina) {
+		List<Historico> historicos = new ArrayList<Historico>();
+		for(Historico h : this.getGrupoHistorico()) {
+			if(statusDisciplina.equals(h.getStatusDisciplina()))
+				historicos.add(h);
+		}
+		return historicos;
+	}
 
 	public void setGrupoHistorico(List<Historico> grupoHistorico) {
 		this.grupoHistorico = grupoHistorico;
@@ -179,17 +212,128 @@ public class Aluno {
 	@Transient
 	public void calculaHorasCompletadas()
 	{
-		ContadorHorasIntegralizadas contador = new ContadorHorasIntegralizadas(this);
-		this.horasAceConcluidas = contador.getHorasAceConcluidas();
-		this.horasEletivasCompletadas = contador.getHorasEletivasCompletadas();
-		this.horasObrigatoriasCompletadas = contador.getHorasObrigatoriasCompletadas();
-		this.horasOpcionaisCompletadas = contador.getHorasOpcionaisCompletadas();
-		this.sobraHorasEletivas = contador.getSobraHorasEletivas();
-		this.sobraHorasOpcionais = contador.getSobraHorasOpcionais();
+		this.disciplinasOpcionaisCompletadas = new ArrayList<Disciplina>();
+		this.disciplinasEletivasCompletadas = new ArrayList<Disciplina>();
+		
+		this.horasObrigatoriasCompletadas = 0;
+		this.horasEletivasCompletadas = 0;
+		this.horasOpcionaisCompletadas = 0;
+		this.sobraHorasEletivas = 0;
+		this.horasCalculadas = false;
+		
+		ImportarArvore importador;
+		EstruturaArvore estruturaArvore = EstruturaArvore.getInstance();
+		importador = estruturaArvore.recuperarArvore(this.grade,false);
+		
+		Curriculum cur = importador.get_cur();
+		StudentsHistory sh = importador.getSh();		
+		Student st = sh.getStudents().get(this.getMatricula());
+		
+		if (st == null){
+			FacesMessage msg = new FacesMessage("O aluno:" + this.getMatricula() + " não tem nenhum histórico de matricula cadastrado!");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			return;
+		}
+		
+		HashMap<Class, ArrayList<String[]>> aprovado = new HashMap<Class, ArrayList<String[]>>(st.getClasses(ClassStatus.APPROVED));
+		
+		//++
+		List<Disciplina> disciplinas = disciplinaRepository.listarTodos();
+				
+		for(int i: cur.getMandatories().keySet())
+		{
+			for(Class c: cur.getMandatories().get(i))
+			{
+				if(aprovado.containsKey(c)){
+					Disciplina d = null;
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							d = disciplina;
+						}
+					}
+						
+					if(d != null)
+					{
+						c.setWorkload(d.getCargaHoraria());
+					}
+					
+					this.horasObrigatoriasCompletadas += c.getWorkload();
+					aprovado.remove(c);
+				}				
+			}
+		}
+		
+		for(Class c: cur.getElectives()) {
+			if(aprovado.containsKey(c))	{
+				this.horasEletivasCompletadas += c.getWorkload();
+				Disciplina d = null;
+				for(Disciplina disciplina: disciplinas) {
+					if(disciplina.getCodigo().equals(c.getId())) {
+						d = disciplina;
+						this.disciplinasEletivasCompletadas.add(d);
+					}
+				}
+				
+				aprovado.remove(c);
+			}
+		}
+		
+		Set<Class> ap = aprovado.keySet();
+		Iterator<Class> i = ap.iterator();
+		while(i.hasNext()){
+			Class c = i.next();
+			for(String[] s2: aprovado.get(c))	{
+				if (s2[1].equals("APR") || s2[1].equals("A")){
+					Disciplina d = null;
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							d = disciplina;
+						}
+					}
+					
+					if(d != null)
+						c.setWorkload(d.getCargaHoraria());
+					horasAceConcluidas += c.getWorkload();
+				}
+				else
+				{
+					Disciplina opcional = null;
+					
+					for(Disciplina disciplina: disciplinas) {
+						if(disciplina.getCodigo().equals(c.getId())) {
+							opcional = disciplina;
+							this.disciplinasOpcionaisCompletadas.add(opcional);
+						}
+					}
+					horasOpcionaisCompletadas += opcional.getCargaHoraria();
+				}
+			}
+		}
+
+		
+		if(this.horasEletivasCompletadas > this.grade.getHorasEletivas())
+		{
+			this.sobraHorasEletivas = this.horasEletivasCompletadas - this.grade.getHorasEletivas();
+			this.horasEletivasCompletadas -= this.sobraHorasEletivas;
+			this.horasOpcionaisCompletadas += this.sobraHorasEletivas;
+			
+			//--
+		}
+		
+		if(this.horasOpcionaisCompletadas > this.grade.getHorasOpcionais())
+		{
+			this.sobraHorasOpcionais = this.horasOpcionaisCompletadas - this.grade.getHorasOpcionais();
+			this.horasOpcionaisCompletadas -= this.sobraHorasOpcionais;
+			this.horasAceConcluidas += this.sobraHorasOpcionais;
+			
+			//--
+		}
+		
+		//-----------------------------
 		this.horasCalculadas = true;
-		contador.dispose();
 	}
 	
+
 	@Transient
 	public int getHorasObrigatoriasCompletadas() {
 		if(!this.horasCalculadas)
@@ -224,9 +368,20 @@ public class Aluno {
 	}
 	
 	@Transient
-	public int getHorasAceConcluidas() {
+	public int getHorasAceConcluidas() {		
 		if(!this.horasCalculadas)
 			this.calculaHorasCompletadas();
+		
+		int aceCadastradas = 0;
+		
+		List<EventoAce> eventos = this.eventoAceRepository.buscarPorMatricula(this.getMatricula());
+		
+		for(EventoAce evento: eventos)
+		{
+			aceCadastradas += evento.getHoras();
+		}
+				
+		this.horasAceConcluidas =  Math.min((horasAceConcluidas + aceCadastradas), this.grade.getHorasAce());
 		
 		return this.horasAceConcluidas;
 	}
@@ -239,7 +394,7 @@ public class Aluno {
 		
 		return this.sobraHorasOpcionais;
 	}
-	
+
 	@Transient
 	public void dadosAlterados()
 	{
@@ -249,5 +404,121 @@ public class Aluno {
 
 	public void setIras(List<IRA> iras) {
 		this.iras = iras;
+	}
+	
+	@Transient
+	public void setEventoAceRepository(EventoAceRepository eventoAceRepository) {
+		this.eventoAceRepository = eventoAceRepository;
+	}
+	
+	@Transient
+	public void setDisciplinaRepository(DisciplinaRepository disciplinaRepository) {
+		this.disciplinaRepository = disciplinaRepository;
+	}
+	
+	@Transient
+	public List<String> getUltimosTresSemestres() {
+		return ultimosTresSemestres;
+	}
+
+
+	public void setUltimosTresSemestres(List<String> ultimosTresSemestres) {
+		this.ultimosTresSemestres = ultimosTresSemestres;
+	}
+	
+	@Transient
+	public int getCet() {
+		return cet;
+	}
+	
+	public void setCet(int cet) {
+		this.cet = cet;
+	}
+
+	@Transient
+	public boolean isEmAcompanhamentoAcademico() {
+		return emAcompanhamentoAcademico;
+	}
+
+
+	public void setEmAcompanhamentoAcademico(boolean emAcompanhamentoAcademico) {
+		this.emAcompanhamentoAcademico = emAcompanhamentoAcademico;
+	}
+	
+	@Transient
+	public List<Float> getIraUltimosTresSemestres() {
+		return iraUltimosTresSemestres;
+	}
+	
+	public void setIraUltimosTresSemestres(List<Float> iraUltimosTresSemestres) {
+		this.iraUltimosTresSemestres = iraUltimosTresSemestres;
+	}
+	
+	public void buscarUltimosTresSemestres() {		
+		for (ListIterator<Historico> it = this.getGrupoHistorico().listIterator(this.getGrupoHistorico().size()); it.hasPrevious() && this.ultimosTresSemestres.size() < 3;) {
+			Historico historico = it.previous();
+			if (!historico.getStatusDisciplina().equals("Matriculado") && !historico.getStatusDisciplina().equals("Trancado") && !this.ultimosTresSemestres.contains(historico.getSemestreCursado())) {
+					this.ultimosTresSemestres.add(historico.getSemestreCursado());
+			}
+		}
+	}
+	
+	public void calcularCet() {
+		this.cet = 0;
+		
+		if (this.ultimosTresSemestres.isEmpty()) {
+			this.buscarUltimosTresSemestres();
+		}
+				
+		if (ultimosTresSemestres.size() == 3) {
+			List<EventoAce> eventosAce = this.eventoAceRepository.buscarPorMatricula(this.getMatricula());
+			
+			for (Historico historico : this.getGrupoHistorico()) {
+				if (ultimosTresSemestres.contains(historico.getSemestreCursado()) && historico.getStatusDisciplina().equals("Aprovado")) {
+					this.cet = this.cet + historico.getDisciplina().getCargaHoraria();
+				}					
+			}
+			
+			for (EventoAce eventoAce : eventosAce) {
+				if (ultimosTresSemestres.contains(eventoAce.getPeriodo().toString())) {
+					this.cet = (int) (this.cet + eventoAce.getHoras());
+				}
+			}
+		}
+	}
+	
+	public void verificarAcompanhamentoAcademico() {
+		int cargaHorariaTotal = this.getGrade().getHorasObrigatorias() + this.getGrade().getHorasEletivas() + this.getGrade().getHorasOpcionais() + this.getGrade().getHorasAce();
+		
+		int numeroMedioPeriodos = 1;
+		for (GradeDisciplina disciplina : this.getGrade().getGrupoGradeDisciplina()) {
+			if (disciplina.getPeriodo() > numeroMedioPeriodos) {
+				numeroMedioPeriodos = disciplina.getPeriodo().intValue();
+			}
+		}
+		
+		int chm = cargaHorariaTotal / numeroMedioPeriodos;
+		
+		this.calcularCet();
+		
+		if (this.cet < 1.5 * chm) {
+			this.emAcompanhamentoAcademico = true;
+		} else {
+			this.emAcompanhamentoAcademico = false;
+		}
+	}
+	
+	public void calcularIraUltimosTresSemestres() {
+		if (this.ultimosTresSemestres.isEmpty()) {
+			this.buscarUltimosTresSemestres();
+		}
+		
+		if (this.ultimosTresSemestres.size() == 3) {
+			for (IRA ira : this.getIras()) {
+				if (this.ultimosTresSemestres.contains(ira.getSemestre())) {
+					this.iraUltimosTresSemestres.add(ira.getIraSemestre());
+				}
+			}
+		}
 	}
 }

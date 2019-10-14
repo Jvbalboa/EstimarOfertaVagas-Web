@@ -10,7 +10,6 @@ import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
 
 import org.primefaces.event.RowEditEvent;
 
@@ -37,8 +36,6 @@ public class CadastroPessoaController implements Serializable {
 	private CursoRepository cursos ;
 	@Inject
 	private PessoaCursoRepository pessoaCursoRepository ;
-	@Inject
-	private EntityManager manager;
 	
 	private Curso curso = new Curso();
 	private Pessoa pessoa = new Pessoa();
@@ -186,7 +183,7 @@ public class CadastroPessoaController implements Serializable {
 		List<String> todos = cursos.buscarTodosCodigosCurso(codigo);
 		return todos;	
 	}
-
+	
 	public List<Curso> cursoNomes(String codigo) {	
 		codigo = codigo.toUpperCase();
 		List<Curso> todos = cursos.buscarTodosNomesObjetoCurso(codigo);
@@ -205,14 +202,8 @@ public class CadastroPessoaController implements Serializable {
 		lgNomeCurso = true;
 	}
 
-	public void onItemSelectCodigoPessoaCurso() {
+	public void onItemSelectPessoaCurso() {
 		curso = cursos.buscarPorCodigo(curso.getCodigo());
-		lgCodigoPessoaCurso = true;
-		lgNomePessoaCurso = true;
-	}
-
-	public void onItemSelectNomePessoaCurso() {
-		curso = cursos.buscarPorNome(curso.getNome());
 		lgCodigoPessoaCurso = true;
 		lgNomePessoaCurso = true;
 	}

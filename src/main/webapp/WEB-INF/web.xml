@@ -3,6 +3,10 @@
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="WebApp_ID" version="3.0">
+	
+	<session-config>
+		<session-timeout>15</session-timeout>
+	</session-config>
 
 	<error-page>
 		<error-code>404</error-code>
@@ -29,14 +33,17 @@
 		<resource-env-ref-name>BeanManager</resource-env-ref-name>
 		<resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
 	</resource-env-ref>
+	
 	<welcome-file-list>
 		<welcome-file>Home.xhtml</welcome-file>
 	</welcome-file-list>
+	
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.xhtml</url-pattern>
@@ -52,10 +59,20 @@
     	<param-value>bootstrap</param-value>
 	</context-param>
 	
-<!-- 	<context-param> -->
-<!--     	<param-name>contextConfigLocation</param-name> -->
-<!--     	<param-value>applicationContext.xml</param-value> -->
-<!-- 	</context-param> -->
+	<context-param>
+		<param-name>configPath</param-name>
+		<param-value>C:/Users/andre/Workspace/TP/ofertavagas/config.txt</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>tokenPath</param-name>
+		<param-value>C:/Users/andre/Workspace/TP/ofertavagas/application.token</param-value>
+	</context-param>
+	
+<!--<context-param> -->
+<!--  	<param-name>contextConfigLocation</param-name> -->
+<!--	<param-value>applicationContext.xml</param-value> -->
+<!--</context-param> -->
 	
 	<filter>
 		<filter-name>springSecurityFilterChain</filter-name>

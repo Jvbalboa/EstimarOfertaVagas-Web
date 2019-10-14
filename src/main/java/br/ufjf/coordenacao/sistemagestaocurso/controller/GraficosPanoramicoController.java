@@ -25,6 +25,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.ElementoGrafico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.GrupoElementoGrafico;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
 //import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
@@ -81,10 +82,14 @@ public class GraficosPanoramicoController implements Serializable {
 	@Inject
 	private EventoAceRepository eventosace;
 
-	//========================================================= METODOS ==================================================================================//
-
 	@Inject
 	private UsuarioController usuarioController;
+	
+	@Inject
+	private DisciplinaRepository disciplinaRepository;
+	//========================================================= METODOS ==================================================================================//
+
+	
 
 	@PostConstruct
 	public void init() {
@@ -201,7 +206,8 @@ public class GraficosPanoramicoController implements Serializable {
 
 				}		
 				
-				//gerarDadosAluno(st,curriculum);
+				aluno.setDisciplinaRepository(disciplinaRepository);
+				aluno.setEventoAceRepository(eventosace);
 				horasAceConcluidas += aluno.getHorasAceConcluidas() + aluno.getSobraHorasOpcionais();
 				horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
 				horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();

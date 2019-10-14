@@ -19,10 +19,10 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Pessoa;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.Autenticacao;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.PessoaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
-import br.ufjf.ice.integra3.ws.login.interfaces.IWsLogin;
-import br.ufjf.ice.integra3.ws.login.interfaces.WsLoginResponse;
-import br.ufjf.ice.integra3.ws.login.interfaces.WsUserInfoResponse;
-import br.ufjf.ice.integra3.ws.login.service.WSLogin;
+import br.ufjf.ice.integra3.ws.login.IWsLogin;
+import br.ufjf.ice.integra3.ws.login.WsLoginResponse;
+import br.ufjf.ice.integra3.ws.login.WsUserInfoResponse;
+import br.ufjf.ice.integra3.ws.login.WSLogin;
 
 @Named
 public class AutenticacaoController implements Serializable {
@@ -38,10 +38,10 @@ public class AutenticacaoController implements Serializable {
 
 		EstruturaArvore estruturaArvore;
 		estruturaArvore = EstruturaArvore.getInstance();
+		final String tokenPath = FacesContext.getCurrentInstance().getExternalContext().getInitParameter("tokenPath");
 
-		//PessoaRepository pessoaDAO = estruturaArvore.getPessoaDAO();
 		List<String> perfis = new ArrayList<String>();
-		FileReader file = new FileReader("/dcc-config/ofertavagas/application.token");
+		FileReader file = new FileReader(tokenPath);
 		BufferedReader bf = new BufferedReader(file);		
 		String token = bf.readLine();
 		bf.close();
@@ -57,10 +57,13 @@ public class AutenticacaoController implements Serializable {
 			Pessoa pessoa = null;
 
 			for (contador = 0;contador < infos.getProfileList().getProfile().size() ; contador ++ ){				
-				pessoa = pessoaDAO.buscarPorSiapePessoa(infos.getProfileList().getProfile().get(contador).getMatricula());				
+				
+				Pessoa pessoaTemp = pessoaDAO.buscarPorSiapePessoa(infos.getProfileList().getProfile().get(contador).getMatricula());
+				
 				perfis.add(infos.getProfileList().getProfile().get(contador).getMatricula());			
-				if (pessoa != null){				
-					achouCoord = true;												
+				if (pessoaTemp != null){				
+					achouCoord = true;
+					pessoa = pessoaTemp;
 				}				
 			}	
 

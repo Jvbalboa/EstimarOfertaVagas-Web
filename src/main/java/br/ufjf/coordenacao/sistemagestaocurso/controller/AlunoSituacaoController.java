@@ -22,6 +22,7 @@ import br.ufjf.coordenacao.OfertaVagas.model.Student;
 import br.ufjf.coordenacao.OfertaVagas.model.StudentsHistory;
 import br.ufjf.coordenacao.OfertaVagas.model.Class;
 import br.ufjf.coordenacao.OfertaVagas.model.ClassStatus;
+import br.ufjf.coordenacao.sistemagestaocurso.controller.util.CalculadorMateriasExcedentes;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.Ordenar;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
@@ -32,9 +33,9 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.HistoricoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
@@ -70,7 +71,6 @@ public class AlunoSituacaoController
   private int horasOpcionais;
   private int horasACE;
   
-  //private AlunoRepository alunos;
   @Inject
   private DisciplinaRepository disciplinas;
   @Inject
@@ -78,7 +78,7 @@ public class AlunoSituacaoController
   @Inject
   private EventoAce eventoAceSelecionado;
   @Inject
-  private CursoRepository cursos;
+  private HistoricoRepository historicoRepository;
   @Inject
   private AlunoRepository alunos;
   
@@ -98,23 +98,11 @@ public class AlunoSituacaoController
   
   private static final Logger logger = Logger.getLogger(AlunoSituacaoController.class);
   
-  public void preencheSobraHoras()
-	{
-		if(this.aluno.getSobraHorasEletivas() > 0)
-		{
-			SituacaoDisciplina disciplinaSituacao = new SituacaoDisciplina();
-			disciplinaSituacao.setCodigo("");
-			disciplinaSituacao.setSituacao("");
-			disciplinaSituacao.setCargaHoraria(this.aluno.getSobraHorasEletivas() + "");
-			disciplinaSituacao.setNome("EXCEDENTE EM DISCIPLINAS ELETIVAS");
-			listaDisciplinaOpcionais.add(disciplinaSituacao);
-		}
-		
-	}
-	
 	@PostConstruct
 	public void init()  {
 		try {
+			
+			
 			estruturaArvore = EstruturaArvore.getInstance();		
 			Grade grade = new Grade();
 			grade.setHorasEletivas(0);
@@ -126,7 +114,6 @@ public class AlunoSituacaoController
 
 			if (usuarioController.getAutenticacao().getTipoAcesso().equals("aluno")){	
 				aluno = alunos.buscarPorMatricula(usuarioController.getAutenticacao().getSelecaoIdentificador());
-				
 				lgMatriculaAluno = true;
 				lgNomeAluno = true;
 				lgAluno = false;
@@ -183,6 +170,7 @@ public class AlunoSituacaoController
 				break;
 			}
 		}
+		
 		lgAce = false;
 		lgNomeAluno = true;	
 		lgMatriculaAluno = true;
@@ -196,6 +184,9 @@ public class AlunoSituacaoController
 		horasOpcionais = gradeAluno.getHorasOpcionais();
 		horasACE = gradeAluno.getHorasAce();
 		
+		aluno.setDisciplinaRepository(disciplinas);
+		aluno.setEventoAceRepository(eventosAceRepository);
+		
 		horasObrigatoriasConcluidas = aluno.getHorasObrigatoriasCompletadas();
 		horasEletivasConcluidas = aluno.getHorasEletivasCompletadas();
 		horasOpcionaisConcluidas = aluno.getHorasOpcionaisCompletadas();
@@ -204,15 +195,13 @@ public class AlunoSituacaoController
 		StudentsHistory sh = importador.getSh();		
 		Student st = sh.getStudents().get(aluno.getMatricula());
 
-		if (st == null){
-
+		if (st == null) {
 			FacesMessage msg = new FacesMessage("O aluno:" + aluno.getMatricula() + " não tem nenhum histórico de matrícula cadastrado!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
-
 		}
 
-		listaEventosAce = new ArrayList<EventoAce>(eventosAceRepository.buscarPorMatricula(aluno.getMatricula()));		
+		listaEventosAce = new ArrayList<EventoAce>(eventosAceRepository.buscarPorMatricula(aluno.getMatricula()));
 		if (listaEventosAce != null){
 			horasAceConcluidas = eventosAceRepository.recuperarHorasConcluidasPorMatricula(aluno.getMatricula());
 		}
@@ -221,11 +210,21 @@ public class AlunoSituacaoController
 		}
 		
 		gerarDadosAluno(st,curriculum);
-		this.preencheSobraHoras();
+		
+		if (this.aluno.getSobraHorasEletivas() > 0) {
+			List<SituacaoDisciplina> disciplinaSituacao = CalculadorMateriasExcedentes.getExcedentesEletivas(this.aluno.getGrade().getHorasEletivas(), this.listaDisciplinaEletivas);
+			for(SituacaoDisciplina eletivaExtra : disciplinaSituacao) {
+				listaDisciplinaOpcionais.add(eletivaExtra);
+				listaDisciplinaEletivas.remove(eletivaExtra);
+			}
+		}
+		
+		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
 		
 		ira = aluno.getIra();
 		
-		periodo = aluno.getPeriodoCorrente(usuarioController.getAutenticacao().getSemestreSelecionado());
+		aluno.calcularCet();
+		
 		int SomaInt = 0;
 		if (horasObrigatorias != 0){
 			percentualObrigatorias =   (horasObrigatoriasConcluidas * 100 / horasObrigatorias);
@@ -241,19 +240,24 @@ public class AlunoSituacaoController
 		
 		if(this.aluno.getSobraHorasOpcionais() > 0)
 		{
+			List<EventoAce> ExcedentesOpcionais = CalculadorMateriasExcedentes.getExcedentesOpcionais(this.aluno.getGrade().getHorasOpcionais(), this.listaDisciplinaOpcionais);
+			for(EventoAce eventoAceExtra : ExcedentesOpcionais) {
+				listaEventosAce.add(eventoAceExtra);
+				for(SituacaoDisciplina d : listaDisciplinaOpcionais) {
+					if(d.getCodigo().equals(eventoAceExtra.getMatricula())){
+						listaDisciplinaOpcionais.remove(d);
+						break;
+					}
+				}
+			}
 			horasAceConcluidas += this.aluno.getSobraHorasOpcionais();
-			EventoAce evento = new EventoAce();
-			evento.setDescricao("EXCEDENTE EM DISCIPLINAS OPCIONAIS");
-			evento.setHoras((long)this.aluno.getSobraHorasOpcionais());
-			//evento.setPeriodo(this.aluno.getPeriodoReal());
-			evento.setExcluir(false);
-			listaEventosAce.add(evento);
 		}
 		
 		SomaInt = aluno.getGrade().getHorasAce();
 		if (aluno.getGrade().getHorasAce() != 0){
 			percentualAce = (horasAceConcluidas* 100 / SomaInt) ;
 		}
+		this.resetaDataTables();
 	}
 
 	public void limpaAluno(){		
@@ -282,7 +286,11 @@ public class AlunoSituacaoController
 		grade.setHorasOpcionais(0);
 		grade.setHorasAce(0);
 		aluno = new Aluno();
-		aluno.setGrade(grade);	
+		aluno.setGrade(grade);
+		this.resetaDataTables();
+	}
+	
+	public void resetaDataTables() {
 		DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot().findComponent("form:gridObrigatorias");
 		dataTable.clearInitialState();
 		dataTable.reset();
@@ -464,7 +472,6 @@ public class AlunoSituacaoController
 		}		
 		listaEventosAce.remove(eventoAceSelecionado);
 	}
-
 
 	//========================================================= GET - SET ==================================================================================//
 

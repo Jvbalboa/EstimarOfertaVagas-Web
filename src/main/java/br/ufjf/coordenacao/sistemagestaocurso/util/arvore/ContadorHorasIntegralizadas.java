@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.util.arvore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
@@ -24,18 +26,22 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.EventoAce;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
-public class ContadorHorasIntegralizadas {
+public class ContadorHorasIntegralizadas implements Serializable{
+	private static final long serialVersionUID = 1L;
 
 	private Aluno aluno;
 	private Grade grade;
 	
 	private Logger logger;
-	
+
+	@Inject
 	private EntityManager manager;
+	
 	private DisciplinaRepository disciplinas;
 	private EventoAceRepository eventosace;
-	
+
 	private int horasObrigatoriasCompletadas;
 	private int horasEletivasCompletadas;
 	private int sobraHorasEletivas;
@@ -107,7 +113,8 @@ public class ContadorHorasIntegralizadas {
 	
 	private void calculaHorasCompletadas()
 	{
-		this.manager = Persistence.createEntityManagerFactory("sgcPU").createEntityManager();
+		EntityManagerProducer managerProducer = new EntityManagerProducer();
+		this.manager = managerProducer.createEntityManager();
 		this.disciplinas = new DisciplinaRepository(this.manager);
 		this.eventosace = new EventoAceRepository(this.manager);
 		
@@ -141,6 +148,7 @@ public class ContadorHorasIntegralizadas {
 			for(Class c: cur.getMandatories().get(i))
 			{
 				if(aprovado.containsKey(c)){
+					
 					Disciplina d = disciplinas.buscarPorCodigoDisciplina(c.getId());
 					if(d != null)
 					{

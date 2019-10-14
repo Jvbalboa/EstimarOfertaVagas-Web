@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.util.config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,6 +8,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.io.IOUtils;
 
@@ -16,7 +19,10 @@ public class ConfHandler {
 
 	private ConfHandler() {
 		try {
-			InputStream inputStream = new FileInputStream("/dcc-config/ofertavagas/config.txt");
+			final String configPath = FacesContext.getCurrentInstance().getExternalContext().getInitParameter("configPath");
+			File f = new File(configPath);
+			InputStream inputStream = new FileInputStream(f);
+			
 	        String arquivo = IOUtils.toString(inputStream);
 			confs = new HashMap<String, String>();
 			Pattern patternConf = Pattern.compile("(.*) = (.*)", Pattern.MULTILINE);

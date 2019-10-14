@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
+import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 public class CursoRepository implements Serializable {
 
@@ -16,12 +18,25 @@ public class CursoRepository implements Serializable {
 	@Inject
 	private EntityManager manager;
 
+
 	public Curso porid(long id) {
 		return manager.find(Curso.class, id);
 	}
 
 	public Curso persistir(Curso curso) {
-		return manager.merge(curso);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			curso = manager.merge(curso);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return curso;
 	}
 
 	public int removerTodosAlunos(Curso curso)	{
@@ -31,7 +46,17 @@ public class CursoRepository implements Serializable {
 	}
 	
 	public void remover(Curso curso) {
-		manager.remove(manager.contains(curso) ? curso : manager.merge(curso));
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.remove(manager.contains(curso) ? curso : manager.merge(curso));
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
 	}
 
 	public List<Curso> listarTodos() {
@@ -59,6 +84,10 @@ public class CursoRepository implements Serializable {
 	public List<String> buscarTodosCodigosCurso(String variavel) {
 		return manager.createQuery("Select codigo FROM Curso WHERE codigo like :codigo", String.class)
 				.setParameter("codigo", "%" + variavel + "%").getResultList();
+	}
+	
+	public List<String> buscarTodosCodigosCurso() {
+		return manager.createQuery("Select codigo FROM Curso", String.class).getResultList();
 	}
 
 	public List<String> buscarTodosNomesCurso(String variavel) {

@@ -83,10 +83,27 @@
 						</p:cellEditor>
 					</p:column>
 					<p:column style="width:32px" exportable="false">
+						<p:commandLink ajax="true" onclick="PF('deletarCurso').show();"
+							title="Deletar Curso" styleClass="ui-icon ui-icon-cancel">
+							<f:setPropertyActionListener value="#{curso}"
+								target="#{cadastroCursoController.curso}" />
+						</p:commandLink>
+					</p:column>
+					<p:column style="width:32px" exportable="false">
 						<p:rowEditor />
 					</p:column>
 				</p:dataTable>
 			</div>
+			<p:confirmDialog header="Deletar Curso"
+				message="Tem certeza que deseja deletar o curso?"
+				widgetVar="deletarCurso" showEffect="fade" hideEffect="fade">
+				<p:commandButton class="btn btn-default-sm" value="Sim"
+					onclick="reprovar.hide()"
+					actionListener="#{cadastroCursoController.deletarCurso}"
+					update="cursos" ajax="true" />
+				<p:commandButton class="btn btn-default-sm" value="Não"
+					onclick="reprovar.hide()" update="cursos" ajax="true" />
+			</p:confirmDialog>
 		</h:form>
 		<p:ajaxStatus id="startAjax" onstart="PF('start').show();"
 			oncomplete="PF('start').hide();">

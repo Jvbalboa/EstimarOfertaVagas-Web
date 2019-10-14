@@ -1,3 +1,7 @@
+# Arquivo de configura��o
+config.txt
+application.token
+
 # Eclipse
 .classpath
 .project
@@ -5,3 +9,4 @@
 
 # Maven
 target/
+/bin/
