@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
 public class EventoAceRepository implements Serializable {
 
@@ -29,11 +30,33 @@ public class EventoAceRepository implements Serializable {
 	}
 
 	public EventoAce persistir(EventoAce objeto) {
-		return manager.merge(objeto);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			objeto = manager.merge(objeto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
 	}
 
 	public void remover(EventoAce objeto) {
-		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
 	}
 
 	public List<EventoAce> listarTodos() {

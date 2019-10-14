@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 public class GradeRepository implements Serializable {
@@ -25,11 +26,33 @@ public class GradeRepository implements Serializable {
 	}
 
 	public Grade persistir(Grade objeto) {
-		return manager.merge(objeto);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			objeto = manager.merge(objeto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
 	}
 
 	public void remover(Grade objeto) {
-		manager.createQuery("DELETE FROM Grade g WHERE g.id = :grade").setParameter("grade", objeto.getId()).executeUpdate();
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.createQuery("DELETE FROM Grade g WHERE g.id = :grade").setParameter("grade", objeto.getId()).executeUpdate();
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
 	}
 
 	public List<Grade> listarTodos() {
@@ -40,6 +63,13 @@ public class GradeRepository implements Serializable {
 	public List<String> buscarTodosCodigosGrade(String variavel, long idCurso) {
 		return manager.createQuery("Select codigo FROM Grade WHERE codigo like :codigo and id_curso = :idcurso")
 				.setParameter("codigo", "%" + variavel + "%").setParameter("idcurso", idCurso).getResultList();
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> buscarTodosCodigosGrade(long idCurso) {
+		return manager.createQuery("Select codigo FROM Grade WHERE id_curso = :idcurso")
+				.setParameter("idcurso", idCurso).getResultList();
 
 	}
 

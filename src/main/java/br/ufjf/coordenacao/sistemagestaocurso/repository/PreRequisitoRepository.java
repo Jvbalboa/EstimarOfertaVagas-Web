@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 public class PreRequisitoRepository implements Serializable {
@@ -23,12 +24,33 @@ public class PreRequisitoRepository implements Serializable {
 	}
 
 	public PreRequisito persistir(PreRequisito objeto) {
-		return manager.merge(objeto);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			objeto = manager.merge(objeto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
 	}
 
 	public void remover(PreRequisito objeto) {
-		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
-		manager.createQuery("DELETE FROM PreRequisito WHERE id = :id").setParameter("id", objeto.getId()).executeUpdate();
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		};
 
 	}
 

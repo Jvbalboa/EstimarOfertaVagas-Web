@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
@@ -23,12 +24,33 @@ public class AlunoRepository implements Serializable {
 	}
 
 	public Aluno persistir(Aluno aluno) {
-		return manager.merge(aluno);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			aluno = manager.merge(aluno);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return aluno;
 	}
 
 	public void remover(Aluno aluno) {
-		manager.remove(manager.contains(aluno) ? aluno : manager.merge(aluno));
-		manager.createQuery("DELETE FROM Aluno WHERE matricula = :matricula").setParameter("matricula", aluno.getMatricula()).executeUpdate();
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.remove(manager.contains(aluno) ? aluno : manager.merge(aluno));
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
 	}
 
 	public Aluno buscarPorMatricula(String variavel) {

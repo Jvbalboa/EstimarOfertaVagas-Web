@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.*;
@@ -51,7 +52,19 @@ public class IraRepository implements Serializable{
 	
 	public IRA persistir(IRA ira)
 	{
-		return manager.merge(ira);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			ira = manager.merge(ira);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return ira;
 	}
 	
 	public IRA porId(long id)

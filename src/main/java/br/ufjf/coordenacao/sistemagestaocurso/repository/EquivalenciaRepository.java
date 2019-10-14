@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
 public class EquivalenciaRepository implements Serializable {
@@ -21,12 +22,33 @@ public class EquivalenciaRepository implements Serializable {
 	}
 
 	public Equivalencia persistir(Equivalencia objeto) {
-		return manager.merge(objeto);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			objeto = manager.merge(objeto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
 	}
 
 	public void remover(Equivalencia equivalencia) {
-		// Verificar se equivalencia já foi persistida no banco
-		manager.remove(manager.find(Equivalencia.class, equivalencia.getId()));
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.remove(manager.contains(equivalencia) ? equivalencia : manager.merge(equivalencia));
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
 	}
 
 	public List<Equivalencia> listarTodos() {

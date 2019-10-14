@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
 public class HistoricoRepository implements Serializable {
 
@@ -20,11 +21,33 @@ public class HistoricoRepository implements Serializable {
 	}
 
 	public Historico persistir(Historico objeto) {
-		return manager.merge(objeto);
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			objeto = manager.merge(objeto);
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
 	}
 
 	public void remover(Historico objeto) {
-		manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
 	}
 
 	public List<Historico> listarTodos() {
