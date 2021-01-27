@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,8 +9,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
+import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
+import br.ufjf.coordenacao.sistemagestaocurso.model.IRA;
 
 public class CursoRepository implements Serializable {
 
@@ -38,11 +40,93 @@ public class CursoRepository implements Serializable {
 		
 		return curso;
 	}
+	
+	public Curso persistirSemCommit(Curso curso) {
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			curso = manager.merge(curso);
+			manager.flush();
+			//transaction.commit();
+		} catch (Exception e) {
+			//transaction.rollback();
+			throw e;
+		}
+		
+		return curso;
+	}
 
 	public int removerTodosAlunos(Curso curso)	{
-		return manager.createQuery("DELETE FROM Aluno WHERE ID_CURSO = :curso")
-				.setParameter("curso", curso.getId())
-				.executeUpdate();
+		
+		EntityTransaction transaction = null;
+		int cont = 0;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			cont = manager.createQuery("DELETE FROM Aluno WHERE ID_CURSO = :curso")
+					.setParameter("curso", curso.getId())
+					.executeUpdate();
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		return cont;
+	}
+	
+public int removerTodosAlunosSemCommit(Curso curso)	{
+		
+		EntityTransaction transaction = null;
+		int cont = 0;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			cont = manager.createQuery("DELETE FROM Aluno WHERE ID_CURSO = :curso")
+					.setParameter("curso", curso.getId())
+					.executeUpdate();
+			//transaction.commit();
+		} catch (Exception e) {
+			//transaction.rollback();
+			throw e;
+		}
+		return cont;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Aluno> removerTodosAlunosV2(Curso curso) throws Exception	{
+		
+		EntityTransaction transaction = null;
+		List<Aluno> listaAlunos = new  ArrayList<Aluno>();
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			
+			listaAlunos = (List<Aluno>) manager.createQuery("FROM Aluno WHERE ID_CURSO = :curso")
+					.setParameter("curso", curso.getId())
+					.getResultList();
+			
+			for(int i = 0; i < listaAlunos.size(); i++) {
+				listaAlunos.set(i,(Aluno)listaAlunos.get(i).clone());
+			}
+			
+			manager.createQuery("DELETE FROM Aluno WHERE ID_CURSO = :curso")
+					.setParameter("curso", curso.getId())
+					.executeUpdate();
+			manager.flush();
+			
+			transaction.commit();
+			
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		return listaAlunos;
 	}
 	
 	public void remover(Curso curso) {

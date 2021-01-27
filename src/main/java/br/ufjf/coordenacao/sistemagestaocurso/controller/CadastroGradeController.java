@@ -11,11 +11,10 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.primefaces.component.datatable.DataTable;
 
-import br.ufjf.coordenacao.OfertaVagas.model.ClassFactory;
-import br.ufjf.coordenacao.OfertaVagas.model.Class;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.Ordenar;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
@@ -108,6 +107,8 @@ public class CadastroGradeController implements Serializable {
 
 	private String tipoPre;
 	private EstruturaArvore estruturaArvore;
+	
+	private Logger logger = Logger.getLogger(CadastroGradeController.class);
 
 	//========================================================= METODOS ==================================================================================//
 
@@ -533,7 +534,7 @@ public class CadastroGradeController implements Serializable {
 
 		gradeDisciplina.setDisciplina(disciplina);
 		gradeDisciplina.setGrade(grade);	
-		List<GradeDisciplina> todos = gradeDisciplinaDAO.buscarTodasGradeDisciplinaPorGrade(grade.getId());
+		//List<GradeDisciplina> todos = gradeDisciplinaDAO.buscarTodasGradeDisciplinaPorGrade(grade.getId());
 
 		GradeDisciplina gdDisciplinaAntiga = gradeDisciplinaDAO.buscarPorDisciplinaGrade(grade.getId(), disciplina.getId());
 		if(gdDisciplinaAntiga != null)
@@ -752,8 +753,12 @@ public class CadastroGradeController implements Serializable {
 	@Transactional
 	public void deletarPreRequisito(){
 
+		logger.info("Deletando Pré-requisito: " + linhaSelecionadaPreRequisto.getDisciplina().getNome());
 		preRequisitoDAO.remover(linhaSelecionadaPreRequisto);
-		listaPreRequisitos.remove(linhaSelecionadaPreRequisto);
+		
+		//listaPreRequisitos.remove(linhaSelecionadaPreRequisto);
+		
+		listaPreRequisitos.clear();
 
 		carregaPreRequisitos();
 		estruturaArvore.removerEstrutura(grade);

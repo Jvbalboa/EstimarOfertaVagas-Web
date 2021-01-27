@@ -11,7 +11,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
 

@@ -160,11 +160,15 @@ public class ImportarHistorico implements Serializable {
 
 	@Transactional
 	public void importar() throws Exception {
+		
+		//Verifica permissão
 		if (usuarioController.getAutenticacao().getTipoAcesso().equals("externo")) {
 			FacesMessage msg = new FacesMessage("Voce não tem permissão para importartar dados!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
+		
+		//Faz autenticação, limpeza dos dados e inicia importação
 		try {
 			IWsLogin integra = new WSLogin().getWsLoginServicePort();
 
@@ -175,41 +179,56 @@ public class ImportarHistorico implements Serializable {
 			 usuarioController.getAutenticacao().getSenha(),
 			 usuarioController.getAutenticacao().getToken());
 			 
-			
-
 			logger.info("Recuperando dados do curso " + curso.getCodigo() + "...");
-			RSCursoAlunosDiscSituacao rsClient = new RSCursoAlunosDiscSituacao(user.getToken(), ServiceVersion.V2);
+			RSCursoAlunosDiscSituacao rsClient;
+			if(user.getToken() != null) {
+				rsClient = new RSCursoAlunosDiscSituacao(user.getToken(), ServiceVersion.V2);
+			}
+			else {
+				logger.info("Token = null, usuário: " + user.getName());
+				throw new Exception("Problema com o token do seguinte usuário: " + user.getName());
+			}
+			
 			EstruturaArvore estruturaArvore = EstruturaArvore.getInstance();
 
 			if (curso == null) {
+				logger.info("Curso Inválido!");
 				FacesMessage msg = new FacesMessage("Curso Inválido!");
 				FacesContext.getCurrentInstance().addMessage(null, msg);
 				logger.warn("Curso inválido. Importacao cancelada");
 				return;
-			} else {
-				if (!curso.getGrupoAlunos().isEmpty()) {
-
-					iras.deletarTodosCurso(curso);
-
-					logger.info("Removendo alunos do curso");
-					int numAlunosRemovidos = cursos.removerTodosAlunos(curso);
-
-					logger.info(numAlunosRemovidos + " alunos removidos");
-					for (Grade grade : curso.getGrupoGrades()) {
-						logger.info("Removendo alunos da grade " + grade.getCodigo());
-
-						grade.setGrupoAlunos(new ArrayList<Aluno>());
-					}
-				}
-
-				else {
-					logger.info("O curso não há alunos a serem removidos");
-				}
 			}
 
+			//Importação do Integra
+			logger.info("importando do integra");
 			CursoAlunosSituacaoResponse rsResponse = (CursoAlunosSituacaoResponse) rsClient.get(curso.getCodigo());
-			if (rsResponse.getResponseStatus() != null)
+			if (rsResponse.getResponseStatus() != null) {
+				logger.info("ResponseStatus: " + rsResponse.getResponseStatus() + "\n");
 				throw new Exception(rsResponse.getResponseStatus());
+			}
+			
+			logger.info("importação != null");
+			
+			if (!curso.getGrupoAlunos().isEmpty()) {
+				
+				logger.info("Removendo iras");
+				iras.deletarTodosCurso(curso);
+
+				logger.info("Removendo alunos do curso");
+				int numAlunosRemovidos = cursos.removerTodosAlunos(curso);
+				logger.info(numAlunosRemovidos + " alunos removidos");
+				
+				for (Grade grade : curso.getGrupoGrades()) {
+					logger.info("Removendo alunos da grade " + grade.getCodigo());
+
+					grade.setGrupoAlunos(new ArrayList<Aluno>());
+				}
+				logger.info("Alunos removidos da grade.");
+			}
+
+			else {
+				logger.info("O curso não há alunos a serem removidos");
+			}
 
 			List<Grade> listaGrade = new ArrayList<Grade>();
 			int contador = 0;
@@ -279,10 +298,14 @@ public class ImportarHistorico implements Serializable {
 				logger.info(tempoExecucaoIra + "ms");
 
 			}
+			
+			logger.info("Processamento de alunos concluído \nCriando lista de grades");
 
 			List<Grade> listaGrades = curso.getGrupoGrades();
 			for (Grade grade : listaGrades) {
+				logger.info("Removendo grade da árvore");
 				estruturaArvore.removerEstrutura(grade);
+				logger.info("Persistindo grade");
 				grades.persistir(grade);
 				logger.info("Removendo " + grade.getCodigo() + " da estrutura");
 
@@ -309,7 +332,8 @@ public class ImportarHistorico implements Serializable {
 	@Transactional
 	public void calcularIra(Aluno a) {
 		long inicio = System.currentTimeMillis();
-
+		
+		//logger.info("Iniciando calculo de IRA");
 		if (!discplinasExcluirIra.containsKey(a.getGrade().getId())) {
 			List<GradeDisciplina> gDisciplinas = gradeDisciplinas.buscarPorIra(a.getGrade().getId(), true);
 			List<Disciplina> disc = new ArrayList<>();
@@ -331,6 +355,7 @@ public class ImportarHistorico implements Serializable {
 		float cargaHorariaAcumulada = 0, cargaHoraria = 0;
 		String periodoCorrente = a.getGrupoHistorico().get(0).getSemestreCursado();
 
+		logger.info("Fazendo o cálculo");
 		for (Historico h : a.getGrupoHistorico()) {
 			// Pela ordenação, as disciplinas que nao entram no calculo sempre
 			// ficam no final,
@@ -411,8 +436,10 @@ public class ImportarHistorico implements Serializable {
 
 	public void chamarTudo() {
 		try {
+			/*
 			if (!manager.getTransaction().isActive())
 				manager.getTransaction().begin();
+			*/
 
 			importar();
 
@@ -420,7 +447,8 @@ public class ImportarHistorico implements Serializable {
 					"Importação concluída com sucesso");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 
-			manager.getTransaction().commit();
+			//manager.getTransaction().commit();
+			
 		} catch (NotAuthorizedException e) {
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Não autorizado",
 					"Você não possui permissão de importar dados");

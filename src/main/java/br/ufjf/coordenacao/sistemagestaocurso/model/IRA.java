@@ -14,7 +14,7 @@ import javax.persistence.SequenceGenerator;
 
 @Entity
 @SequenceGenerator(name="ira_sequencia", sequenceName="ira_seq", allocationSize=1)
-public class IRA implements Serializable {
+public class IRA implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	private Long id;
@@ -24,6 +24,10 @@ public class IRA implements Serializable {
 	private String semestre; 
 	private float iraSemestre;
 	private float iraAcumulado;
+	
+	public Object clone()throws CloneNotSupportedException{
+		return super.clone();
+	}
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="ID_ALUNO")

@@ -49,7 +49,7 @@ public class CadastroCursoController implements Serializable {
 	public void onRowEdit(RowEditEvent event) {		
 		Curso curso = (Curso) event.getObject();		
 		if (curso.getNome().equals("") || curso.getNome() == null){
-			FacesMessage msg = new FacesMessage("Nome disciplina inv�lido!" );	
+			FacesMessage msg = new FacesMessage("Nome disciplina inválido!" );	
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}		
@@ -61,7 +61,7 @@ public class CadastroCursoController implements Serializable {
 	}
 
 	public void onRowCancel(RowEditEvent event) {
-		FacesMessage msg = new FacesMessage("Edi��o Cancelada!", ((Curso) event.getObject()).getNome());
+		FacesMessage msg = new FacesMessage("Edição Cancelada!", ((Curso) event.getObject()).getNome());
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 	}
 
@@ -72,7 +72,7 @@ public class CadastroCursoController implements Serializable {
 		curso.setNome(curso.getNome().trim());
 
 		if (curso.getCodigo() == null || curso.getCodigo().equals("")){
-			FacesMessage msg = new FacesMessage("Preencha o campo C�digo!");
+			FacesMessage msg = new FacesMessage("Preencha o campo Código!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;
 		}
@@ -83,7 +83,7 @@ public class CadastroCursoController implements Serializable {
 			return;
 		}
 		if (cursos.buscarPorCodigo(curso.getCodigo().toUpperCase()) != null){
-			FacesMessage msg = new FacesMessage("Curso j� existe!");
+			FacesMessage msg = new FacesMessage("Curso já existe!");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 			return;			
 		}

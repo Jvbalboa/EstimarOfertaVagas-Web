@@ -2,7 +2,6 @@ package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.EventoAce;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
 import java.math.BigDecimal;

@@ -1,7 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.controller.util;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
@@ -15,8 +14,10 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 
+import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Pessoa;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.Autenticacao;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.PessoaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.ice.integra3.ws.login.IWsLogin;
@@ -32,6 +33,9 @@ public class AutenticacaoController implements Serializable {
 	
 	@Inject
 	private PessoaRepository pessoaDAO;
+	
+	@Inject
+	private AlunoRepository alunoDAO;
 	
 	public Autenticacao logar(Autenticacao autenticacao) throws IOException {
 
@@ -50,13 +54,20 @@ public class AutenticacaoController implements Serializable {
 		try {
 			logger.info("Logando " + autenticacao.getLogin());
 			IWsLogin integra = new WSLogin().getWsLoginServicePort();
+			logger.info("integra.login");
 			WsLoginResponse user = integra.login(autenticacao.getLogin(), autenticacao.getSenha(), token);
-			WsUserInfoResponse infos = integra.getUserInformation(user.getToken()); // Pegando informa��es			
+			logger.info("integra.getUserInformation");
+			WsUserInfoResponse infos = integra.getUserInformation(user.getToken()); // Pegando informa��es	
+			logger.info("Integra ok");
 			int contador;
 			boolean achouCoord = false;
 			Pessoa pessoa = null;
 
+			logger.info("Buscando matriculas... \n" + infos.getProfileList().getProfile().size() + " matrícula(s) encontrada(s):");
+			
 			for (contador = 0;contador < infos.getProfileList().getProfile().size() ; contador ++ ){				
+				
+				logger.info(infos.getProfileList().getProfile().get(contador).getMatricula());
 				
 				Pessoa pessoaTemp = pessoaDAO.buscarPorSiapePessoa(infos.getProfileList().getProfile().get(contador).getMatricula());
 				
@@ -69,6 +80,7 @@ public class AutenticacaoController implements Serializable {
 
 			if (achouCoord == true){
 
+				logger.info("Coordenador");
 				autenticacao.setPessoa(pessoa);
 				autenticacao.setToken(token);
 				autenticacao.setTipoAcesso("coordenador");
@@ -78,7 +90,36 @@ public class AutenticacaoController implements Serializable {
 				return autenticacao;
 
 			}
-
+			
+			/*
+			String email = null;
+			if(infos.getEmailSiga() != null){
+				email = infos.getEmailSiga();
+			}
+			else if(infos.getEmailIntegra() != null) {
+				email = infos.getEmailIntegra();
+			}
+			if(email != null){
+				//gravar email
+				for (contador = 0;contador < infos.getProfileList().getProfile().size() ; contador ++ ){
+					Aluno aluno = alunoDAO.buscarPorMatricula(infos.getProfileList().getProfile().get(contador).getMatricula());
+					if(aluno != null) {
+						if(aluno.getEmail() == null) {
+							aluno.setEmail(email);
+							alunoDAO.persistir(aluno);
+							break;
+						} 
+						else if(!aluno.getEmail().equals(email)) {
+							aluno.setEmail(email);
+							alunoDAO.persistir(aluno);
+							break;
+						}
+					}
+				}
+			}
+			*/
+	
+			logger.info("Aluno");
 			autenticacao.setPerfis(perfis);
 			autenticacao.setTipoAcesso("aluno");
 			autenticacao.setMaiorPermissao("aluno");
@@ -87,12 +128,18 @@ public class AutenticacaoController implements Serializable {
 
 		} 
 		catch (Exception e) {
+			//System.out.println(e.getMessage());
+			logger.info(e.getMessage());
+			
+			logger.info("Erro ao realizar o login pelo SIGA " + autenticacao.getLogin() + " " + e);
+			//FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ocorreu um problema", e.getMessage()));
+			
 			//Caso as credenciais sejam inválidas, o webservice lançará um exceção
-			if(!e.getMessage().contains("Usuário ou senha não cadastrados"))
-			{
-				logger.error("Erro ao realizar o login pelo SIGA " + autenticacao.getLogin(), e);
-				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ocorreu um problema", e.getMessage()));
+			if(!e.getMessage().contains("Usuário ou senha não cadastrados")) {
+				//logger.info("Erro ao realizar o login pelo SIGA " + autenticacao.getLogin(), e); 
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ocorreu um problema", e.getMessage())); 
 			}
+			 
 		}
 
 		try {
@@ -109,6 +156,7 @@ public class AutenticacaoController implements Serializable {
 						autenticacao.setTipoAcesso("admin");
 						estruturaArvore.setLoginUtilizado("admin");
 						autenticacao.setMaiorPermissao("admin");
+						logger.info("Admin");
 
 					}
 

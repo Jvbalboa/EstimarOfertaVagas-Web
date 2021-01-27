@@ -65,36 +65,45 @@ public void commence(HttpServletRequest request, HttpServletResponse response, A
         throws IOException, ServletException {
 
     String redirectUrl = null;
-
-    if (useForward) {
-
-        if (forceHttps && "http".equals(request.getScheme())) {
-            // First redirect the current request to HTTPS.
-            // When that request is received, the forward to the login page will be used.
-            redirectUrl = buildHttpsRedirectUrlForRequest(request);
-        }
-
-        if (redirectUrl == null) {
-            String loginForm = determineUrlToUseForThisRequest(request, response, authException);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("Server side forward to: " + loginForm);
-            }
-
-            RequestDispatcher dispatcher = request.getRequestDispatcher(loginForm);
-
-            dispatcher.forward(request, response);
-
-            return;
-        }
-    } else {
-        // redirect to login page. Use https if forceHttps true
-
-        redirectUrl = buildRedirectUrlToLoginPage(request, response, authException);
-
+    
+    //Excluindo caminho do serviço de exportação
+    String path = ((HttpServletRequest) request).getRequestURI();
+    if (path.startsWith("/services/") || path.startsWith("/servlet/")) {
+    	//não faz nada
     }
+    
+    else {
 
-    redirectStrategy.sendRedirect(request, response, redirectUrl);
+	    if (useForward) {
+	
+	        if (forceHttps && "http".equals(request.getScheme())) {
+	            // First redirect the current request to HTTPS.
+	            // When that request is received, the forward to the login page will be used.
+	            redirectUrl = buildHttpsRedirectUrlForRequest(request);
+	        }
+	
+	        if (redirectUrl == null) {
+	            String loginForm = determineUrlToUseForThisRequest(request, response, authException);
+	
+	            if (logger.isDebugEnabled()) {
+	                logger.debug("Server side forward to: " + loginForm);
+	            }
+	
+	            RequestDispatcher dispatcher = request.getRequestDispatcher(loginForm);
+	
+	            dispatcher.forward(request, response);
+	
+	            return;
+	        }
+	    } else {
+	        // redirect to login page. Use https if forceHttps true
+	
+	        redirectUrl = buildRedirectUrlToLoginPage(request, response, authException);
+	
+	    }
+	
+	    redirectStrategy.sendRedirect(request, response, redirectUrl);
+    }
 }
 
 protected String buildRedirectUrlToLoginPage(HttpServletRequest request, HttpServletResponse response,

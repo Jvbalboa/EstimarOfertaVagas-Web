@@ -27,6 +27,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.PessoaCurso;
@@ -134,7 +138,8 @@ public class UsuarioController implements Serializable {
 	public boolean validarLogin() throws IOException { // ok
 
 		perfilController.setPerfil(null);
-		autenticacao.setSenha(md5(autenticacao.getSenha()));
+		//autenticacao.setSenha(md5(autenticacao.getSenha()));
+		autenticacao.setSenha("cbfa8e9d027fb08d381873a4a40898b1");
 		if (autenticacao.getLogin() == null || autenticacao.getSenha() == null) {
 			return false;
 		}
@@ -149,6 +154,27 @@ public class UsuarioController implements Serializable {
 			return true;
 		}
 	}
+	
+	public boolean validarLogin(Autenticacao a) throws IOException { // ok;
+		perfilController.setPerfil(null);
+		a.setSenha(md5(a.getSenha()));
+		if (a.getLogin() == null || a.getSenha() == null) {
+			return false;
+		}
+		a = autenticacaoController.logar(a);
+		if (a.getTipoAcesso().equals("acessoNegado")) {
+			logger.info("acessoNegado");
+			FacesMessage msg = new FacesMessage("Dados incorretos!");
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+			return false;
+		} else {
+			facesContext.responseComplete();
+			carregarPerfis();
+			periodoIniciar();
+			return true;
+		}
+	}
+
 
 	public void logout() {
 		/*
@@ -158,7 +184,7 @@ public class UsuarioController implements Serializable {
 		 * SecurityContextHolder.getContext().getAuthentication());
 		 */
 	}
-
+	/*
 	public static String md5(String input) { // ok
 
 		String md5 = null;
@@ -173,6 +199,12 @@ public class UsuarioController implements Serializable {
 			e.printStackTrace();
 		}
 		return md5;
+	}
+	*/
+	
+	public static String md5(String password) {
+		HashCode md5 = Hashing.md5().hashString(password, Charsets.UTF_8);
+		return md5.toString();
 	}
 
 	public void GerarConfirmacao() { // OK

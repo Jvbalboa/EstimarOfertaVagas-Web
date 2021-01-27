@@ -1,6 +1,11 @@
 package br.ufjf.ice.integra3.rs.restclient;
 
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.apache.log4j.Logger;
+
+import br.ufjf.coordenacao.sistemagestaocurso.controller.util.AutenticacaoController;
+import br.ufjf.ice.integra3.rs.restclient.model.v2.CursoAlunosSituacaoResponse;
+
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -11,15 +16,17 @@ import javax.ws.rs.core.MediaType;
 public class RSCursoAlunosDiscSituacao 
 {
     // URL do serviço
-    private static final String REST_URL_V1 = "http://login.integra.nrc.ice.ufjf.br:8080/integra/services/rs/alunos/curso/situacao/v1/getcursoalunosdiscsituacao";
-    private static final String REST_URL_V2 = "http://login.integra.nrc.ice.ufjf.br:8080/integra/services/rs/alunos/curso/situacao/v2/getcursoalunosdiscsituacao";
-
+    private static final String REST_URL_V1 = "http://login.integra.nrc.ice.ufjf.br/integra/services/rs/alunos/curso/situacao/v1/getcursoalunosdiscsituacao";
+    private static final String REST_URL_V2 = "http://login.integra.nrc.ice.ufjf.br/integra/services/rs/alunos/curso/situacao/v2/getcursoalunosdiscsituacao";
+                                               
     // Versão do serviço
     public enum ServiceVersion { V1, V2 };
     
     private String authToken;
     private WebClient rsClient;
     private ServiceVersion rsVersion;
+    
+    private static final Logger logger = Logger.getLogger(AutenticacaoController.class);
     
     /**
      * 
@@ -127,6 +134,17 @@ public class RSCursoAlunosDiscSituacao
     
     private br.ufjf.ice.integra3.rs.restclient.model.v2.CursoAlunosSituacaoResponse get_v2(String curso)
     {
-        return this.rsClient.path(String.format("adm/%s", curso)).accept(MediaType.APPLICATION_XML).get(br.ufjf.ice.integra3.rs.restclient.model.v2.CursoAlunosSituacaoResponse.class);
+    	logger.info(this.rsClient.path(String.format("adm/%s", curso)).getCurrentURI().getPath());
+    	logger.info(this.rsClient.path(String.format("adm/%s", curso)).getHeaders().toString());
+    	//logger.info(this.rsClient.path(String.format("adm/%s", curso)).getCurrentURI().getPath());
+    	//return null;
+    	CursoAlunosSituacaoResponse c = this.rsClient.path(String.format("adm/%s", curso)).accept(MediaType.APPLICATION_XML).get(br.ufjf.ice.integra3.rs.restclient.model.v2.CursoAlunosSituacaoResponse.class);
+        if(c == null) {
+        	logger.info("Retorno == null");
+        	logger.info(this.rsClient.path(String.format("adm/%s", curso)).getCurrentURI().getPath());
+        	return null;
+        }
+        return c;
+    	//return this.rsClient.path(String.format("adm/%s", curso)).accept(MediaType.APPLICATION_XML).get(br.ufjf.ice.integra3.rs.restclient.model.v2.CursoAlunosSituacaoResponse.class);
     }
 }

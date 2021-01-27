@@ -14,6 +14,7 @@ import javax.inject.Named;
 import br.ufjf.coordenacao.OfertaVagas.estimate.Estimator;
 import br.ufjf.coordenacao.OfertaVagas.model.*;
 import br.ufjf.coordenacao.OfertaVagas.model.Class;
+import br.ufjf.coordenacao.sistemagestaocurso.controller.util.AutenticacaoController;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.*;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.EspectativaDisciplina;
@@ -21,6 +22,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.GradeHistorico;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 
+import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 
@@ -86,6 +88,8 @@ public class VisaoGeralController implements Serializable {
 	private Grade grade;
 	private EstruturaArvore estruturaArvore;
 	
+	private static final Logger logger = Logger.getLogger(AutenticacaoController.class);
+	
 
 	@Inject
 	private UsuarioController usuarioController;
@@ -107,6 +111,14 @@ public class VisaoGeralController implements Serializable {
 			for(Grade gradeSelecionada:curso.getGrupoGrades() ){				
 				if (gradeSelecionada.getCodigo().equals(codigoGrade)){
 					grade = gradeSelecionada;	
+					
+					//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+					//if(curso.getCodigo().equals("35A")) {
+						logger.info("Grade selecionada: " + grade.getCodigo());
+						System.out.println("Grade selecionada: " + grade.getCodigo());
+					//}
+					//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+					
 					break;
 				}				
 			}			
@@ -118,6 +130,13 @@ public class VisaoGeralController implements Serializable {
 
 
 	public void gerarDados(){
+		
+		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//if(curso.getCodigo().equals("35A")) {
+			logger.info("Gerando dados");
+			System.out.println("Gerando dados");
+		//}
+		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 		listaEspectativaDisciplina = new ArrayList<EspectativaDisciplina>();
 		classes = new ArrayList<Class>();
@@ -132,6 +151,14 @@ public class VisaoGeralController implements Serializable {
 		//desativar tabela quando nao tiver nenhuma grade selecionada
 		if (listagrade == null  || listagrade.size() == 0 ){
 			ldGridHistorico = false;
+			
+			//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			//if(curso.getCodigo().equals("35A")) {
+				logger.info("Não há grade selecionada");
+				System.out.println("Não há grade selecionada");
+			//}
+			//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			
 			return;
 		}
 		//se nao tiver nenhuma situacao selecionada considera que todas estao selecionadas
@@ -155,6 +182,14 @@ public class VisaoGeralController implements Serializable {
 			for(Grade gradeSelecionada:curso.getGrupoGrades() ){				
 				if (gradeSelecionada.getCodigo().equals(codigoGrade)){
 					grade = gradeSelecionada;	
+					
+					//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+					//if(curso.getCodigo().equals("35A")) {
+						logger.info("Grade selecionada: " + grade.getCodigo());
+						System.out.println("Grade selecionada: " + grade.getCodigo());
+					//}
+					//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+					
 					break;
 				}				
 			}				
@@ -309,7 +344,7 @@ public class VisaoGeralController implements Serializable {
 			for (Integer sem : semester) {
 				for (Class c1 : curriculum.getMandatories().get(sem).toArray(classe)) {
 					listaTodasDisciplinasDisponiveis.add(c1.getId());
-					//traz todas disciplinas quanto nao tiver nenhuma selecionada
+					//traz todas disciplinas quando nao tiver nenhuma selecionada
 					if(listaTodasDisciplinasSelecionadas != null && listaTodasDisciplinasSelecionadas.size() > 0  ){
 						if(listaTodasDisciplinasSelecionadas.contains(c1.getId())){
 							listaDisciplinasDisponiveis.add(c1.getId());
@@ -522,9 +557,9 @@ public class VisaoGeralController implements Serializable {
 
 	public List<String> alunoAno(String codigo) {
 		List<String> listaSelecionadas = new ArrayList<String>();
-		System.out.println("Entrando alunoAno");
+		//System.out.println("Entrando alunoAno");
 		for (String alunoAno:listaAnoTodos ){
-			System.out.println(alunoAno);
+			//System.out.println(alunoAno);
 			//if (alunoAno.indexOf(2015) >= 0){
 				listaSelecionadas.add(alunoAno);
 			//}
@@ -534,6 +569,14 @@ public class VisaoGeralController implements Serializable {
 	}	
 
 	public void onItemSelectGrade(int i) { 
+		
+		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//if(curso.getCodigo().equals("35A")) {
+			logger.info("onItemSelectGrade: " + i);
+			System.out.println("onItemSelectGrade: " + i);
+		//}
+		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
 
 		if (i==1){   // foi selecionado um ingresso
 			listaAnosSelecionadosInvertida = new ArrayList<String>();
@@ -606,7 +649,23 @@ public class VisaoGeralController implements Serializable {
 			listaAnosSelecionadosInvertida = new ArrayList<String>();
 			listaAnosSelecionados = new ArrayList<String>();
 		}
+		
+		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//if(curso.getCodigo().equals("35A")) {
+			logger.info("Gerar dados: " + i);
+			System.out.println("Gerar dados: " + i);
+		//}
+		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+				
 		gerarDados();	
+		
+		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		//if(curso.getCodigo().equals("35A")) {
+			logger.info("Dados gerados");
+			System.out.println("Dados gerados: ");
+		//}
+		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
 		FacesMessage msg = new FacesMessage("Filtro Aplicado!");
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 

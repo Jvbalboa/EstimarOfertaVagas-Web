@@ -2,7 +2,6 @@ package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -27,10 +26,10 @@ public class GradeRepository implements Serializable {
 
 	public Grade persistir(Grade objeto) {
 		EntityTransaction transaction = null;
-		
 		try {
 			transaction = manager.getTransaction();
-			transaction.begin();
+			if (!transaction.isActive())
+				transaction.begin();
 			objeto = manager.merge(objeto);
 			transaction.commit();
 		} catch (Exception e) {
@@ -39,6 +38,62 @@ public class GradeRepository implements Serializable {
 		}
 		
 		return objeto;
+	}
+	
+	public Grade persistirSemCommit(Grade objeto) {
+		EntityTransaction transaction = null;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			objeto = manager.merge(objeto);
+			manager.flush();
+			//transaction.commit();
+		} catch (Exception e) {
+			//transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
+	}
+	
+	public void persistir(List<Grade> objetos) {
+		EntityTransaction transaction = null;
+		try {
+			transaction = manager.getTransaction();
+			transaction.begin();
+			//objetos = manager.merge(objetos);
+			for(Grade grade : objetos) {
+				grade = manager.merge(grade);
+				//manager.flush();
+				//manager.clear();
+			}
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+	}
+	
+	public void persistirSemCommit(List<Grade> objetos) {
+		EntityTransaction transaction = null;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			//objetos = manager.merge(objetos);
+			for(Grade grade : objetos) {
+				grade = manager.merge(grade);
+				manager.flush();
+				//manager.clear();
+			}
+			//transaction.commit();
+		} catch (Exception e) {
+			//transaction.rollback();
+			throw e;
+		}
+		
 	}
 
 	public void remover(Grade objeto) {

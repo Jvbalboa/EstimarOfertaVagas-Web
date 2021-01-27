@@ -1,7 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.GradeDisciplina;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -113,7 +112,39 @@ public class GradeDisciplinaRepository implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public List<GradeDisciplina> buscarPorIra(Long idGrade, boolean ira) {
-		return manager.createQuery("FROM GradeDisciplina WHERE id_grade = :idGrade and excluir_ira = :ira")
+		EntityTransaction transaction = null;
+		List<GradeDisciplina> gDisciplina = null;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			gDisciplina = manager.createQuery("FROM GradeDisciplina WHERE id_grade = :idGrade and excluir_ira = :ira")
 				.setParameter("idGrade", idGrade).setParameter("ira", ira).getResultList();
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return gDisciplina;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<GradeDisciplina> buscarPorIraSemCommit(Long idGrade, boolean ira) {
+		EntityTransaction transaction = null;
+		List<GradeDisciplina> gDisciplina = null;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			gDisciplina = manager.createQuery("FROM GradeDisciplina WHERE id_grade = :idGrade and excluir_ira = :ira")
+				.setParameter("idGrade", idGrade).setParameter("ira", ira).getResultList();
+			//transaction.commit();
+		} catch (Exception e) {
+			//transaction.rollback();
+			throw e;
+		}
+		
+		return gDisciplina;
 	}
 }

@@ -11,9 +11,9 @@ import javax.inject.Named;
 import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
-import br.ufjf.coordenacao.sistemagestaocurso.model.Grade;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Historico;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 
 @Named(value="exportarHistorico")
 public class ExportarHistorico  {
@@ -27,6 +27,9 @@ public class ExportarHistorico  {
 	
 	@Inject
 	AlunoRepository alunoRepository;
+	
+	@Inject
+	CursoRepository cursoDAO;
 
 	
 	/**

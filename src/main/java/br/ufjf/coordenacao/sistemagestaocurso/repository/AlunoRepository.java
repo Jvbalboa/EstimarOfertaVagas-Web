@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,12 +9,15 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 
+import org.apache.log4j.Logger;
+
 import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 public class AlunoRepository implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	private Logger logger = Logger.getLogger(AlunoRepository.class);
 
 	@Inject
 	private EntityManager manager;
@@ -28,7 +32,8 @@ public class AlunoRepository implements Serializable {
 		
 		try {
 			transaction = manager.getTransaction();
-			transaction.begin();
+			if (!transaction.isActive())
+				transaction.begin();
 			aluno = manager.merge(aluno);
 			transaction.commit();
 		} catch (Exception e) {
@@ -37,6 +42,54 @@ public class AlunoRepository implements Serializable {
 		}
 		
 		return aluno;
+	}
+	
+	public List<Aluno> persistir(List<Aluno> alunos) {
+		EntityTransaction transaction = null;
+		
+		List<Aluno> aux = new ArrayList<Aluno>();
+		
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			//alunos = manager.merge(alunos);
+			for(Aluno aluno : alunos) {
+				aluno = manager.merge(aluno);
+				aux.add(aluno);
+				//manager.flush();
+				//manager.clear();
+			}
+			transaction.commit();
+			return aux;
+		} catch (Exception e) {
+			//transaction.rollback();
+			throw e;
+		}
+	}
+	
+	public List<Aluno> persistirSemCommit(List<Aluno> alunos) {
+		EntityTransaction transaction = null;
+		
+		List<Aluno> aux = new ArrayList<Aluno>();
+		
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			//alunos = manager.merge(alunos);
+			for(Aluno aluno : alunos) {
+				aluno = manager.merge(aluno);
+				//manager.flush();
+				aux.add(aluno);
+				//manager.clear();
+			}
+			//transaction.commit();
+			return aux;
+		} catch (Exception e) {
+			//transaction.rollback();
+			throw e;
+		}
 	}
 
 	public void remover(Aluno aluno) {
@@ -49,6 +102,23 @@ public class AlunoRepository implements Serializable {
 			transaction.commit();
 		} catch (Exception e) {
 			transaction.rollback();
+			throw e;
+		}
+	}
+	
+	public void remover(List<Aluno> alunos) {
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			for(Aluno aluno : alunos) {
+				manager.remove(manager.contains(aluno) ? aluno : manager.merge(aluno));
+			}
+			transaction.commit();
+		} catch (Exception e) {
+			//transaction.rollback();
 			throw e;
 		}
 	}
@@ -110,8 +180,13 @@ public class AlunoRepository implements Serializable {
 	}
 
 	public List<Aluno> buscarTodosAlunoCursoObjeto(Long idCurso) {
-		return manager.createQuery("FROM Aluno WHERE id_curso = :idCurso  ", Aluno.class)
-				.setParameter("idCurso", idCurso).getResultList();
-
+		logger.info("Buscando todos os alunos");
+		try {
+			return manager.createQuery("FROM Aluno WHERE id_curso = :idCurso  ", Aluno.class)
+					.setParameter("idCurso", idCurso).getResultList();
+		} catch (Exception e) {
+			throw e;
+		}
 	}
+	
 }

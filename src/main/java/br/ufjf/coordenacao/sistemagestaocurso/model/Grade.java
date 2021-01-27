@@ -24,7 +24,7 @@ import br.ufjf.coordenacao.OfertaVagas.model.Class;
 
 @Entity
 @SequenceGenerator(name="grade_sequencia", sequenceName="grade_seq", allocationSize=1)
-public class Grade {
+public class Grade implements Cloneable{
 	// ==========================VARIÃ�VEIS=================================================================================================================//
 
 	private String codigo;
@@ -41,6 +41,10 @@ public class Grade {
 
 	// ==========================GETTERS_AND_SETTERS======================================================================================================//
 
+	public Object clone()throws CloneNotSupportedException{
+		return super.clone();
+	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="grade_sequencia")
 	public Long getId() {

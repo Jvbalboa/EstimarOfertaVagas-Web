@@ -33,11 +33,30 @@ public class DisciplinaRepository implements Serializable {
 		
 		try {
 			transaction = manager.getTransaction();
-			transaction.begin();
+			if (!transaction.isActive())
+				transaction.begin();
 			objeto = manager.merge(objeto);
 			transaction.commit();
 		} catch (Exception e) {
 			transaction.rollback();
+			throw e;
+		}
+		
+		return objeto;
+	}
+	
+	public Disciplina persistirSemCommit(Disciplina objeto) {
+		EntityTransaction transaction = null;
+		
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			objeto = manager.merge(objeto);
+			manager.flush();
+			//transaction.commit();
+		} catch (Exception e) {
+			//transaction.rollback();
 			throw e;
 		}
 		
@@ -70,12 +89,36 @@ public class DisciplinaRepository implements Serializable {
 	}
 
 	public Disciplina buscarPorCodigoDisciplina(String variavel) {
+		EntityTransaction transaction = null;
+		Disciplina disc = null;
 		try {
-			return manager.createQuery("FROM Disciplina WHERE codigo = :codigo", Disciplina.class)
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			disc = manager.createQuery("FROM Disciplina WHERE codigo = :codigo", Disciplina.class)
 					.setParameter("codigo", variavel).getSingleResult();
+			transaction.commit();
 		} catch (NoResultException e) {
-			return null;
+			transaction.rollback();
 		}
+		return disc;
+	}
+	
+	public Disciplina buscarPorCodigoDisciplinaSemCommit(String variavel) {
+		EntityTransaction transaction = null;
+		Disciplina disc = null;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			disc = manager.createQuery("FROM Disciplina WHERE codigo = :codigo", Disciplina.class)
+					.setParameter("codigo", variavel).getSingleResult();
+			//transaction.commit();
+		} catch (NoResultException e) {
+			//transaction.rollback();
+			throw e;
+		}
+		return disc;
 	}
 
 	public List<String> buscarTodosNomesDisciplina(String variavel) {

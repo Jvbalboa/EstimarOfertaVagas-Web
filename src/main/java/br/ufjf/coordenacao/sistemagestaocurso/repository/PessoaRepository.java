@@ -1,7 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.Pessoa;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -75,12 +74,46 @@ public class PessoaRepository implements Serializable {
 		}
 
 	}
+	
+	public Pessoa buscarPorSiapePessoa2(String variavel) {
+		EntityTransaction transaction = null;
+		
+		Pessoa p = null;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
+			p = (Pessoa) manager.createNativeQuery("SELECT * FROM Pessoa WHERE siape = :codigo")
+					.setParameter("codigo", variavel).getSingleResult();
+			transaction.commit();
+		} catch (NoResultException e) {
+			transaction.rollback();
+			return null;
+		}
+		
+		return p;
+
+	}
 
 	public int alterarSenha(Pessoa pessoaSelecionada) {
+		EntityTransaction transaction = null;
+		
+		int alterou = 0;
+		try {
+			transaction = manager.getTransaction();
+			if (!transaction.isActive())
+				transaction.begin();
 
-		return manager.createQuery("UPDATE Pessoa SET SENHA = :senha WHERE id = :codigo")
-				.setParameter("codigo", pessoaSelecionada.getId()).setParameter("senha", pessoaSelecionada.getSenha())
-				.executeUpdate();
-
+			alterou = manager.createQuery("UPDATE Pessoa SET SENHA = :senha WHERE id = :codigo")
+					.setParameter("codigo", pessoaSelecionada.getId()).setParameter("senha", pessoaSelecionada.getSenha())
+					.executeUpdate();
+			
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+			throw e;
+		}
+		
+		return alterou;
 	}
 }

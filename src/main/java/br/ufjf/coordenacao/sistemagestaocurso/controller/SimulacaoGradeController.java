@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.controller;
 
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -175,7 +176,15 @@ public class SimulacaoGradeController implements Serializable {
 		codigo = codigo.toUpperCase();
 		List<Aluno> todos = new ArrayList<Aluno>();
 		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getNome().contains(codigo)){
+
+			//Desconsiderando acentuação
+			String nome = alunoQuestao.getNome();
+			String nomeNormalizado = Normalizer.normalize(nome, Normalizer.Form.NFD);
+			String nomeAscii = nomeNormalizado.replaceAll("[^\\p{ASCII}]", "");
+			String codigoNormalizado = Normalizer.normalize(codigo, Normalizer.Form.NFD);
+			String codigoAscii = codigoNormalizado.replaceAll("[^\\p{ASCII}]", "");
+			
+			if (nomeAscii.contains(codigoAscii)) {
 				todos.add(alunoQuestao); 
 			}
 		}

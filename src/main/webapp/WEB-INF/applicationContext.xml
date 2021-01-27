@@ -61,7 +61,9 @@
 		
 		
 		
-	
+		<!-- Exclusões -->
+		<intercept-url pattern="/*.class" access="permitAll" />
+		<intercept-url pattern="/*.java" access="permitAll" />
 		
 	
 		

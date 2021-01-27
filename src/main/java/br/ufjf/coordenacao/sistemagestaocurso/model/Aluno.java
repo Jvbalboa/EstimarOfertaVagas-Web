@@ -1,5 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,7 +34,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.*;
 
 @Entity
 @SequenceGenerator(name="aluno_sequencia", sequenceName="aluno_seq", allocationSize=1)  
-public class Aluno {
+public class Aluno implements Cloneable {
 	// ==========================VARI√ÉÔøΩVEIS=================================================================================================================//
 
 	private Long id;
@@ -41,6 +42,7 @@ public class Aluno {
 	private Curso curso;
 	private Grade grade;
 	private String nome;
+	private String email;
 	private Float ira;
 	private Integer periodoReal;
 	private List<Historico> grupoHistorico;
@@ -64,6 +66,10 @@ public class Aluno {
 
 	// ==========================GETTERS_AND_SETTERS======================================================================================================//
 
+	public Object clone()throws CloneNotSupportedException{
+		return super.clone();
+	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="aluno_sequencia")  
 	public Long getId() {
@@ -93,6 +99,16 @@ public class Aluno {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}	
+	
+	@Column(name="EMAIL")
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}	
+
 
 	@Transient
 	public String getPeriodoIngresso() {

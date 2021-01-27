@@ -11,8 +11,10 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.log4j.Logger;
 import org.primefaces.event.RowEditEvent;
 
+import br.ufjf.coordenacao.sistemagestaocurso.controller.util.UsuarioController;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Pessoa;
 import br.ufjf.coordenacao.sistemagestaocurso.model.PessoaCurso;
@@ -49,6 +51,8 @@ public class CadastroPessoaController implements Serializable {
 	private boolean lgCodigoPessoaCurso = false;
 	private boolean lgNomePessoaCurso = false;	
 	//private EstruturaArvore estruturaArvore;
+	
+	private Logger logger = Logger.getLogger(CadastroPessoaController.class);
 
 	//========================================================= METODOS ==================================================================================//
 
@@ -225,7 +229,15 @@ public class CadastroPessoaController implements Serializable {
 			return;
 		}
 		pessoaCursoRepository.remover(pessoaCursoSelecionada);
-		listaPessoaCursoAuxiliar.remove(pessoaCursoSelecionada);
+		int i = 0;
+		for(PessoaCurso p:listaPessoaCursoAuxiliar){
+			if(p.getCurso().getCodigo().equals(pessoaCursoSelecionada.getCurso().getCodigo())) {
+				listaPessoaCursoAuxiliar.remove(i);
+				break;
+			}
+			i++;
+		}
+		//listaPessoaCursoAuxiliar.remove(pessoaCursoSelecionada);
 		listaPessoaCurso.clear();
 		for(PessoaCurso p:listaPessoaCursoAuxiliar){
 			listaPessoaCurso.add(p);

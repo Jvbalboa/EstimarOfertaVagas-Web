@@ -1,7 +1,6 @@
 package br.ufjf.coordenacao.sistemagestaocurso.repository;
 
 import br.ufjf.coordenacao.sistemagestaocurso.model.PreRequisito;
-import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.EntityManagerProducer;
 
 import java.util.List;
 import java.io.Serializable;
@@ -42,15 +41,22 @@ public class PreRequisitoRepository implements Serializable {
 	public void remover(PreRequisito objeto) {
 		EntityTransaction transaction = null;
 		
+		int deletar;
+		
 		try {
 			transaction = manager.getTransaction();
 			transaction.begin();
-			manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+			//manager.remove(manager.contains(objeto) ? objeto : manager.merge(objeto));
+			
+			deletar = manager.createQuery("DELETE FROM PreRequisito WHERE ID = :id")
+					.setParameter("id", objeto.getId())
+					.executeUpdate();
+			
 			transaction.commit();
 		} catch (Exception e) {
 			transaction.rollback();
 			throw e;
-		};
+		}
 
 	}
 

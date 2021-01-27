@@ -144,7 +144,7 @@ public class ImportarGradeController implements Serializable {
 			if (this.grade != null) {
 
 				for (Grade gradeSelecionada : curso.getGrupoGrades()) {
-					if (gradeSelecionada.getCodigo().equals(this.codigoNovaGrade)) {
+					if (gradeSelecionada.getCodigo().equals(this.codigoNovaGrade)) { //--------------------------
 						addMessage("Grade já existente");
 						return;
 					}
@@ -152,14 +152,16 @@ public class ImportarGradeController implements Serializable {
 				
 				Grade novaGrade = new Grade();
 				novaGrade.setCodigo(this.codigoNovaGrade);
+				//-----------------------------------------------------------------------------------------------
 				novaGrade.setCurso(this.usuarioController.getAutenticacao().getCursoSelecionado());
+				//-----------------------------------------------------------------------------------------------
 				novaGrade.setHorasAce(grade.getHorasAce());
 				novaGrade.setHorasEletivas(grade.getHorasEletivas());
 				novaGrade.setHorasOpcionais(grade.getHorasOpcionais());
 				novaGrade.setNumeroMaximoPeriodos(grade.getNumeroMaximoPeriodos());
 				novaGrade.setPeriodoInicio(grade.getPeriodoInicio());
 
-				novaGrade = gradeRepository.persistir(novaGrade);
+				novaGrade = gradeRepository.persistir(novaGrade); //---------------------------------------------
 				
 				Hibernate.initialize(novaGrade.getGrupoGradeDisciplina());
 				
@@ -172,7 +174,7 @@ public class ImportarGradeController implements Serializable {
 					gd.setExcluirIra(g.getExcluirIra());
 					gd.setPeriodo(g.getPeriodo());
 
-					gd = gradeDisciplinaRepository.persistir(gd);
+					gd = gradeDisciplinaRepository.persistir(gd); //---------------------------------------------
 					
 					Hibernate.initialize(gd.getPreRequisito());
 					for (PreRequisito p : g.getPreRequisito()) {
@@ -182,7 +184,7 @@ public class ImportarGradeController implements Serializable {
 						pq.setGradeDisciplina(gd);
 						pq.setTipo(p.getTipo());
 
-						preRequisitoRepository.persistir(pq);
+						preRequisitoRepository.persistir(pq); //Trata com try catch, o que ñ é feito na versão de produção
 					}
 				}
 				
@@ -194,7 +196,7 @@ public class ImportarGradeController implements Serializable {
 					e.setDisciplinaGrade(E.getDisciplinaGrade());
 					e.setGrade(novaGrade);
 
-					equivalenciaRepository.persistir(e);
+					equivalenciaRepository.persistir(e); //Trata com try catch, o que ñ é feito na versão de produção
 				}
 
 				usuarioController.setReseta(true);

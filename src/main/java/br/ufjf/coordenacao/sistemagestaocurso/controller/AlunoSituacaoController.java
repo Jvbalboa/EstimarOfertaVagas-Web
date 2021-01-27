@@ -1,6 +1,7 @@
 package br.ufjf.coordenacao.sistemagestaocurso.controller;
 
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,7 +36,6 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.SituacaoDisciplina
 import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.DisciplinaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.EventoAceRepository;
-import br.ufjf.coordenacao.sistemagestaocurso.repository.HistoricoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.EstruturaArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.arvore.ImportarArvore;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
@@ -77,8 +77,6 @@ public class AlunoSituacaoController
   private EventoAceRepository eventosAceRepository;
   @Inject
   private EventoAce eventoAceSelecionado;
-  @Inject
-  private HistoricoRepository historicoRepository;
   @Inject
   private AlunoRepository alunos;
   
@@ -155,7 +153,15 @@ public class AlunoSituacaoController
 		codigo = codigo.toUpperCase();
 		List<Aluno> todos = new ArrayList<Aluno>();
 		for (Aluno alunoQuestao : curso.getGrupoAlunos()){
-			if(alunoQuestao.getNome().contains(codigo)){
+
+			//Desconsiderando acentuação
+			String nome = alunoQuestao.getNome();
+			String nomeNormalizado = Normalizer.normalize(nome, Normalizer.Form.NFD);
+			String nomeAscii = nomeNormalizado.replaceAll("[^\\p{ASCII}]", "");
+			String codigoNormalizado = Normalizer.normalize(codigo, Normalizer.Form.NFD);
+			String codigoAscii = codigoNormalizado.replaceAll("[^\\p{ASCII}]", "");
+			
+			if (nomeAscii.contains(codigoAscii)) {
 				todos.add(alunoQuestao); 
 			}
 		}
