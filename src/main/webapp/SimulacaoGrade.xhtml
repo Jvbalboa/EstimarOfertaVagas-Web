@@ -22,7 +22,7 @@
 				<div class="ui-grid-row">
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Matricula:" />
-						<p:autoComplete id="matriculaAluno"
+						<p:autoComplete queryDelay="1000"  id="matriculaAluno"
 							value="#{simulacaoGradeController.aluno.matricula}"
 							completeMethod="#{simulacaoGradeController.alunoMatricula}"
 							disabled="#{simulacaoGradeController.lgMatriculaAluno}"
@@ -35,7 +35,7 @@
 					<div class="ui-grid-col-4"
 						style="width: 30.333%; margin-right: 3%;">
 						<p:outputLabel value="Nome:" />
-						<p:autoComplete id="nomeAluno"
+						<p:autoComplete queryDelay="1000"  id="nomeAluno"
 							value="#{simulacaoGradeController.aluno}"
 							completeMethod="#{simulacaoGradeController.alunoNome}"
 							disabled="#{simulacaoGradeController.lgNomeAluno}"
@@ -75,7 +75,7 @@
 				<div class="ui-grid-row espacoLinha">
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Grade:" />
-						<p:autoComplete id="gradeSelecionada"
+						<p:autoComplete queryDelay="1000"  id="gradeSelecionada"
 							value="#{simulacaoGradeController.gradeSimulada.codigo}"
 							disabled="#{simulacaoGradeController.lgGradeAluno}"
 							completeMethod="#{simulacaoGradeController.codigoGrades}"

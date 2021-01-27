@@ -48,7 +48,7 @@
 				<div class="ui-grid-row espacoLinha">					
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Código do curso:" />
-						<p:autoComplete id="codigoCurso"
+						<p:autoComplete queryDelay="1000"  id="codigoCurso"
 							value="#{importarGradeController.codigoCurso}"
 							completeMethod="#{importarGradeController.buscarCodigosCursos}"
 							disabled="#{importarGradeController.lgCodigoCurso}">
@@ -59,7 +59,7 @@
 					
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Código da grade:" />
-						<p:autoComplete id="codigoGrade"
+						<p:autoComplete queryDelay="1000"  id="codigoGrade"
 							value="#{importarGradeController.codigoGrade}"
 							completeMethod="#{importarGradeController.gradeCodigos}"
 							disabled="#{importarGradeController.lgCodigoGrade}">>

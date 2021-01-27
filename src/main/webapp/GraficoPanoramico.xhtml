@@ -22,7 +22,7 @@
 			<div class="ui-grid-row">
 				<div class="ui-grid-col-2">
 					<p:outputLabel value="Matricula:" />
-					<p:autoComplete id="matriculaAluno"
+					<p:autoComplete queryDelay="1000"  id="matriculaAluno"
 						value="#{graficosPanoramicoController.alunoSelecionado.matricula}"
 						completeMethod="#{graficosPanoramicoController.alunoMatricula}"
 						disabled="#{graficosPanoramicoController.lgMatriculaAluno}"

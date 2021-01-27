@@ -21,7 +21,7 @@
 				<div class="ui-grid-row">
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Matricula:" />
-						<p:autoComplete id="matriculaAluno"
+						<p:autoComplete queryDelay="1000"  id="matriculaAluno"
 							value="#{alunoSituacaoController.aluno.matricula}"
 							completeMethod="#{alunoSituacaoController.alunoMatricula}"
 							disabled="#{alunoSituacaoController.lgMatriculaAluno}"
@@ -34,7 +34,8 @@
 					<div class="ui-grid-col-4"
 						style="width: 30.333%; margin-right: 3%;">
 						<p:outputLabel value="Nome:" />
-						<p:autoComplete id="nomeAluno"
+						<p:autoComplete queryDelay="1000"
+							id="nomeAluno"
 							value="#{alunoSituacaoController.aluno}"
 							completeMethod="#{alunoSituacaoController.alunoNome}"
 							disabled="#{alunoSituacaoController.lgNomeAluno}"

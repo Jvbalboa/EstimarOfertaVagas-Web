@@ -25,7 +25,7 @@
 							<div class="ui-grid-col-6 "
 								style="width: 50%; margin-top: -25px;">
 								<p:outputLabel value="Grades:" />
-								<p:autoComplete id="gradesSelecionadas" multiple="true"
+								<p:autoComplete queryDelay="1000"  id="gradesSelecionadas" multiple="true"
 									forceSelection="true"
 									value="#{visaoGeralController.listagrade}"
 									completeMethod="#{visaoGeralController.gradeCodigos}"
@@ -52,7 +52,7 @@
 							<div class="ui-grid-col-6 "
 								style="width: 50%; padding-top: 10px;">
 								<p:outputLabel value="Alunos:" />
-								<p:autoComplete id="alunosSelecionadas" multiple="true"
+								<p:autoComplete queryDelay="1000"  id="alunosSelecionadas" multiple="true"
 									forceSelection="true"
 									value="#{visaoGeralController.listaAlunosSelecionados}"
 									completeMethod="#{visaoGeralController.nomeAluno}"
@@ -72,7 +72,7 @@
 							<div class="ui-grid-col-6 "
 								style="width: 50%; padding-top: 10px;">
 								<p:outputLabel value="Somente ingresso em:" />
-								<p:autoComplete id="alunosAnoSelecionadas" multiple="true"
+								<p:autoComplete queryDelay="1000"  id="alunosAnoSelecionadas" multiple="true"
 									forceSelection="true"
 									value="#{visaoGeralController.listaAnosSelecionados}"
 									completeMethod="#{visaoGeralController.alunoAno}"
@@ -89,7 +89,7 @@
 							<div class="ui-grid-col-6 "
 								style="width: 50%; padding-top: 10px;">
 								<p:outputLabel value="Desprezar ingresso em:" />
-								<p:autoComplete id="alunosAnoSelecionadasInvertido" multiple="true"
+								<p:autoComplete queryDelay="1000"  id="alunosAnoSelecionadasInvertido" multiple="true"
 									forceSelection="true"
 									value="#{visaoGeralController.listaAnosSelecionadosInvertida}"
 									completeMethod="#{visaoGeralController.alunoAno}"
@@ -232,7 +232,7 @@
 					</div>
 					<div class="ui-grid-col-4" style="width: 33%;">
 						<p:outputLabel value="Disciplinas Avulsas:"></p:outputLabel>
-						<p:autoComplete id="disciplinasSelecionadas" multiple="true"
+						<p:autoComplete queryDelay="1000"  id="disciplinasSelecionadas" multiple="true"
 							forceSelection="true"
 							value="#{visaoGeralController.listaTodasDisciplinasSelecionadas}"
 							completeMethod="#{visaoGeralController.nomeDisciplina}"
@@ -455,6 +455,11 @@
 				</div>
 			</div>
 		</h:form>
+		<style type="text/css">
+			.ui-state-active {
+				background-color: #b3b3b3 !important;
+			}
+		</style>
 	</ui:define>
 </ui:composition>
 </html>

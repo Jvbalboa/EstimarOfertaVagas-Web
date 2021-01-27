@@ -32,7 +32,7 @@
 					</div>
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Código Curso:"></p:outputLabel>
-						<p:autoComplete id="codigoCurso"
+						<p:autoComplete queryDelay="1000"  id="codigoCurso"
 							value="#{cadastroPessoaController.curso.codigo}"
 							completeMethod="#{cadastroPessoaController.cursoCodigos}"
 							disabled="#{cadastroPessoaController.lgCodigoCurso}"
@@ -44,7 +44,7 @@
 					</div>
 					<div class="ui-grid-col-4">
 						<p:outputLabel value="Nome Curso:"></p:outputLabel>
-						<p:autoComplete id="nomeCurso"
+						<p:autoComplete queryDelay="1000"  id="nomeCurso"
 							value="#{cadastroPessoaController.curso}"
 							completeMethod="#{cadastroPessoaController.cursoNomes}"
 							forceSelection="true" size="47" converter="entityConverter"
@@ -185,7 +185,7 @@
 						<div class="ui-grid-row espacoLinha">
 							<div style="width: 17%;">
 								<p:outputLabel value="Cód. Curso:"></p:outputLabel>
-								<p:autoComplete id="codigoPessoaCurso"
+								<p:autoComplete queryDelay="1000"  id="codigoPessoaCurso"
 									value="#{cadastroPessoaController.curso.codigo}"
 									completeMethod="#{cadastroPessoaController.cursoCodigos}"
 									disabled="#{cadastroPessoaController.lgCodigoPessoaCurso}"
@@ -197,7 +197,7 @@
 							</div>
 							<div style="width: 53%;">
 								<p:outputLabel value="Nome Curso:"></p:outputLabel>
-								<p:autoComplete id="nomePessoaCurso"
+								<p:autoComplete queryDelay="1000"  id="nomePessoaCurso"
 									value="#{cadastroPessoaController.curso}"
 									completeMethod="#{cadastroPessoaController.cursoNomes}"
 									disabled="#{cadastroPessoaController.lgNomePessoaCurso}"
@@ -247,7 +247,7 @@
 								</p:commandLink>
 								<p:confirmDialog global="true" showEffect="fade"
 									header="Deletar Pessoa X Curso"
-									message="Tem certeza que deseja deletar a Pessoa?"
+									message="Tem certeza que deseja deletar o Curso?"
 									widgetVar="deletarPessoaCurso">
 									<p:commandButton value="Sim" type="button"
 										styleClass="ui-confirmdialog-no" ajax="true">

@@ -45,7 +45,7 @@
 				<div class="ui-grid-row espacoLinha">
 					<div class="ui-grid-col-2 ">
 						<p:outputLabel value="Código Grade:" />
-						<p:autoComplete id="codigoGrade"
+						<p:autoComplete queryDelay="1000"  id="codigoGrade"
 							value="#{cadastroGradeController.grade.codigo}"
 							completeMethod="#{cadastroGradeController.gradeCodigos}"
 							disabled="#{cadastroGradeController.lgCodigoGrade}">
@@ -152,7 +152,7 @@
 				<div class="ui-grid-row espacoLinha">
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Código:  " />
-						<p:autoComplete id="codigoDisciplina"
+						<p:autoComplete queryDelay="1000"  id="codigoDisciplina"
 							value="#{cadastroGradeController.disciplina.codigo}"
 							completeMethod="#{cadastroGradeController.disciplinaCodigos}"
 							disabled="#{cadastroGradeController.lgCodigoDisciplina}"
@@ -164,7 +164,7 @@
 					</div>
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Nome:" />
-						<p:autoComplete id="nomeDisciplina"
+						<p:autoComplete queryDelay="1000"  id="nomeDisciplina"
 							value="#{cadastroGradeController.disciplina}"
 							completeMethod="#{cadastroGradeController.disciplinaNomes}"
 							disabled="#{cadastroGradeController.lgNomeDisciplina}"
@@ -378,7 +378,7 @@
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Código Disciplina Grade:"
 							style="    font-size: 13px;" />
-						<p:autoComplete id="codigoDisciplinaEquivalenciaUm"
+						<p:autoComplete queryDelay="1000"  id="codigoDisciplinaEquivalenciaUm"
 							value="#{cadastroGradeController.disciplinaEquivalenciaUm}"
 							completeMethod="#{cadastroGradeController.disciplinaCodigoEquivalencia}"
 							disabled="#{cadastroGradeController.lgCodigoDisciplinaEquivalenciaUm}"
@@ -392,7 +392,7 @@
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Nome Disciplina Grade:"
 							style="    font-size: 13px;" />
-						<p:autoComplete id="nomeDisciplinaEquivalenciaUm"
+						<p:autoComplete queryDelay="1000"  id="nomeDisciplinaEquivalenciaUm"
 							value="#{cadastroGradeController.disciplinaEquivalenciaUm}"
 							completeMethod="#{cadastroGradeController.disciplinaNomesEquivalencia}"
 							disabled="#{cadastroGradeController.lgNomeDisciplinaEquivalenciaUm}"
@@ -416,7 +416,7 @@
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Código Disciplina Equivalente:"
 							style="    font-size: 13px;"></p:outputLabel>
-						<p:autoComplete id="codigoDisciplinaEquivalenciaDois"
+						<p:autoComplete queryDelay="1000"  id="codigoDisciplinaEquivalenciaDois"
 							value="#{cadastroGradeController.disciplinaEquivalenciaDois.codigo}"
 							completeMethod="#{cadastroGradeController.disciplinaCodigos}"
 							disabled="#{cadastroGradeController.lgCodigoDisciplinaEquivalenciaDois}"
@@ -429,7 +429,7 @@
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Nome Disciplina Equivalente:"
 							style="    font-size: 13px;" />
-						<p:autoComplete id="nomeDisciplinaEquivalenciaDois"
+						<p:autoComplete queryDelay="1000"  id="nomeDisciplinaEquivalenciaDois"
 							value="#{cadastroGradeController.disciplinaEquivalenciaDois}"
 							completeMethod="#{cadastroGradeController.disciplinaNomes}"
 							disabled="#{cadastroGradeController.lgNomeDisciplinaEquivalenciaDois}"
@@ -522,7 +522,7 @@
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Código Disciplina:"
 							style="    font-size: 13px;" />
-						<p:autoComplete id="codigoDisciplinaIRA"
+						<p:autoComplete queryDelay="1000"  id="codigoDisciplinaIRA"
 							value="#{cadastroGradeController.disciplinaIra}"
 							completeMethod="#{cadastroGradeController.disciplinaCodigoEquivalencia}"
 							disabled="#{cadastroGradeController.lgDisciplinaIra}"
@@ -536,7 +536,7 @@
 					<div class="ui-grid-col-2">
 						<p:outputLabel value="Nome Disciplina:"
 							style="    font-size: 13px;" />
-						<p:autoComplete id="nomeDisciplinaIRA"
+						<p:autoComplete queryDelay="1000"  id="nomeDisciplinaIRA"
 							value="#{cadastroGradeController.disciplinaIra}"
 							completeMethod="#{cadastroGradeController.disciplinaNomesEquivalencia}"
 							disabled="#{cadastroGradeController.lgDisciplinaIra}"
@@ -656,7 +656,7 @@
 						<div class="ui-grid-row espacoLinha">
 							<div style="width: 33%;">
 								<p:outputLabel value="Código Pré-Requisito:"></p:outputLabel>
-								<p:autoComplete id="CodigoPreRequisito"
+								<p:autoComplete queryDelay="1000"  id="CodigoPreRequisito"
 									value="#{cadastroGradeController.disciplinaPre.codigo}"
 									completeMethod="#{cadastroGradeController.disciplinaCodigos}"
 									forceSelection="true" size="20">
@@ -716,7 +716,7 @@
 										styleClass="ui-confirmdialog-no" ajax="true">
 										<p:ajax event="click"
 											listener="#{cadastroGradeController.deletarPreRequisito()}"
-											update="gridPreRequisitos :principalForm" />
+											update="gridPreRequisitos" />
 									</p:commandButton>
 									<p:commandButton value="Não" type="button"
 										styleClass="ui-confirmdialog-no" />
