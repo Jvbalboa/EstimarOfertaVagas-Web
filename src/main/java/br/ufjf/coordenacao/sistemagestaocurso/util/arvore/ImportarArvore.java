@@ -31,6 +31,7 @@ public class ImportarArvore implements Serializable{
 			else if (classStatus.equals("Rep Nota")) status = ClassStatus.REPROVED_GRADE;
 			else if (classStatus.equals("Rep Freq")) status = ClassStatus.REPROVED_FREQUENCY;
 			else if (classStatus.equals("Trancado")) status = ClassStatus.NOT_ENROLLED;
+			else if (classStatus.equals("Cancelado")) status = ClassStatus.NOT_ENROLLED;
 			else continue; 
 
 			sh.add(

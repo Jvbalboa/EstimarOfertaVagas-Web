@@ -35,6 +35,7 @@ import br.ufjf.coordenacao.sistemagestaocurso.model.Aluno;
 import br.ufjf.coordenacao.sistemagestaocurso.model.Curso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.PessoaCurso;
 import br.ufjf.coordenacao.sistemagestaocurso.model.estrutura.Autenticacao;
+import br.ufjf.coordenacao.sistemagestaocurso.repository.AlunoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.CursoRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.repository.PessoaRepository;
 import br.ufjf.coordenacao.sistemagestaocurso.util.jpa.Transactional;
@@ -73,7 +74,8 @@ public class UsuarioController implements Serializable {
 	private PerfilController perfilController;
 	@Inject
 	private EntityManager manager;
-
+	@Inject
+	private AlunoRepository alunos;
 	@Inject
 	private AutenticacaoController autenticacaoController;
 
@@ -91,7 +93,11 @@ public class UsuarioController implements Serializable {
 					+ autenticacao.getCursoSelecionado().getId()
 					+ " AND STATUS_DISCIPLINA = 'Matriculado' ) AS historico_curso GROUP BY SEMESTRE_CURSADO order by matriculado DESC, SEMESTRE_CURSADO DESC LIMIT 0,3) AS t";
 
-			periodos = manager.createNativeQuery(query).getResultList();
+			if(autenticacao.getTipoAcesso().equals("aluno")) {
+				periodos.add(manager.createNativeQuery(query).getResultList().get(0).toString());
+			} else {
+				periodos = manager.createNativeQuery(query).getResultList();
+			}
 			autenticacao.setSemestreSelecionado(periodos.get(0));
 		} catch (Exception e) {
 			logger.warn("Não foi possível selecionar os periodos baseado nos dados de histórico. Será usado um método alternativo. Motivo: " + e.getMessage());
@@ -111,12 +117,24 @@ public class UsuarioController implements Serializable {
 				if (periodoAtual == 1){
 					autenticacao.setSemestreSelecionado(Integer.toString(anoAtual) + "1") ;
 					periodos.add(Integer.toString(anoAtual) + "1");
-					periodos.add(Integer.toString(anoAtual-1) + "3");
+					if(!autenticacao.getTipoAcesso().equals("aluno"))
+						periodos.add(Integer.toString(anoAtual-1) + "3");
 				}
 				else {
-					autenticacao.setSemestreSelecionado(Integer.toString(anoAtual-1) + "3") ;			
+					autenticacao.setSemestreSelecionado(Integer.toString(anoAtual) + "3") ;			
+					periodos.add(Integer.toString(anoAtual) + "3");
+					if(!autenticacao.getTipoAcesso().equals("aluno"))
+						periodos.add(Integer.toString(anoAtual) + "1");
+				}
+			}
+			else if(periodos.size() == 1 && !autenticacao.getTipoAcesso().equals("aluno")) {
+				String periodoAtual = periodos.get(0);
+				int anoAtual = Integer.parseInt(periodoAtual.substring(0, 4));
+				int periodo = Integer.parseInt(periodoAtual.substring(4));
+				if (periodo == 1){
 					periodos.add(Integer.toString(anoAtual-1) + "3");
-					periodos.add(Integer.toString(anoAtual-1) + "1");
+				} else {
+					periodos.add(Integer.toString(anoAtual) + "1");
 				}
 			}
 		}
@@ -138,8 +156,7 @@ public class UsuarioController implements Serializable {
 	public boolean validarLogin() throws IOException { // ok
 
 		perfilController.setPerfil(null);
-		//autenticacao.setSenha(md5(autenticacao.getSenha()));
-		autenticacao.setSenha("cbfa8e9d027fb08d381873a4a40898b1");
+		autenticacao.setSenha(md5(autenticacao.getSenha()));
 		if (autenticacao.getLogin() == null || autenticacao.getSenha() == null) {
 			return false;
 		}
@@ -263,6 +280,10 @@ public class UsuarioController implements Serializable {
 
 			if (autenticacao.getSelecaoIdentificador() == null) {
 				autenticacao.setSelecaoIdentificador(autenticacao.getPerfis().get(0));
+				Aluno aluno = alunos.buscarPorMatricula(autenticacao.getSelecaoIdentificador());
+				if (aluno != null && aluno.getCurso() != null) {
+					autenticacao.setCursoSelecionado(aluno.getCurso());
+				}
 			}
 		} else if (autenticacao.getTipoAcesso().equals("admin") || autenticacao.getTipoAcesso().equals("externo")) {
 

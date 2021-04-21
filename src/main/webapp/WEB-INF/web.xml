@@ -45,11 +45,11 @@
   </context-param>
   <context-param>
     <param-name>configPath</param-name>
-    <param-value>C:/Users/victo/Documents/UFJF/TP/config.txt</param-value>
+    <param-value>/dcc-config/ofertavagas/config.txt</param-value>
   </context-param>
   <context-param>
     <param-name>tokenPath</param-name>
-    <param-value>C:/Users/victo/Documents/UFJF/TP/application.token</param-value>
+    <param-value>/dcc-config/ofertavagas/application.token</param-value>
   </context-param>
   <filter>
     <filter-name>springSecurityFilterChain</filter-name>

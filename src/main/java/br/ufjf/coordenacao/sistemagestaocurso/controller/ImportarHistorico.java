@@ -57,16 +57,16 @@ public class ImportarHistorico implements Serializable {
 			// Os outros serao ordenados pela ordem dos periodos
 
 			if (o1.getStatusDisciplina().equals("Trancado") || o1.getStatusDisciplina().equals("Dispensado")
-					|| o1.getStatusDisciplina().equals("Matriculado")) {
+				|| o1.getStatusDisciplina().equals("Matriculado") || o1.getStatusDisciplina().equals("Cancelado")) {
 				if (o2.getStatusDisciplina().equals("Trancado") || o2.getStatusDisciplina().equals("Dispensado")
-						|| o2.getStatusDisciplina().equals("Matriculado")) {
+					|| o2.getStatusDisciplina().equals("Matriculado") || o2.getStatusDisciplina().equals("Cancelado")) {
 					return 0; // Os dois são iguais
 				} else {
 					return 1;
 				}
 			} else {
 				if (o2.getStatusDisciplina().equals("Trancado") || o2.getStatusDisciplina().equals("Dispensado")
-						|| o2.getStatusDisciplina().equals("Matriculado")) {
+					|| o2.getStatusDisciplina().equals("Matriculado") || o2.getStatusDisciplina().equals("Cancelado")) {
 					return -1; // O primeiro deve vir antes do ultimo
 				} else {
 					try {
@@ -362,7 +362,7 @@ public class ImportarHistorico implements Serializable {
 			// entao ao encontrar uma delas, sabemos que nao tem mais nada para
 			// entrar no calculo
 			if (h.getStatusDisciplina().equals("Trancado") || h.getStatusDisciplina().equals("Dispensado")
-					|| h.getStatusDisciplina().equals("Matriculado")) {
+				|| h.getStatusDisciplina().equals("Matriculado") || h.getStatusDisciplina().equals("Cancelado")) {
 				break;
 			}
 

@@ -473,7 +473,7 @@ public class Aluno implements Cloneable {
 	public void buscarUltimosTresSemestres() {		
 		for (ListIterator<Historico> it = this.getGrupoHistorico().listIterator(this.getGrupoHistorico().size()); it.hasPrevious() && this.ultimosTresSemestres.size() < 3;) {
 			Historico historico = it.previous();
-			if (!historico.getStatusDisciplina().equals("Matriculado") && !historico.getStatusDisciplina().equals("Trancado") && !this.ultimosTresSemestres.contains(historico.getSemestreCursado())) {
+			if (!historico.getStatusDisciplina().equals("Matriculado") && !historico.getStatusDisciplina().equals("Trancado") && !historico.getStatusDisciplina().equals("Cancelado") && !this.ultimosTresSemestres.contains(historico.getSemestreCursado())) {
 					this.ultimosTresSemestres.add(historico.getSemestreCursado());
 			}
 		}
